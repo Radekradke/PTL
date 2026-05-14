@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Sector {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  pin       String
+  employees Employee[]
+  tickets   Ticket[]
+  createdAt DateTime   @default(now())
+}
+
+model Employee {
+  id           Int      @id @default(autoincrement())
+  name         String
+  username     String?  @unique
+  passwordHash String?
+  sectorId     Int
+  sector       Sector   @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  tickets      Ticket[]
+  createdAt    DateTime @default(now())
+   updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Ticket {
+  id                Int      @id @default(autoincrement())
+  employeeId        Int
+  sectorId          Int
+  category          String
+  origin            String
+  description       String
+  status            String   @default("Aberto")
+  priority          String   @default("Normal")
+  technicalResponse String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  employee Employee        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  sector   Sector          @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  timeline Timeline[]
+  messages TicketMessage[]
+}
+
+model TicketMessage {
+  id         Int      @id @default(autoincrement())
+  ticketId   Int
+  senderType String
+  senderName String
+  message    String
+  createdAt  DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+}
+
+model Timeline {
+  id        Int      @id @default(autoincrement())
+  ticketId  Int
+  action    String
+  createdAt DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+}
