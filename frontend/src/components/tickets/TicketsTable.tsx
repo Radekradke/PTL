@@ -41,6 +41,41 @@ function FieldCard({ label, value }: { label: string; value: string }) {
   )
 }
 
+
+function DetailsSection({
+  title,
+  defaultOpen = false,
+  children,
+}: {
+  title: string
+  defaultOpen?: boolean
+  children: React.ReactNode
+}) {
+  const [open, setOpen] = useState(defaultOpen)
+
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
+      >
+        <span className="text-sm font-bold text-slate-900">{title}</span>
+        <span className="text-sm font-bold text-emerald-700">
+          {open ? "−" : "+"}
+        </span>
+      </button>
+
+      {open && (
+        <div className="border-t border-slate-100 px-4 py-4">
+          {children}
+        </div>
+      )}
+    </div>
+  )
+}
+
+
 export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   const [tableTickets, setTableTickets] = useState<any[]>(tickets)
   const [employees, setEmployees] = useState<Employee[]>([])
@@ -646,94 +681,131 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
         )}
       </div>
 
-      <Dialog open={!!selectedTicket} onOpenChange={() => setSelectedTicket(null)}>
-        <DialogContent className="max-h-[92vh] w-[calc(100vw-1rem)] overflow-hidden rounded-3xl border border-slate-200 bg-white p-0 text-slate-950 shadow-2xl sm:max-w-5xl">
-          <DialogHeader className="border-b border-slate-200 px-5 py-4 sm:px-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-600">Chamado #{selectedTicket?.id}</p>
-                <DialogTitle className="mt-1 text-xl font-bold tracking-[-0.02em] text-slate-950">Responder usuário</DialogTitle>
+    <Dialog open={!!selectedTicket} onOpenChange={() => setSelectedTicket(null)}>
+  <DialogContent className="max-h-[92vh] w-[calc(100vw-1rem)] overflow-hidden rounded-3xl border border-slate-200 bg-[#F8FAF9] p-0 text-slate-950 shadow-2xl sm:max-w-4xl xl:max-w-[1100px]">
+    <DialogHeader className="border-b border-slate-200 bg-white px-5 py-4 sm:px-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-600">
+            Chamado #{selectedTicket?.id}
+          </p>
+          <DialogTitle className="mt-1 text-xl font-bold tracking-[-0.02em] text-slate-950">
+            Atendimento técnico
+          </DialogTitle>
+          <p className="mt-1 text-sm text-slate-500">
+            Responda o usuário e consulte os detalhes quando precisar.
+          </p>
+        </div>
+
+        {selectedTicket && (
+          <span className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(selectedTicket.status)}`}>
+            {selectedTicket.status}
+          </span>
+        )}
+      </div>
+    </DialogHeader>
+
+    {selectedTicket && (
+      <div className="max-h-[calc(92vh-96px)] overflow-y-auto p-4 sm:p-5">
+        <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
+          <section className="space-y-4">
+            <div className="rounded-3xl border border-emerald-100 bg-white p-4 shadow-sm">
+              <div className="mb-3">
+                <p className="text-sm font-bold text-slate-950">
+                  Responder ao usuário
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Informe orientação, diagnóstico ou próximo passo.
+                </p>
               </div>
 
-              {selectedTicket && (
-                <span className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(selectedTicket.status)}`}>
-                  {selectedTicket.status}
-                </span>
-              )}
+              <Textarea
+                placeholder="Ex: Verificamos a solicitação e o próximo passo será..."
+                value={technicalResponse}
+                onChange={(e) => setTechnicalResponse(e.target.value)}
+                className="min-h-[150px] rounded-2xl border-slate-200 bg-white text-slate-950"
+              />
+
+              <div className="mt-3 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <Button
+                  variant="outline"
+                  className="h-11 rounded-2xl border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                  onClick={handleFinishTicket}
+                >
+                  Finalizar chamado
+                </Button>
+
+                <Button
+                  className="h-11 rounded-2xl bg-emerald-600 px-6 text-white hover:bg-emerald-700 disabled:opacity-50"
+                  onClick={handleAddResponse}
+                  disabled={!technicalResponse.trim()}
+                >
+                  Enviar resposta
+                </Button>
+              </div>
             </div>
-          </DialogHeader>
 
-          {selectedTicket && (
-            <div className="max-h-[calc(92vh-82px)] overflow-y-auto p-4 sm:p-6">
-              <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
-                <section className="space-y-4">
-                  <div className="rounded-3xl border border-emerald-100 bg-emerald-50/60 p-4">
-                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-700">Descrição do problema</p>
-                    <div className="mt-3 max-h-36 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-white p-4 text-sm leading-6 text-slate-700 ring-1 ring-emerald-100">
-                      {selectedTicket.description || "Sem descrição."}
-                    </div>
-                  </div>
+            <DetailsSection title="Descrição do problema" defaultOpen>
+              <div className="max-h-44 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 ring-1 ring-slate-200">
+                {selectedTicket.description || "Sem descrição."}
+              </div>
+            </DetailsSection>
 
-                  {selectedTicket.technicalResponse && (
-                    <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Última resposta técnica</p>
-                      <div className="mt-3 max-h-32 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-white p-4 text-sm leading-6 text-slate-700 ring-1 ring-slate-200">
-                        {selectedTicket.technicalResponse}
+            {selectedTicket.technicalResponse && (
+              <DetailsSection title="Última resposta técnica">
+                <div className="max-h-40 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 ring-1 ring-slate-200">
+                  {selectedTicket.technicalResponse}
+                </div>
+              </DetailsSection>
+            )}
+          </section>
+
+          <aside className="space-y-4">
+            <DetailsSection title="Informações principais" defaultOpen>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                <FieldCard label="Solicitante" value={selectedTicket.user} />
+                <FieldCard label="Setor" value={selectedTicket.sector} />
+                <FieldCard label="Categoria" value={selectedTicket.category} />
+                <FieldCard label="Criado em" value={selectedTicket.createdAt} />
+                <FieldCard label="Origem" value={selectedTicket.origin} />
+                <FieldCard label="Prioridade" value={selectedTicket.priority} />
+              </div>
+            </DetailsSection>
+
+            <DetailsSection title="Histórico do chamado">
+              <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
+                {selectedTicket.timeline?.length ? (
+                  selectedTicket.timeline.map(
+                    (
+                      event: { date: string; action: string },
+                      index: number
+                    ) => (
+                      <div
+                        key={index}
+                        className="rounded-2xl bg-slate-50 p-3 text-sm ring-1 ring-slate-200"
+                      >
+                        <p className="break-words text-slate-800">
+                          {event.action}
+                        </p>
+                        <p className="mt-1 text-xs text-slate-500">
+                          {event.date}
+                        </p>
                       </div>
-                    </div>
-                  )}
-
-                  <div className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <label className="text-sm font-bold text-slate-950">Responder ao usuário</label>
-                    <Textarea
-                      placeholder="Escreva a orientação, diagnóstico ou próximo passo..."
-                      value={technicalResponse}
-                      onChange={(e) => setTechnicalResponse(e.target.value)}
-                      className="mt-3 min-h-[160px] border-slate-200 bg-white text-slate-950"
-                    />
-
-                    <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-end">
-                      <Button variant="outline" className="h-11 rounded-2xl border-slate-200 bg-white text-slate-700 hover:bg-slate-50" onClick={handleFinishTicket}>
-                        Finalizar chamado
-                      </Button>
-                      <Button className="h-11 rounded-2xl bg-emerald-600 px-6 text-white hover:bg-emerald-700" onClick={handleAddResponse}>
-                        Enviar resposta
-                      </Button>
-                    </div>
-                  </div>
-                </section>
-
-                <aside className="space-y-4">
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                    <FieldCard label="Solicitante" value={selectedTicket.user} />
-                    <FieldCard label="Setor" value={selectedTicket.sector} />
-                    <FieldCard label="Categoria" value={selectedTicket.category} />
-                    <FieldCard label="Criado em" value={selectedTicket.createdAt} />
-                    <FieldCard label="Origem" value={selectedTicket.origin} />
-                    <FieldCard label="Prioridade" value={selectedTicket.priority} />
-                  </div>
-
-                  <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-sm font-bold text-slate-950">Histórico</p>
-                    <div className="mt-3 max-h-64 space-y-2 overflow-y-auto pr-1">
-                      {selectedTicket.timeline?.length ? (
-                        selectedTicket.timeline.map((event: { date: string; action: string }, index: number) => (
-                          <div key={index} className="rounded-2xl bg-white p-3 text-sm ring-1 ring-slate-200">
-                            <p className="break-words text-slate-800">{event.action}</p>
-                            <p className="mt-1 text-xs text-slate-500">{event.date}</p>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="rounded-2xl border border-dashed border-slate-200 bg-white p-4 text-sm text-slate-500">Nenhum evento registrado.</p>
-                      )}
-                    </div>
-                  </div>
-                </aside>
+                    )
+                  )
+                ) : (
+                  <p className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
+                    Nenhum evento registrado.
+                  </p>
+                )}
               </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+            </DetailsSection>
+          </aside>
+        </div>
+      </div>
+    )}
+  </DialogContent>
+</Dialog>
     </div>
   )
 }
