@@ -2,16 +2,22 @@ import { useEffect, useState } from "react"
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { categories } from "@/lib/categories"
 import { API_URL } from "@/services/api"
 import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
+  LogOut,
+  LockKeyhole,
+  MessageSquareText,
+  PlusCircle,
+  RefreshCw,
   ShieldCheck,
   UserCircle2,
   UserRound,
   ArrowRight,
-  LockKeyhole,
 } from "lucide-react"
 
 type Sector = {
