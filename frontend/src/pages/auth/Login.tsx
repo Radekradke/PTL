@@ -37,8 +37,8 @@ export function Login() {
             <div className="inline-flex rounded-2xl bg-white/10 p-3 ring-1 ring-white/15">
               <ShieldCheck size={28} />
             </div>
-            <h1 className="mt-8 text-4xl font-white tracking-[-0.05em]">Lifting Support</h1>
-            <p className="mt-4 max-w-md text-sm leading-6 text-white-50/80">
+            <h1 className="mt-8 text-4xl font-black tracking-[-0.05em]">Lifting Support</h1>
+            <p className="mt-4 max-w-md text-sm leading-6 text-emerald-50/80">
               Plataforma interna para gerenciar chamados, atendimento técnico e relatórios operacionais.
             </p>
           </div>
