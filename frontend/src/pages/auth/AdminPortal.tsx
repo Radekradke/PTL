@@ -667,9 +667,7 @@ export function AdminPortal() {
         {activeTab === "new" ? (
           <GlassCard className="p-4 sm:p-6">
             <div className="mb-5">
-              <p className="inline-flex rounded-full bg-[#00A859]/10 px-3 py-1.5 text-xs font-bold text-[#073B2A]">
-                Abrir chamado
-              </p>
+              
               <h2 className="mt-3 text-2xl font-black tracking-[-0.04em] text-[#111827]">Qual é o problema?</h2>
               <p className="mt-1 text-sm text-slate-500">Descreva o problema e envie para a equipe técnica.</p>
             </div>
