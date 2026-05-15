@@ -213,3 +213,18 @@
     gap: 1rem;
   }
 }
+
+@media (min-width: 1024px) {
+  .ls-page-shell {
+    gap: 1.25rem;
+  }
+
+  .ls-card,
+  .ls-product-card {
+    border-radius: 1.35rem;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 3vw, 2.75rem);
+  }
+}
