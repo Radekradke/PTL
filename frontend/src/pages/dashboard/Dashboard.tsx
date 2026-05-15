@@ -56,7 +56,7 @@ export function Dashboard() {
   ).length;
 
   const waitingUserTickets = filteredTickets.filter(
-    (ticket) => ticket.status === "Aguardando",
+    (ticket) => ticket.status === "Aguardando usuário" || ticket.status === "Aguardando",
   ).length;
 
   const finishedTickets = filteredTickets.filter(
@@ -95,7 +95,7 @@ export function Dashboard() {
       total: progressTickets,
     },
     {
-      name: "Aguardando",
+      name: "Aguardando usuário",
       total: waitingUserTickets,
     },
     {
@@ -140,17 +140,17 @@ export function Dashboard() {
   return (
     <AppLayout>
       <div className="mx-auto w-full max-w-7xl space-y-6 sm:space-y-8">
-        <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-5 shadow-[0_20px_60px_rgba(15,23,42,0.45)]">
+        <div className="rounded-[1.75rem] border border-[#E5ECE7] bg-white p-5 shadow-[0_14px_34px_rgba(50,98,74,0.08)]">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.24em] text-[#42A95E]/80">
                 Visão geral
               </p>
-              <h1 className="mt-2 text-3xl font-bold sm:text-4xl text-[#2B2B2B] lg:text-5xl">
+              <h1 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-[#253128] sm:text-4xl">
                 Dashboard
               </h1>
               <p className="mt-3 max-w-2xl text-[#66736B]">
-                Visão rápida da operação, filtros essenciais e indicadores para decidir sem ruído.
+                Indicadores essenciais da operação.
               </p>
             </div>
 
@@ -163,7 +163,7 @@ export function Dashboard() {
                   {filteredTickets.length}
                 </p>
               </div>
-              <div className="rounded-[1.5rem] border border-[#B4D7C4]/70 bg-white p-4 text-center shadow-[0_10px_28px_rgba(50,98,74,0.08)]">
+              <div className="rounded-[1.5rem] border border-[#E5ECE7] bg-white p-4 text-center shadow-[0_10px_28px_rgba(50,98,74,0.08)]">
                 <p className="text-xs uppercase tracking-[0.2em] text-[#66736B]">
                   Setores ativos
                 </p>
@@ -171,7 +171,7 @@ export function Dashboard() {
                   {uniqueSectors.length}
                 </p>
               </div>
-              <div className="rounded-[1.5rem] border border-[#B4D7C4]/70 bg-white p-4 text-center shadow-[0_10px_28px_rgba(50,98,74,0.08)]">
+              <div className="rounded-[1.5rem] border border-[#E5ECE7] bg-white p-4 text-center shadow-[0_10px_28px_rgba(50,98,74,0.08)]">
                 <p className="text-xs uppercase tracking-[0.2em] text-[#66736B]">
                   Categorias ativas
                 </p>
@@ -196,7 +196,7 @@ export function Dashboard() {
           )}
         </div>
 
-        <section className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:p-6">
+        <section className="rounded-[1.75rem] border border-[#E5ECE7] bg-white p-4 shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <h2 className="ls-section-title text-xl">
@@ -220,7 +220,7 @@ export function Dashboard() {
             </button>
           </div>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <label className="block">
               <span className="text-sm text-[#66736B]">Setor</span>
               <select
@@ -276,7 +276,7 @@ export function Dashboard() {
                 <option value="Todos">Todos Status</option>
                 <option value="Aberto">Aberto</option>
                 <option value="Em andamento">Em andamento</option>
-                <option value="Aguardando">Aguardando</option>
+                <option value="Aguardando usuário">Aguardando usuário</option>
                 <option value="Finalizado">Finalizado</option>
               </select>
             </label>
@@ -288,7 +288,7 @@ export function Dashboard() {
             <h3 className="text-sm uppercase tracking-[0.16em] text-[#32624A] mb-4">
               Status
             </h3>
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
               <StatsCard
                 title="Total"
                 value={String(totalTickets)}
@@ -321,7 +321,7 @@ export function Dashboard() {
             <h3 className="text-sm uppercase tracking-[0.16em] text-[#32624A] mb-4">
               Origem
             </h3>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-2 gap-3">
               <StatsCard
                 title="Offshore"
                 value={String(offshoreTickets)}
@@ -337,7 +337,7 @@ export function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <div className="dashboard-chart-card rounded-[1.65rem] border border-[#B4D7C4]/70 bg-white p-4 shadow-[0_14px_38px_rgba(50,98,74,0.10)] transition hover:-translate-y-0.5 hover:border-[#42A95E]/35 sm:p-6">
+          <div className="rounded-[1.65rem] border border-[#E5ECE7] bg-white p-4 shadow-[0_14px_38px_rgba(50,98,74,0.10)] transition hover:-translate-y-0.5 hover:border-[#42A95E]/35 sm:p-6">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="ls-section-title text-xl">
@@ -353,7 +353,7 @@ export function Dashboard() {
               </span>
             </div>
 
-            <div className="dashboard-chart mt-5 h-[320px] min-h-[320px]">
+            <div className="mt-5 block h-[300px] min-h-[300px] w-full sm:h-[320px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={ticketsBySector}>
                   <XAxis
@@ -372,7 +372,7 @@ export function Dashboard() {
     borderRadius: 20,
     border: "1px solid rgba(66,169,94,0.22)",
     color: "#2B2B2B",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+    boxShadow: "0 16px 36px rgba(50,98,74,0.14)",
   }}
   labelStyle={{
     color: "#2B2B2B",
@@ -387,7 +387,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="dashboard-chart-card rounded-[1.65rem] border border-[#B4D7C4]/70 bg-white p-4 shadow-[0_14px_38px_rgba(50,98,74,0.10)] transition hover:-translate-y-0.5 hover:border-[#42A95E]/35 sm:p-6">
+          <div className="rounded-[1.65rem] border border-[#E5ECE7] bg-white p-4 shadow-[0_14px_38px_rgba(50,98,74,0.10)] transition hover:-translate-y-0.5 hover:border-[#42A95E]/35 sm:p-6">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="ls-section-title text-xl">
@@ -403,7 +403,7 @@ export function Dashboard() {
               </span>
             </div>
 
-            <div className="dashboard-chart mt-5 h-[320px] min-h-[320px]">
+            <div className="mt-5 block h-[300px] min-h-[300px] w-full sm:h-[320px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={ticketsByCategory}>
                   <XAxis
@@ -422,7 +422,7 @@ export function Dashboard() {
     borderRadius: 20,
     border: "1px solid rgba(66,169,94,0.22)",
     color: "#2B2B2B",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+    boxShadow: "0 16px 36px rgba(50,98,74,0.14)",
   }}
   labelStyle={{
     color: "#2B2B2B",
@@ -439,7 +439,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="dashboard-chart-card rounded-[1.65rem] border border-[#B4D7C4]/70 bg-white p-4 shadow-[0_14px_38px_rgba(50,98,74,0.10)] transition hover:-translate-y-0.5 hover:border-[#42A95E]/35 sm:p-6">
+          <div className="rounded-[1.65rem] border border-[#E5ECE7] bg-white p-4 shadow-[0_14px_38px_rgba(50,98,74,0.10)] transition hover:-translate-y-0.5 hover:border-[#42A95E]/35 sm:p-6">
             <h2 className="ls-section-title text-xl">
               Por status
               <span className="ls-help" title="Mostra a distribuição atual da fila de atendimento.">?</span>
@@ -448,10 +448,10 @@ export function Dashboard() {
               Etapas atuais da fila.
             </p>
 
-            <div className="dashboard-chart mt-5 h-[320px] min-h-[320px]">
+            <div className="mt-5 block h-[300px] min-h-[300px] w-full sm:h-[320px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart style={{
-  filter: "drop-shadow(0 12px 24px rgba(0,0,0,0.25))",
+  filter: "drop-shadow(0 10px 18px rgba(50,98,74,0.12))",
 }}>
                   <Pie
                     data={ticketsByStatus}
@@ -474,7 +474,7 @@ label
     borderRadius: 20,
     border: "1px solid rgba(66,169,94,0.22)",
     color: "#2B2B2B",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+    boxShadow: "0 16px 36px rgba(50,98,74,0.14)",
   }}
   labelStyle={{
     color: "#2B2B2B",
@@ -486,7 +486,7 @@ label
             </div>
           </div>
 
-          <div className="dashboard-chart-card rounded-[1.65rem] border border-[#B4D7C4]/70 bg-white p-4 shadow-[0_14px_38px_rgba(50,98,74,0.10)] transition hover:-translate-y-0.5 hover:border-[#42A95E]/35 sm:p-6">
+          <div className="rounded-[1.65rem] border border-[#E5ECE7] bg-white p-4 shadow-[0_14px_38px_rgba(50,98,74,0.10)] transition hover:-translate-y-0.5 hover:border-[#42A95E]/35 sm:p-6">
             <h2 className="ls-section-title text-xl">
               Base x Offshore
               <span className="ls-help" title="Compara a origem dos chamados no período filtrado.">?</span>
@@ -495,10 +495,10 @@ label
               Base versus offshore.
             </p>
 
-            <div className="dashboard-chart mt-5 h-[320px] min-h-[320px]">
+            <div className="mt-5 block h-[300px] min-h-[300px] w-full sm:h-[320px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart style={{
-  filter: "drop-shadow(0 12px 24px rgba(0,0,0,0.25))",
+  filter: "drop-shadow(0 10px 18px rgba(50,98,74,0.12))",
 }}>
                   <Pie
                     data={ticketsByOrigin}
@@ -519,7 +519,7 @@ label
     borderRadius: 20,
     border: "1px solid rgba(66,169,94,0.22)",
     color: "#2B2B2B",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+    boxShadow: "0 16px 36px rgba(50,98,74,0.14)",
   }}
   labelStyle={{
     color: "#2B2B2B",
