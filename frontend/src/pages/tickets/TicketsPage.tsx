@@ -53,36 +53,36 @@ export function TicketsPage() {
   return (
     <AppLayout>
       <div className="ls-page-shell">
-        <section className="ls-hero-clean p-6 sm:p-8">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#00A859]">Operação técnica</p>
-              <h1 className="mt-2 text-4xl font-black tracking-[-0.06em] text-[#111827] sm:text-5xl">Chamados</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#64748B] sm:text-base">
+        <section className="ls-hero-clean p-4 sm:p-6 lg:p-8">
+          <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm font-black uppercase tracking-[0.22em] text-[#00A859]">Operação técnica</p>
+              <h1 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-black tracking-[-0.06em] text-[#111827]">Chamados</h1>
+              <p className="mt-2 sm:mt-3 max-w-2xl text-xs sm:text-sm leading-5 sm:leading-6 text-[#64748B]">
                 Gerencie a fila, responda usuários e acompanhe atendimentos.
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[420px]">
-              <div className="rounded-3xl border border-[#DDE8E2] bg-white p-4 text-center shadow-sm">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Total</p>
-                <p className="mt-1 text-2xl font-black text-[#111827]">{totalTickets}</p>
+            <div className="grid gap-2 sm:gap-3 grid-cols-3 shrink-0">
+              <div className="rounded-2xl sm:rounded-3xl border border-[#DDE8E2] bg-white p-3 sm:p-4 text-center shadow-sm">
+                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Total</p>
+                <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-[#111827]">{totalTickets}</p>
               </div>
-              <div className="rounded-3xl border border-amber-200 bg-amber-50 p-4 text-center shadow-sm">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-amber-700">Pendentes</p>
-                <p className="mt-1 text-2xl font-black text-amber-700">{openTickets + waitingUserTickets}</p>
+              <div className="rounded-2xl sm:rounded-3xl border border-amber-200 bg-amber-50 p-3 sm:p-4 text-center shadow-sm">
+                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-amber-700">Pendentes</p>
+                <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-amber-700">{openTickets + waitingUserTickets}</p>
               </div>
-              <div className="rounded-3xl border border-[#DDE8E2] bg-[#ECFBF3] p-4 text-center shadow-sm">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#073B2A]">Em atendimento</p>
-                <p className="mt-1 text-2xl font-black text-[#00A859]">{progressTickets}</p>
+              <div className="rounded-2xl sm:rounded-3xl border border-[#DDE8E2] bg-[#ECFBF3] p-3 sm:p-4 text-center shadow-sm">
+                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-[#073B2A]">Em atendimento</p>
+                <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-[#00A859]">{progressTickets}</p>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="space-y-4">
+        <section className="space-y-3 sm:space-y-4 lg:space-y-4">
           <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Status</h3>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
             <StatsCard title="Total" value={String(totalTickets)} tone="neutral" />
             <StatsCard title="Abertos" value={String(openTickets)} tone="warning" />
             <StatsCard title="Em andamento" value={String(progressTickets)} tone="info" />
@@ -91,9 +91,9 @@ export function TicketsPage() {
           </div>
         </section>
 
-        <section className="space-y-4">
+        <section className="space-y-3 sm:space-y-4 lg:space-y-4">
           <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Origem</h3>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2">
             <StatsCard title="Offshore" value={String(offshoreTickets)} tone="danger" />
             <StatsCard title="Base" value={String(baseTickets)} tone="base" />
           </div>
