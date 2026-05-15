@@ -25,8 +25,8 @@ type Ticket = {
   technicalResponse: string;
 };
 
-const metallicPanel = "rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,#102E26_0%,#174A3A_48%,#2563EB_145%)] shadow-[0_24px_70px_rgba(15,23,42,0.24)]";
-const metallicCard = "rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,#102E26_0%,#174A3A_52%,#1D5B83_145%)] shadow-[0_22px_60px_rgba(15,23,42,0.22)]";
+const metallicPanel = "rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,#061B16_0%,#0F3D2E_46%,#164A6B_145%)] shadow-[0_24px_70px_rgba(6,27,22,0.32)]";
+const metallicCard = "rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,#08221B_0%,#103B2F_52%,#143E57_145%)] shadow-[0_22px_60px_rgba(6,27,22,0.28)]";
 const selectTrigger = "h-11 rounded-2xl border border-white/15 bg-white/95 text-slate-900";
 const labelClass = "flex items-center gap-2 text-sm font-semibold text-white/75";
 
@@ -111,7 +111,7 @@ export function ReportsPage() {
       head: [["ID", "Solicitante", "Setor", "Categoria", "Origem", "Status", "Prioridade", "Criado em"]],
       body: filteredTickets.map((ticket) => [`#${ticket.id}`, ticket.user, ticket.sector, ticket.category, ticket.origin, ticket.status, ticket.priority, ticket.createdAt]),
       styles: { fontSize: 8, cellPadding: 2 },
-      headStyles: { fillColor: [23, 74, 58], textColor: 255 },
+      headStyles: { fillColor: [15, 61, 46], textColor: 255 },
     });
     doc.save(`relatorio-chamados-lifting-${new Date().toISOString().split("T")[0]}.pdf`);
   }
@@ -193,11 +193,11 @@ export function ReportsPage() {
         </Card>
 
         <div className="space-y-6">
-          <section><h3 className="mb-4 text-sm font-black uppercase tracking-[0.16em] text-[#174A3A]">Resumo por status</h3><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5"><StatsCard title="Total filtrado" value={String(totalFilteredTickets)} tone="neutral" /><StatsCard title="Abertos" value={String(openFilteredTickets)} tone="info" /><StatsCard title="Em andamento" value={String(progressFilteredTickets)} tone="warning" /><StatsCard title="Aguardando usuário" value={String(waitingUserFilteredTickets)} tone="danger" /><StatsCard title="Finalizados" value={String(finishedFilteredTickets)} tone="success" /></div></section>
-          <section><h3 className="mb-4 text-sm font-black uppercase tracking-[0.16em] text-[#174A3A]">Resumo por origem</h3><div className="grid gap-4 sm:grid-cols-2"><StatsCard title="Offshore" value={String(offshoreFilteredTickets)} tone="danger" /><StatsCard title="Base" value={String(baseFilteredTickets)} tone="base" /></div></section>
+          <section><h3 className="mb-4 text-sm font-black uppercase tracking-[0.16em] text-[#0F3D2E]">Resumo por status</h3><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5"><StatsCard title="Total filtrado" value={String(totalFilteredTickets)} tone="neutral" /><StatsCard title="Abertos" value={String(openFilteredTickets)} tone="info" /><StatsCard title="Em andamento" value={String(progressFilteredTickets)} tone="warning" /><StatsCard title="Aguardando usuário" value={String(waitingUserFilteredTickets)} tone="danger" /><StatsCard title="Finalizados" value={String(finishedFilteredTickets)} tone="success" /></div></section>
+          <section><h3 className="mb-4 text-sm font-black uppercase tracking-[0.16em] text-[#0F3D2E]">Resumo por origem</h3><div className="grid gap-4 sm:grid-cols-2"><StatsCard title="Offshore" value={String(offshoreFilteredTickets)} tone="danger" /><StatsCard title="Base" value={String(baseFilteredTickets)} tone="base" /></div></section>
         </div>
 
-        <Card className="rounded-[2rem] border border-emerald-900/10 bg-white shadow-[0_16px_45px_rgba(15,23,42,0.08)]">
+        <Card className="rounded-[2rem] border border-emerald-900/10 bg-white shadow-[0_16px_45px_rgba(6,27,22,0.10)]">
           <CardHeader><CardTitle className="text-xl font-black tracking-[-0.03em] text-[#17221C]">Preview dos dados</CardTitle></CardHeader>
           <CardContent>
             <div className="overflow-x-auto rounded-[1.5rem] border border-slate-200 bg-white"><table className="min-w-[900px] w-full text-sm"><thead><tr className="border-b border-slate-200 bg-slate-50"><th className="p-3 text-left text-slate-500">ID</th><th className="p-3 text-left text-slate-500">Solicitante</th><th className="p-3 text-left text-slate-500">Setor</th><th className="p-3 text-left text-slate-500">Categoria</th><th className="p-3 text-left text-slate-500">Status</th><th className="p-3 text-left text-slate-500">Origem</th><th className="p-3 text-left text-slate-500">Prioridade</th><th className="p-3 text-left text-slate-500">Criado em</th></tr></thead><tbody>{filteredTickets.slice(0, 20).map((ticket) => (<tr key={ticket.id} className="border-b border-slate-100 transition hover:bg-emerald-50/40"><td className="p-3 text-slate-950">#{ticket.id}</td><td className="p-3 text-slate-900">{ticket.user}</td><td className="p-3 text-slate-700">{ticket.sector}</td><td className="p-3 text-slate-700">{ticket.category}</td><td className="p-3"><span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${getStatusColor(ticket.status)}`}>{ticket.status}</span></td><td className="p-3 text-slate-700">{ticket.origin}</td><td className="p-3 text-slate-700">{ticket.priority}</td><td className="p-3 text-slate-700">{ticket.createdAt}</td></tr>))}</tbody></table></div>

@@ -5,7 +5,7 @@ import { TicketsTable } from "@/components/tickets/TicketsTable"
 import { API_URL } from "@/services/api"
 import { useNotifications } from "@/contexts/NotificationContext"
 
-const metallicPanel = "rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,#102E26_0%,#174A3A_48%,#2563EB_145%)] shadow-[0_24px_70px_rgba(15,23,42,0.24)]"
+const metallicPanel = "rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,#061B16_0%,#0F3D2E_46%,#164A6B_145%)] shadow-[0_24px_70px_rgba(6,27,22,0.32)]"
 
 export function TicketsPage() {
   const [tickets, setTickets] = useState<any[]>([])
