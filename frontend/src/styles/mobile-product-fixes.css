@@ -1,0 +1,161 @@
+/* Lifting Support - ajustes finais de tema claro/mobile
+   Importar depois do index.css para remover resíduos do tema escuro. */
+:root {
+  --ls-bg: #f4f8f5;
+  --ls-surface: #ffffff;
+  --ls-surface-soft: #f7fbf8;
+  --ls-surface-muted: #eef7f1;
+  --ls-border: #dce8df;
+  --ls-border-strong: #c8dccf;
+  --ls-text: #17221c;
+  --ls-muted: #637267;
+  --ls-subtle: #7d8d82;
+  --ls-green: #2fa866;
+  --ls-green-dark: #174a3a;
+  --ls-blue: #2563eb;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background: var(--ls-bg) !important;
+  color: var(--ls-text) !important;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Evita que telas mobile tenham scroll horizontal por containers grandes */
+* {
+  box-sizing: border-box;
+}
+
+main,
+[data-slot="sidebar-inset"] {
+  background: var(--ls-bg) !important;
+}
+
+/* Limpeza dos resíduos escuros do tema anterior nas páginas internas */
+.bg-zinc-950,
+.bg-zinc-900,
+.bg-zinc-950\/70,
+.bg-zinc-950\/80,
+.bg-zinc-950\/90,
+.bg-zinc-900\/70,
+.bg-zinc-900\/80,
+.bg-zinc-900\/90 {
+  background-color: var(--ls-surface) !important;
+}
+
+.bg-zinc-800,
+.bg-zinc-800\/50,
+.bg-zinc-800\/60,
+.hover\:bg-zinc-800:hover,
+.hover\:bg-zinc-800\/50:hover,
+.hover\:bg-zinc-800\/60:hover {
+  background-color: var(--ls-surface-muted) !important;
+}
+
+.border-zinc-800,
+.border-zinc-700,
+.dark\:border-input {
+  border-color: var(--ls-border) !important;
+}
+
+.text-white,
+.text-zinc-100,
+.text-zinc-200,
+.text-zinc-300 {
+  color: var(--ls-text) !important;
+}
+
+.text-zinc-400,
+.text-zinc-500,
+.text-zinc-600 {
+  color: var(--ls-muted) !important;
+}
+
+/* Inputs/selects mais claros e consistentes */
+input,
+textarea,
+select,
+[data-slot="select-trigger"] {
+  max-width: 100%;
+  border-color: var(--ls-border) !important;
+  background-color: var(--ls-surface) !important;
+  color: var(--ls-text) !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+[data-slot="select-trigger"]:focus-visible {
+  border-color: var(--ls-green) !important;
+  box-shadow: 0 0 0 3px rgba(47, 168, 102, 0.14) !important;
+}
+
+/* Cards com cara de produto, não de template escuro */
+.ls-product-card {
+  border: 1px solid var(--ls-border);
+  background: var(--ls-surface);
+  box-shadow: 0 16px 40px rgba(23, 74, 58, 0.08);
+}
+
+.ls-soft-card {
+  border: 1px solid var(--ls-border);
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbf8 100%);
+  box-shadow: 0 12px 30px rgba(23, 74, 58, 0.06);
+}
+
+/* Mobile realmente mobile: mais respiro, menos largura falsa */
+@media (max-width: 767px) {
+  .max-w-7xl,
+  .max-w-6xl,
+  .max-w-5xl {
+    max-width: 100% !important;
+  }
+
+  main,
+  [data-slot="sidebar-inset"] {
+    padding-inline: 0 !important;
+  }
+
+  .rounded-\[2rem\] {
+    border-radius: 1.35rem !important;
+  }
+
+  .p-8,
+  .sm\:p-8,
+  .p-6,
+  .sm\:p-6 {
+    padding: 1rem !important;
+  }
+
+  h1 {
+    letter-spacing: -0.035em;
+  }
+
+  table {
+    font-size: 0.8125rem;
+  }
+}
+
+/* Tabelas não devem forçar a tela inteira no mobile */
+[data-slot="table-container"],
+.overflow-x-auto {
+  max-width: 100%;
+}
+
+/* Dialogs no mobile: sem encostar na borda e sem estourar tela */
+[data-slot="dialog-content"] {
+  max-width: min(94vw, 980px) !important;
+}
+
+@media (max-width: 767px) {
+  [data-slot="dialog-content"] {
+    width: calc(100vw - 1rem) !important;
+    max-height: 92vh !important;
+  }
+}
