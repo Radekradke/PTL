@@ -617,11 +617,11 @@ export function AdminPortal() {
             <div className="grid grid-cols-2 gap-2 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1 lg:w-[360px]">
               <button
                 onClick={() => setActiveTab("new")}
-                className={`inline-flex h-11 items-center justify-center rounded-xl px-4 text-sm font-bold transition ${
-                  activeTab === "new"
-                    ? "bg-[#073B2A] text-white shadow-sm"
-                    : "text-slate-500 hover:bg-slate-50 hover:text-[#073B2A]"
-                }`}
+               className={`inline-flex h-11 items-center justify-center rounded-xl px-4 text-sm font-bold transition ${
+  activeTab === "new"
+    ? "bg-[#073B2A] text-white shadow-sm"
+    : "text-white hover:bg-slate-50 hover:text-[#073B2A]"
+}`}
               >
                 <PlusCircle size={16} className="mr-2 text-white" />
                 Novo
@@ -631,7 +631,7 @@ export function AdminPortal() {
                   setActiveTab("mine")
                   loadMyTickets(loggedEmployee.id)
                 }}
-                className={`inline-flex h-11 items-center justify-center rounded-xl px-4 text-sm font-bold transition ${
+                className={`inline-flex h-11 items-center justify-center rounded-xl px-4 text-sm font-bold text-white transition ${
                   activeTab === "mine"
                     ? "bg-[#073B2A] text-white shadow-sm"
                     : "text-slate-500 hover:bg-slate-50 hover:text-[#073B2A]"
