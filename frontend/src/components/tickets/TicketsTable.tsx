@@ -210,15 +210,11 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       return "bg-[#F59E0B]/15 text-[#B56F00] border border-[#F59E0B]/25"
     }
 
-    if (status === "Aguardando usuário") {
-      return "bg-[#F59E0B]/15 text-[#9A5E00] border border-[#F59E0B]/25"
-    }
-
     if (status === "Finalizado") {
       return "bg-[#42A95E]/15 text-[#32624A] border border-[#42A95E]/25"
     }
 
-    return "bg-[#F2F2F2] text-[#66736B] border border-[#D9E5DD]"
+    return "bg-zinc-500/20 text-[#66736B]"
   }
 
   function handleAddResponse() {
@@ -679,7 +675,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
               <div>
                 <DialogTitle className="text-xl font-semibold">Detalhes do chamado #{selectedTicket?.id}</DialogTitle>
                 <p className="mt-1 text-sm text-[#66736B]">
-                  Resumo, histórico e resposta técnica.
+                  Acompanhe informações, resposta técnica e histórico do atendimento.
                 </p>
               </div>
 
@@ -695,13 +691,12 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             <div className="max-h-[calc(92vh-92px)] overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
               <div className="grid gap-5 lg:grid-cols-[1fr_0.9fr]">
                 <div className="space-y-5">
-                  <details open className="group rounded-3xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4">
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-[#2B2B2B] [&::-webkit-details-marker]:hidden">
-                      <span>Informações principais</span>
-                      <span className="rounded-full bg-white px-2 py-1 text-xs text-[#66736B] transition group-open:rotate-180">⌄</span>
-                    </summary>
+                  <div className="rounded-3xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4">
+                    <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-[#42A95E]/70">
+                      Informações principais
+                    </h3>
 
-                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="grid gap-3 sm:grid-cols-2">
                       <div className="rounded-2xl bg-white/70 p-3">
                         <p className="text-xs text-[#7C8A80]">Solicitante</p>
                         <p className="mt-1 break-words text-sm font-medium text-[#2B2B2B]">{selectedTicket.user}</p>
@@ -732,42 +727,33 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                         <p className="mt-1 break-words text-sm font-medium text-[#2B2B2B]">{selectedTicket.priority}</p>
                       </div>
                     </div>
-                  </details>
+                  </div>
 
-                  <details className="group rounded-3xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4">
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-[#2B2B2B] [&::-webkit-details-marker]:hidden">
-                      <span>Descrição</span>
-                      <span className="rounded-full bg-white px-2 py-1 text-xs text-[#66736B] transition group-open:rotate-180">⌄</span>
-                    </summary>
-                    <div className="mt-3 max-h-44 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl border border-[#B4D7C4]/60 bg-white/80 p-4 text-sm leading-6 text-[#32624A]">
+                  <div className="rounded-3xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4">
+                    <p className="text-sm font-semibold text-[#2B2B2B]">Descrição</p>
+                    <div className="mt-3 max-h-40 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl border border-[#B4D7C4]/60 bg-white/70 p-4 text-sm leading-6 text-[#32624A]">
                       {selectedTicket.description || "Sem descrição."}
                     </div>
-                  </details>
+                  </div>
 
-                  <details className="group rounded-3xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4">
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-[#2B2B2B] [&::-webkit-details-marker]:hidden">
-                      <span>Resposta técnica</span>
-                      <span className="rounded-full bg-white px-2 py-1 text-xs text-[#66736B] transition group-open:rotate-180">⌄</span>
-                    </summary>
+                  <div className="rounded-3xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4">
+                    <p className="text-sm font-semibold text-[#2B2B2B]">Resposta técnica</p>
                     {selectedTicket.technicalResponse ? (
-                      <div className="mt-3 max-h-44 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl border border-[#B4D7C4]/60 bg-white/80 p-4 text-sm leading-6 text-[#32624A]">
+                      <div className="mt-3 max-h-40 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl border border-[#B4D7C4]/60 bg-white/70 p-4 text-sm leading-6 text-[#32624A]">
                         {selectedTicket.technicalResponse}
                       </div>
                     ) : (
-                      <p className="mt-3 rounded-2xl border border-dashed border-[#B4D7C4]/60 bg-white/60 p-4 text-sm text-[#7C8A80]">
+                      <p className="mt-3 rounded-2xl border border-dashed border-[#B4D7C4]/60 bg-white/50 p-4 text-sm text-[#7C8A80]">
                         Nenhuma resposta adicionada ainda.
                       </p>
                     )}
-                  </details>
+                  </div>
                 </div>
 
                 <aside className="space-y-5">
 
-                  <details className="group rounded-3xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4">
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-[#2B2B2B] [&::-webkit-details-marker]:hidden">
-                      <span>Timeline</span>
-                      <span className="rounded-full bg-white px-2 py-1 text-xs text-[#66736B] transition group-open:rotate-180">⌄</span>
-                    </summary>
+                  <div className="rounded-3xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4">
+                    <p className="text-sm font-semibold text-[#2B2B2B]">Timeline</p>
                     <div className="mt-3 max-h-56 space-y-3 overflow-y-auto pr-1">
                       {selectedTicket.timeline?.length ? (
                         selectedTicket.timeline.map((event: { date: string; action: string }, index: number) => (
@@ -782,9 +768,9 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                         </p>
                       )}
                     </div>
-                  </details>
+                  </div>
 
-                  <div className="rounded-3xl border border-[#B4D7C4]/60 bg-white p-4 shadow-[0_12px_30px_rgba(50,98,74,0.08)]">
+                  <div className="rounded-3xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4">
                     <label className="text-sm font-semibold text-[#2B2B2B]">Nova resposta técnica</label>
                     <Textarea
                       placeholder="Digite a resposta técnica..."
@@ -797,7 +783,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                       <Button className="h-11 rounded-2xl bg-[#42A95E] text-white hover:bg-[#2F8B4C]" onClick={handleAddResponse}>
                         Salvar resposta
                       </Button>
-                      <Button className="h-11 rounded-2xl bg-[#32624A] text-white hover:bg-[#274C3A]" onClick={handleFinishTicket}>
+                      <Button className="h-11 rounded-2xl bg-green-700 text-[#2B2B2B] hover:bg-green-800" onClick={handleFinishTicket}>
                         Finalizar chamado
                       </Button>
                     </div>
