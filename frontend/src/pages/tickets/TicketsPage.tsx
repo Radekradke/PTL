@@ -74,14 +74,14 @@ export function TicketsPage() {
 
   return (
     <AppLayout>
-      <div className="mx-auto w-full max-w-7xl space-y-8 py-4">
-        <div className="relative overflow-hidden rounded-[2.25rem] border border-zinc-800 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.14),transparent_32%),linear-gradient(135deg,#09090b,#18181b_45%,#09090b)] p-6 shadow-[0_28px_90px_rgba(15,23,42,0.48)] sm:p-8">
+      <div className="mx-auto w-full max-w-7xl space-y-6 sm:space-y-8 py-4">
+        <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.35)] sm:p-8">
           <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.24em] text-cyan-300/80">
                 Operação técnica
               </p>
-              <h1 className="mt-2 text-4xl font-bold tracking-[-0.04em] text-white sm:text-5xl">
+              <h1 className="mt-2 text-3xl font-bold sm:text-4xl tracking-[-0.04em] text-white lg:text-5xl">
                 Chamados
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base">
@@ -90,15 +90,15 @@ export function TicketsPage() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950/70 p-5 text-center shadow-[0_16px_45px_rgba(15,23,42,0.22)]">
+              <div className="rounded-3xl border border-zinc-800 bg-zinc-950/60 p-4 text-center">
                 <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">Total</p>
                 <p className="mt-3 text-3xl font-semibold text-white">{totalTickets}</p>
               </div>
-              <div className="rounded-[2rem] border border-amber-500/25 bg-amber-500/10 p-5 text-center shadow-[0_16px_45px_rgba(146,64,14,0.12)]">
+              <div className="rounded-3xl border border-amber-500/20 bg-amber-500/10 p-4 text-center">
                 <p className="text-xs uppercase tracking-[0.2em] text-amber-200">Pendentes</p>
                 <p className="mt-3 text-3xl font-semibold text-amber-300">{openTickets + waitingUserTickets}</p>
               </div>
-              <div className="rounded-[2rem] border border-sky-500/25 bg-sky-500/10 p-5 text-center shadow-[0_16px_45px_rgba(14,165,233,0.12)] sm:col-span-2 lg:col-span-1">
+              <div className="rounded-3xl border border-sky-500/20 bg-sky-500/10 p-4 text-center sm:col-span-2 lg:col-span-1">
                 <p className="text-xs uppercase tracking-[0.2em] text-sky-200">Em atendimento</p>
                 <p className="mt-3 text-3xl font-semibold text-sky-300">{progressTickets}</p>
               </div>

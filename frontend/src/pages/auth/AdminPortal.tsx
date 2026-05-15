@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -8,15 +8,9 @@ import { categories } from "@/lib/categories"
 import { API_URL } from "@/services/api"
 import {
   CheckCircle2,
-  Clock3,
-  ClipboardList,
-  LogOut,
   MessageSquareText,
   PlusCircle,
   RefreshCw,
-  SendHorizontal,
-  ShieldCheck,
-  Sparkles,
   UserCircle2,
 } from "lucide-react"
 
@@ -85,30 +79,22 @@ function formatTicket(ticket: any): PortalTicket {
 
 function getStatusStyle(status: string) {
   if (status === "Aberto") {
-    return "border-amber-500/25 bg-amber-500/10 text-amber-300"
+    return "bg-yellow-500/20 text-yellow-300 border-yellow-500/20"
   }
 
   if (status === "Em andamento") {
-    return "border-sky-500/25 bg-sky-500/10 text-sky-300"
+    return "bg-blue-500/20 text-blue-300 border-blue-500/20"
   }
 
   if (status === "Aguardando usuário") {
-    return "border-orange-500/25 bg-orange-500/10 text-orange-300"
+    return "bg-orange-500/20 text-orange-300 border-orange-500/20"
   }
 
   if (status === "Finalizado") {
-    return "border-emerald-500/25 bg-emerald-500/10 text-emerald-300"
+    return "bg-green-500/20 text-green-300 border-green-500/20"
   }
 
-  return "border-zinc-500/25 bg-zinc-500/10 text-zinc-300"
-}
-
-function getStatusDot(status: string) {
-  if (status === "Aberto") return "bg-amber-300"
-  if (status === "Em andamento") return "bg-sky-300"
-  if (status === "Aguardando usuário") return "bg-orange-300"
-  if (status === "Finalizado") return "bg-emerald-300"
-  return "bg-zinc-300"
+  return "bg-zinc-500/20 text-zinc-300 border-zinc-500/20"
 }
 
 export function AdminPortal() {
@@ -151,15 +137,6 @@ export function AdminPortal() {
       loadMyTickets(loggedEmployee.id)
     }
   }, [loggedEmployee?.id])
-
-  const ticketStats = useMemo(() => {
-    return {
-      total: myTickets.length,
-      open: myTickets.filter((ticket) => ticket.status === "Aberto").length,
-      waiting: myTickets.filter((ticket) => ticket.status === "Aguardando usuário").length,
-      finished: myTickets.filter((ticket) => ticket.status === "Finalizado").length,
-    }
-  }, [myTickets])
 
   async function handlePortalLogin() {
     if (!username || !password) {
@@ -262,7 +239,7 @@ export function AdminPortal() {
   }
 
   async function handleSubmit() {
-    if (!loggedEmployee || !description.trim()) {
+    if (!loggedEmployee || !description) {
       alert("Descreva o problema antes de abrir o chamado.")
       return
     }
@@ -279,7 +256,7 @@ export function AdminPortal() {
           employeeId: loggedEmployee.id,
           category,
           origin,
-          description: description.trim(),
+          description,
         }),
       })
 
@@ -372,147 +349,107 @@ export function AdminPortal() {
 
   if (!loggedEmployee) {
     return (
-      <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(168,85,247,0.10),transparent_28%),#0f172a] p-4 text-zinc-100">
-        <div className="mx-auto grid min-h-[calc(100vh-2rem)] w-full max-w-6xl items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-          <section className="hidden rounded-[2.25rem] border border-sky-500/10 bg-gradient-to-br from-sky-500/10 via-zinc-950 to-zinc-950 p-8 shadow-[0_30px_90px_rgba(15,23,42,0.45)] lg:block">
-            <div className="inline-flex rounded-full border border-sky-500/20 bg-sky-500/10 px-4 py-2 text-sm font-semibold text-sky-300">
-              <ShieldCheck size={16} className="mr-2" /> Portal seguro do colaborador
+      <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.16),transparent_30%),radial-gradient(circle_at_bottom_left,_rgba(168,85,247,0.12),transparent_30%),#0f172a] p-4">
+        <Card className="w-full max-w-md rounded-[2rem] border border-zinc-800 bg-zinc-950 shadow-[0_25px_80px_rgba(15,23,42,0.45)]">
+          <CardContent className="space-y-6 p-8">
+            <div className="space-y-2 text-center">
+              <p className="text-sm uppercase tracking-[0.25em] text-sky-400">
+                Portal de Chamados
+              </p>
+              <h1 className="text-3xl font-bold text-white">Acesse sua conta</h1>
+              <p className="text-zinc-400">
+                Entre com seu usuário e senha para abrir, acompanhar e responder seus chamados.
+              </p>
             </div>
 
-            <h1 className="mt-8 max-w-xl text-5xl font-black tracking-[-0.06em] text-white">
-              Abra, acompanhe e responda chamados em um só lugar.
-            </h1>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm text-zinc-300">Usuário</label>
+                <Input
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="ex: andre.ti"
+                  className="rounded-2xl border-zinc-800 bg-zinc-900 px-4 py-3 text-white"
+                />
+              </div>
 
-            <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-400">
-              Seu usuário identifica automaticamente seu nome e setor. Menos seleção manual, menos erro humano e mais rastreabilidade para o suporte.
-            </p>
+              <div className="space-y-2">
+                <label className="text-sm text-zinc-300">Senha</label>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Digite sua senha"
+                  className="rounded-2xl border-zinc-800 bg-zinc-900 px-4 py-3 text-white"
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      handlePortalLogin()
+                    }
+                  }}
+                />
+              </div>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
-              <div className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-4">
-                <PlusCircle className="text-sky-300" />
-                <p className="mt-3 text-sm font-semibold text-white">Abrir chamado</p>
-                <p className="mt-1 text-xs leading-5 text-zinc-500">Registro rápido e vinculado ao seu cadastro.</p>
-              </div>
-              <div className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-4">
-                <MessageSquareText className="text-violet-300" />
-                <p className="mt-3 text-sm font-semibold text-white">Responder TI</p>
-                <p className="mt-1 text-xs leading-5 text-zinc-500">Histórico salvo em formato de conversa.</p>
-              </div>
-              <div className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-4">
-                <Clock3 className="text-emerald-300" />
-                <p className="mt-3 text-sm font-semibold text-white">Acompanhar</p>
-                <p className="mt-1 text-xs leading-5 text-zinc-500">Veja status e respostas sem depender do WhatsApp.</p>
-              </div>
+              <Button
+                className="w-full rounded-[1.75rem] bg-sky-600 text-white shadow-lg shadow-sky-500/20 hover:bg-sky-500"
+                onClick={handlePortalLogin}
+                disabled={isLoggingIn}
+              >
+                {isLoggingIn ? "Entrando..." : "Entrar"}
+              </Button>
             </div>
-          </section>
-
-          <Card className="rounded-[2.25rem] border border-zinc-800 bg-zinc-950/95 shadow-[0_30px_90px_rgba(15,23,42,0.55)]">
-            <CardContent className="space-y-7 p-8 sm:p-10">
-              <div className="space-y-3 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-sky-500/20 bg-sky-500/10 text-sky-300">
-                  <UserCircle2 size={28} />
-                </div>
-                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-sky-300">
-                  Portal de Chamados
-                </p>
-                <h1 className="text-3xl font-black tracking-[-0.04em] text-white">Acesse sua conta</h1>
-                <p className="text-sm leading-6 text-zinc-400">
-                  Entre com seu usuário e senha para abrir, acompanhar e responder seus chamados.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-zinc-300">Usuário</label>
-                  <Input
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="ex: andre.ti"
-                    className="h-12 rounded-2xl border-zinc-800 bg-zinc-900 px-4 text-white placeholder:text-zinc-600 focus-visible:border-sky-500"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-zinc-300">Senha</label>
-                  <Input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Digite sua senha"
-                    className="h-12 rounded-2xl border-zinc-800 bg-zinc-900 px-4 text-white placeholder:text-zinc-600 focus-visible:border-sky-500"
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") {
-                        handlePortalLogin()
-                      }
-                    }}
-                  />
-                </div>
-
-                <Button
-                  className="h-12 w-full rounded-2xl bg-sky-600 font-semibold text-white shadow-lg shadow-sky-500/20 transition hover:-translate-y-0.5 hover:bg-sky-500 disabled:opacity-50"
-                  onClick={handlePortalLogin}
-                  disabled={isLoggingIn}
-                >
-                  {isLoggingIn ? "Entrando..." : "Entrar no portal"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     )
   }
 
   if (successState.isVisible) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(34,197,94,0.14),transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(56,189,248,0.10),transparent_26%),#0f172a] p-4 text-zinc-100">
-        <Card className="w-full max-w-lg rounded-[2.25rem] border border-emerald-500/20 bg-zinc-950 shadow-[0_30px_90px_rgba(15,23,42,0.55)]">
-          <CardContent className="space-y-8 p-8 text-center sm:p-12">
+      <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(34,197,94,0.12),transparent_25%),radial-gradient(circle_at_bottom_right,_rgba(56,189,248,0.08),transparent_25%),#0f172a] p-4">
+        <Card className="w-full max-w-md rounded-[2rem] border border-zinc-800 bg-zinc-950 shadow-[0_25px_80px_rgba(15,23,42,0.5)]">
+          <CardContent className="space-y-8 p-12 text-center">
             <div className="flex justify-center">
               <div className="relative">
-                <div className="absolute inset-0 rounded-full bg-emerald-500/25 blur-3xl" />
-                <div className="relative rounded-full border border-emerald-500/25 bg-emerald-500/10 p-5">
-                  <CheckCircle2 className="h-16 w-16 text-emerald-400" />
-                </div>
+                <div className="absolute inset-0 rounded-full bg-green-500/20 blur-2xl" />
+                <CheckCircle2 className="relative h-20 w-20 text-green-500" />
               </div>
             </div>
 
             <div className="space-y-3">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-300">Chamado registrado</p>
-              <h1 className="text-3xl font-black tracking-[-0.04em] text-white">Chamado enviado!</h1>
-              <p className="text-sm leading-6 text-zinc-400">
-                Seu chamado foi criado com sucesso. Agora você pode acompanhar respostas e conversar com a equipe técnica por aqui.
+              <h1 className="text-3xl font-bold text-white">Chamado enviado!</h1>
+              <p className="text-zinc-400">
+                Seu chamado foi criado com sucesso. Agora você pode acompanhar respostas por aqui.
               </p>
             </div>
 
-            <div className="grid gap-3 rounded-[1.75rem] border border-zinc-800 bg-zinc-900/70 p-5 text-left sm:grid-cols-2">
+            <div className="space-y-2 rounded-[1.5rem] border border-zinc-800 bg-zinc-900 p-6">
               <div>
-                <p className="text-xs uppercase tracking-wider text-zinc-500">ID do chamado</p>
-                <p className="mt-1 text-2xl font-bold text-emerald-300">#{successState.ticketId}</p>
+                <p className="text-xs uppercase tracking-wider text-zinc-500">ID do Chamado</p>
+                <p className="text-xl font-semibold text-green-400">#{successState.ticketId}</p>
               </div>
-              <div className="sm:border-l sm:border-zinc-800 sm:pl-5">
+              <div className="border-t border-zinc-800 pt-4">
                 <p className="text-xs uppercase tracking-wider text-zinc-500">Solicitante</p>
-                <p className="mt-1 text-lg font-semibold text-white">{successState.employeeName}</p>
+                <p className="text-lg text-white">{successState.employeeName}</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 pt-4 sm:grid-cols-3">
               <Button
                 variant="outline"
-                className="h-11 rounded-2xl border-zinc-700 !bg-zinc-900/60 text-zinc-300 hover:!bg-zinc-800 hover:text-white"
+                className="rounded-[1.5rem] border-zinc-700 text-zinc-300 hover:bg-zinc-800/50"
                 onClick={handleExit}
               >
                 Sair
               </Button>
               <Button
                 variant="outline"
-                className="h-11 rounded-2xl border-sky-500/30 !bg-sky-500/10 text-sky-300 hover:!bg-sky-500/15 hover:text-sky-200"
+                className="rounded-[1.5rem] border-sky-500/30 text-sky-300 hover:bg-sky-500/10"
                 onClick={handleGoToMyTickets}
               >
                 Acompanhar
               </Button>
               <Button
-                className="h-11 rounded-2xl bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 hover:bg-emerald-500"
+                className="rounded-[1.5rem] bg-green-600 text-white shadow-lg shadow-green-500/20 hover:bg-green-500"
                 onClick={handleContinue}
               >
                 Novo chamado
@@ -525,26 +462,26 @@ export function AdminPortal() {
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.12),transparent_25%),radial-gradient(circle_at_bottom_right,_rgba(168,85,247,0.10),transparent_25%),#0f172a] p-4 text-zinc-100">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.12),transparent_25%),radial-gradient(circle_at_bottom_right,_rgba(168,85,247,0.12),transparent_25%),#0f172a] p-4 text-zinc-100">
       <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-7xl flex-col gap-6">
-        <header className="rounded-[2.25rem] border border-zinc-800 bg-gradient-to-br from-zinc-950 via-zinc-950 to-zinc-900 p-6 shadow-[0_25px_80px_rgba(15,23,42,0.38)]">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <header className="rounded-[2rem] border border-zinc-800 bg-zinc-950/90 p-6 shadow-[0_25px_80px_rgba(15,23,42,0.35)]">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <div className="inline-flex rounded-full border border-sky-500/20 bg-sky-500/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-sky-300">
+              <p className="text-sm uppercase tracking-[0.24em] text-sky-300">
                 Portal interno
-              </div>
-              <h1 className="mt-4 text-3xl font-black tracking-[-0.05em] text-white sm:text-4xl">
+              </p>
+              <h1 className="mt-2 text-3xl font-bold text-white">
                 Olá, {loggedEmployee.name}
               </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">
-                Seu setor é <strong className="text-zinc-200">{loggedEmployee.sector?.name}</strong>. Todos os chamados abertos por aqui ficam vinculados ao seu cadastro.
+              <p className="mt-2 max-w-2xl text-zinc-400">
+                Setor vinculado: <strong className="text-zinc-200">{loggedEmployee.sector?.name}</strong>. Seu setor é puxado do cadastro e será usado em todos os chamados.
               </p>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button
                 variant="outline"
-                className="h-11 rounded-2xl border-sky-500/20 !bg-sky-500/10 px-5 text-sky-300 hover:!bg-sky-500/15 hover:text-sky-200"
+                className="rounded-2xl border-zinc-700 text-zinc-300 hover:bg-zinc-800/60"
                 onClick={() => loadMyTickets(loggedEmployee.id)}
                 disabled={isLoadingTickets}
               >
@@ -553,44 +490,31 @@ export function AdminPortal() {
               </Button>
               <Button
                 variant="outline"
-                className="h-11 rounded-2xl border-red-500/20 !bg-red-500/10 px-5 text-red-300 hover:!bg-red-500/15 hover:text-red-200"
+                className="rounded-2xl border-zinc-700 text-zinc-300 hover:bg-zinc-800/60"
                 onClick={handleExit}
               >
-                <LogOut size={16} className="mr-2" />
                 Sair
               </Button>
             </div>
           </div>
 
           <div className="mt-6 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
-            <div className="grid gap-3 sm:grid-cols-4">
-              <div className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-4 sm:col-span-2">
-                <div className="flex items-center gap-3">
-                  <div className="rounded-2xl border border-sky-500/20 bg-sky-500/10 p-3 text-sky-300">
-                    <UserCircle2 />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-white">{loggedEmployee.name}</p>
-                    <p className="text-xs text-zinc-500">Usuário: {loggedEmployee.username || "sem usuário"}</p>
-                  </div>
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
+              <div className="flex items-center gap-3">
+                <UserCircle2 className="text-sky-300" />
+                <div>
+                  <p className="text-sm font-semibold text-white">{loggedEmployee.name}</p>
+                  <p className="text-xs text-zinc-500">Usuário: {loggedEmployee.username || "sem usuário"}</p>
                 </div>
-              </div>
-              <div className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-4">
-                <p className="text-xs uppercase tracking-[0.18em] text-zinc-500">Chamados</p>
-                <p className="mt-2 text-2xl font-bold text-white">{ticketStats.total}</p>
-              </div>
-              <div className="rounded-3xl border border-orange-500/20 bg-orange-500/10 p-4">
-                <p className="text-xs uppercase tracking-[0.18em] text-orange-300">Aguardando</p>
-                <p className="mt-2 text-2xl font-bold text-orange-200">{ticketStats.waiting}</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 rounded-3xl border border-zinc-800 bg-zinc-900/80 p-1.5">
+            <div className="grid grid-cols-2 gap-3 rounded-2xl border border-zinc-800 bg-zinc-900 p-1">
               <button
                 onClick={() => setActiveTab("new")}
-                className={`inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-bold transition ${
+                className={`inline-flex items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition ${
                   activeTab === "new"
-                    ? "bg-sky-600 text-white shadow-lg shadow-sky-500/20"
+                    ? "bg-sky-600 text-white"
                     : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
                 }`}
               >
@@ -602,9 +526,9 @@ export function AdminPortal() {
                   setActiveTab("mine")
                   loadMyTickets(loggedEmployee.id)
                 }}
-                className={`inline-flex items-center justify-center rounded-2xl px-4 py-3 text-sm font-bold transition ${
+                className={`inline-flex items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition ${
                   activeTab === "mine"
-                    ? "bg-sky-600 text-white shadow-lg shadow-sky-500/20"
+                    ? "bg-sky-600 text-white"
                     : "text-zinc-400 hover:bg-zinc-800 hover:text-white"
                 }`}
               >
@@ -616,113 +540,89 @@ export function AdminPortal() {
         </header>
 
         {activeTab === "new" ? (
-          <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
-            <Card className="rounded-[2.25rem] border border-zinc-800 bg-zinc-950 shadow-[0_25px_80px_rgba(15,23,42,0.35)]">
-              <CardContent className="space-y-7 p-6 sm:p-8">
-                <div className="space-y-3">
-                  <div className="inline-flex rounded-full border border-violet-500/20 bg-violet-500/10 px-4 py-2 text-sm font-semibold text-violet-300">
-                    <ClipboardList size={16} className="mr-2" /> Abrir chamado interno
-                  </div>
-                  <h2 className="text-3xl font-black tracking-[-0.04em] text-white">Preencha os dados do atendimento</h2>
-                  <p className="max-w-3xl text-sm leading-6 text-zinc-400">
-                    O solicitante e o setor vêm do seu login. Informe categoria, origem e descreva o problema com contexto suficiente para agilizar o suporte.
-                  </p>
+          <Card className="rounded-[2rem] border border-zinc-800 bg-zinc-950 shadow-[0_25px_80px_rgba(15,23,42,0.35)]">
+            <CardContent className="space-y-6 p-8">
+              <div className="space-y-3">
+                <div className="inline-flex rounded-full bg-violet-500/10 px-4 py-2 text-sm font-medium text-violet-300">
+                  Abrir chamado interno
                 </div>
+                <h2 className="text-3xl font-bold text-white">Preencha os dados</h2>
+                <p className="text-zinc-400">
+                  O solicitante e o setor já estão definidos pelo seu login. Agora é só informar a categoria, origem e descrição.
+                </p>
+              </div>
 
-                <div className="grid gap-4 lg:grid-cols-2">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-zinc-400">Solicitante</label>
-                    <Input
-                      value={loggedEmployee.name}
-                      disabled
-                      className="h-12 rounded-2xl border-zinc-800 bg-zinc-900 px-4 text-zinc-400"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-zinc-400">Setor</label>
-                    <Input
-                      value={loggedEmployee.sector?.name || ""}
-                      disabled
-                      className="h-12 rounded-2xl border-zinc-800 bg-zinc-900 px-4 text-zinc-400"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-zinc-400">Categoria</label>
-                    <select
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      className="h-12 w-full rounded-2xl border border-zinc-800 bg-zinc-900 px-4 text-zinc-200 shadow-sm outline-none transition focus:border-sky-500"
-                    >
-                      {categories.map((category) => (
-                        <option key={category}>{category}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-zinc-400">Origem</label>
-                    <select
-                      value={origin}
-                      onChange={(e) => setOrigin(e.target.value)}
-                      className="h-12 w-full rounded-2xl border border-zinc-800 bg-zinc-900 px-4 text-zinc-200 shadow-sm outline-none transition focus:border-sky-500"
-                    >
-                      <option>Base</option>
-                      <option>Offshore</option>
-                    </select>
-                  </div>
-                </div>
-
+              <div className="grid gap-4 lg:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-zinc-400">Descrição do problema</label>
-                  <Textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Ex: computador não liga, impressora não aparece na rede, sistema apresenta erro ao abrir..."
-                    className="min-h-[190px] rounded-2xl border-zinc-800 bg-zinc-900 px-4 py-3 text-white placeholder:text-zinc-600 focus-visible:border-sky-500"
+                  <label className="text-sm text-zinc-400">Solicitante</label>
+                  <Input
+                    value={loggedEmployee.name}
+                    disabled
+                    className="rounded-2xl border-zinc-800 bg-zinc-900 px-4 py-3 text-zinc-400"
                   />
                 </div>
 
-                <Button
-                  className="h-13 w-full rounded-2xl bg-sky-600 text-base font-bold text-white shadow-lg shadow-sky-500/20 transition hover:-translate-y-0.5 hover:bg-sky-500 disabled:opacity-50"
-                  onClick={handleSubmit}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Enviando chamado..." : "Abrir chamado"}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <aside className="space-y-4">
-              <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.28)]">
-                <div className="flex items-center gap-3">
-                  <Sparkles className="text-sky-300" />
-                  <h3 className="text-lg font-bold text-white">Boas práticas</h3>
+                <div className="space-y-2">
+                  <label className="text-sm text-zinc-400">Setor</label>
+                  <Input
+                    value={loggedEmployee.sector?.name || ""}
+                    disabled
+                    className="rounded-2xl border-zinc-800 bg-zinc-900 px-4 py-3 text-zinc-400"
+                  />
                 </div>
-                <ul className="mt-5 space-y-3 text-sm leading-6 text-zinc-400">
-                  <li>• Informe quando o problema começou.</li>
-                  <li>• Descreva mensagens de erro exatamente como aparecem.</li>
-                  <li>• Diga se é urgente ou impacta operação.</li>
-                  <li>• Acompanhe a resposta na aba “Meus chamados”.</li>
-                </ul>
+
+                <div className="space-y-2">
+                  <label className="text-sm text-zinc-400">Categoria</label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full rounded-2xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-zinc-200 shadow-sm outline-none focus:border-sky-500"
+                  >
+                    {categories.map((category) => (
+                      <option key={category}>{category}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm text-zinc-400">Origem</label>
+                  <select
+                    value={origin}
+                    onChange={(e) => setOrigin(e.target.value)}
+                    className="w-full rounded-2xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-zinc-200 shadow-sm outline-none focus:border-sky-500"
+                  >
+                    <option>Base</option>
+                    <option>Offshore</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="rounded-[2rem] border border-sky-500/20 bg-sky-500/10 p-6">
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-sky-300">Rastreamento</p>
-                <p className="mt-3 text-sm leading-6 text-zinc-300">
-                  Cada resposta fica salva no histórico do chamado, com data, autor e status atualizado.
-                </p>
+              <div className="space-y-2">
+                <label className="text-sm text-zinc-400">Descrição</label>
+                <Textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Descreva o problema com o máximo de contexto possível..."
+                  className="min-h-[180px] rounded-2xl border-zinc-800 bg-zinc-900 px-4 py-3 text-white"
+                />
               </div>
-            </aside>
-          </div>
+
+              <Button
+                className="w-full rounded-[1.75rem] bg-sky-600 py-6 text-white shadow-lg shadow-sky-500/20 hover:bg-sky-500 disabled:opacity-50"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Enviando..." : "Abrir chamado"}
+              </Button>
+            </CardContent>
+          </Card>
         ) : (
-          <div className="grid min-h-[680px] gap-6 xl:grid-cols-[400px_1fr]">
-            <Card className="rounded-[2.25rem] border border-zinc-800 bg-zinc-950 shadow-[0_25px_80px_rgba(15,23,42,0.35)]">
+          <div className="grid min-h-[640px] gap-6 xl:grid-cols-[380px_1fr]">
+            <Card className="rounded-[2rem] border border-zinc-800 bg-zinc-950 shadow-[0_25px_80px_rgba(15,23,42,0.35)]">
               <CardContent className="flex h-full flex-col p-5">
                 <div className="mb-4 flex items-center justify-between gap-4">
                   <div>
-                    <h2 className="text-xl font-black tracking-[-0.03em] text-white">Meus chamados</h2>
+                    <h2 className="text-xl font-bold text-white">Meus chamados</h2>
                     <p className="text-sm text-zinc-500">
                       {myTickets.length} chamado(s) encontrados
                     </p>
@@ -730,7 +630,7 @@ export function AdminPortal() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="rounded-xl border-sky-500/20 !bg-sky-500/10 text-sky-300 hover:!bg-sky-500/15 hover:text-sky-200"
+                    className="rounded-xl border-zinc-700 text-zinc-300"
                     onClick={() => loadMyTickets(loggedEmployee.id)}
                     disabled={isLoadingTickets}
                   >
@@ -743,74 +643,68 @@ export function AdminPortal() {
                     <button
                       key={ticket.id}
                       onClick={() => loadTicketMessages(ticket)}
-                      className={`w-full rounded-3xl border p-4 text-left transition hover:border-sky-500/40 hover:bg-zinc-900 ${
+                      className={`w-full rounded-2xl border p-4 text-left transition hover:border-sky-500/40 hover:bg-zinc-900 ${
                         selectedTicket?.id === ticket.id
-                          ? "border-sky-500/50 bg-sky-500/10 shadow-[0_12px_34px_rgba(14,165,233,0.08)]"
+                          ? "border-sky-500/50 bg-sky-500/10"
                           : "border-zinc-800 bg-zinc-900/70"
                       }`}
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="text-sm font-bold text-white">#{ticket.id} - {ticket.category}</p>
+                        <div>
+                          <p className="text-sm font-semibold text-white">#{ticket.id} - {ticket.category}</p>
                           <p className="mt-1 line-clamp-2 text-xs leading-5 text-zinc-400">{ticket.description}</p>
                         </div>
-                        <span className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-bold ${getStatusStyle(ticket.status)}`}>
+                        <span className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-semibold ${getStatusStyle(ticket.status)}`}>
                           {ticket.status}
                         </span>
                       </div>
-                      <div className="mt-3 flex items-center justify-between text-xs text-zinc-500">
-                        <span>{ticket.createdAt}</span>
-                        <span className="rounded-full bg-zinc-950 px-2 py-1">{ticket.origin}</span>
-                      </div>
+                      <p className="mt-3 text-xs text-zinc-500">{ticket.createdAt}</p>
                     </button>
                   ))}
 
                   {myTickets.length === 0 && (
-                    <div className="rounded-3xl border border-dashed border-zinc-800 p-8 text-center">
-                      <MessageSquareText className="mx-auto h-10 w-10 text-zinc-700" />
-                      <p className="mt-3 text-sm font-semibold text-zinc-300">Nenhum chamado encontrado</p>
-                      <p className="mt-1 text-xs leading-5 text-zinc-500">Quando você abrir um chamado, ele aparecerá aqui.</p>
+                    <div className="rounded-2xl border border-dashed border-zinc-800 p-6 text-center text-sm text-zinc-500">
+                      Nenhum chamado encontrado para sua conta.
                     </div>
                   )}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="rounded-[2.25rem] border border-zinc-800 bg-zinc-950 shadow-[0_25px_80px_rgba(15,23,42,0.35)]">
-              <CardContent className="flex h-full min-h-[680px] flex-col p-0">
+            <Card className="rounded-[2rem] border border-zinc-800 bg-zinc-950 shadow-[0_25px_80px_rgba(15,23,42,0.35)]">
+              <CardContent className="flex h-full min-h-[640px] flex-col p-0">
                 {selectedTicket ? (
                   <>
                     <div className="border-b border-zinc-800 p-6">
                       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                         <div>
-                          <p className="text-xs font-bold uppercase tracking-[0.22em] text-sky-300">Conversa do chamado</p>
-                          <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">
+                          <p className="text-xs uppercase tracking-[0.22em] text-sky-300">Conversa do chamado</p>
+                          <h2 className="mt-2 text-2xl font-bold text-white">
                             #{selectedTicket.id} - {selectedTicket.category}
                           </h2>
                           <p className="mt-2 max-w-3xl text-sm leading-6 text-zinc-400">
                             {selectedTicket.description}
                           </p>
                         </div>
-                        <span className={`inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1 text-xs font-bold ${getStatusStyle(selectedTicket.status)}`}>
-                          <span className={`h-2 w-2 rounded-full ${getStatusDot(selectedTicket.status)}`} />
+                        <span className={`w-fit rounded-full border px-3 py-1 text-xs font-semibold ${getStatusStyle(selectedTicket.status)}`}>
                           {selectedTicket.status}
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex-1 space-y-4 overflow-y-auto bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.05),transparent_30%)] p-6">
+                    <div className="flex-1 space-y-4 overflow-y-auto p-6">
                       {messages.map((message) => {
                         const isEmployee = message.senderType === "employee"
 
                         return (
                           <div key={message.id} className={`flex ${isEmployee ? "justify-end" : "justify-start"}`}>
-                            <div className={`max-w-[82%] rounded-3xl border p-4 shadow-[0_12px_34px_rgba(0,0,0,0.16)] ${
+                            <div className={`max-w-[82%] rounded-3xl border p-4 ${
                               isEmployee
                                 ? "border-sky-500/30 bg-sky-500/15 text-sky-50"
                                 : "border-zinc-800 bg-zinc-900 text-zinc-100"
                             }`}>
-                              <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
-                                <p className={`text-xs font-bold uppercase tracking-[0.14em] ${isEmployee ? "text-sky-200" : "text-zinc-400"}`}>
+                              <div className="mb-2 flex items-center justify-between gap-4">
+                                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-zinc-400">
                                   {isEmployee ? "Você" : message.senderName || "Técnico"}
                                 </p>
                                 <p className="text-[11px] text-zinc-500">
@@ -826,17 +720,15 @@ export function AdminPortal() {
                       })}
 
                       {messages.length === 0 && (
-                        <div className="rounded-3xl border border-dashed border-zinc-800 p-10 text-center">
-                          <MessageSquareText className="mx-auto h-12 w-12 text-zinc-700" />
-                          <h3 className="mt-4 text-lg font-bold text-white">Nenhuma mensagem ainda</h3>
-                          <p className="mt-2 text-sm text-zinc-500">Quando a equipe técnica responder, a conversa aparecerá aqui.</p>
+                        <div className="rounded-2xl border border-dashed border-zinc-800 p-8 text-center text-zinc-500">
+                          Nenhuma mensagem nesse chamado ainda.
                         </div>
                       )}
                     </div>
 
                     <div className="border-t border-zinc-800 p-5">
                       {selectedTicket.status === "Finalizado" ? (
-                        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm leading-6 text-emerald-300">
+                        <div className="rounded-2xl border border-green-500/20 bg-green-500/10 p-4 text-sm text-green-300">
                           Este chamado está finalizado. Caso o problema volte, abra um novo chamado com o contexto atualizado.
                         </div>
                       ) : (
@@ -845,14 +737,13 @@ export function AdminPortal() {
                             value={employeeReply}
                             onChange={(e) => setEmployeeReply(e.target.value)}
                             placeholder="Responda o técnico ou envie mais detalhes..."
-                            className="min-h-[96px] rounded-2xl border-zinc-800 bg-zinc-900 px-4 py-3 text-white placeholder:text-zinc-600 focus-visible:border-sky-500"
+                            className="min-h-[96px] rounded-2xl border-zinc-800 bg-zinc-900 text-white"
                           />
                           <Button
-                            className="rounded-2xl bg-sky-600 px-6 font-bold text-white shadow-lg shadow-sky-500/20 transition hover:-translate-y-0.5 hover:bg-sky-500 disabled:opacity-50"
+                            className="rounded-2xl bg-sky-600 px-6 text-white hover:bg-sky-500 disabled:opacity-50"
                             onClick={handleEmployeeReply}
                             disabled={isSendingReply || !employeeReply.trim()}
                           >
-                            <SendHorizontal size={16} className="mr-2" />
                             {isSendingReply ? "Enviando..." : "Responder"}
                           </Button>
                         </div>
@@ -860,13 +751,11 @@ export function AdminPortal() {
                     </div>
                   </>
                 ) : (
-                  <div className="flex h-full min-h-[680px] items-center justify-center p-8 text-center">
+                  <div className="flex h-full min-h-[640px] items-center justify-center p-8 text-center">
                     <div className="max-w-md">
-                      <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl border border-zinc-800 bg-zinc-900 text-zinc-600">
-                        <MessageSquareText className="h-10 w-10" />
-                      </div>
-                      <h2 className="mt-5 text-2xl font-black tracking-[-0.04em] text-white">Selecione um chamado</h2>
-                      <p className="mt-2 text-sm leading-6 text-zinc-500">
+                      <MessageSquareText className="mx-auto h-14 w-14 text-zinc-600" />
+                      <h2 className="mt-4 text-2xl font-bold text-white">Selecione um chamado</h2>
+                      <p className="mt-2 text-zinc-500">
                         Clique em um chamado à esquerda para acompanhar a conversa com a equipe técnica.
                       </p>
                     </div>

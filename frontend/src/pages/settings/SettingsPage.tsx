@@ -220,8 +220,8 @@ export function SettingsPage() {
 
   return (
     <AppLayout>
-      <div className="mx-auto w-full max-w-7xl space-y-8 py-6">
-        <div className="relative overflow-hidden rounded-[2.25rem] border border-zinc-800 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.12),transparent_30%),linear-gradient(135deg,#09090b,#18181b_45%,#09090b)] p-6 shadow-[0_28px_90px_rgba(15,23,42,0.42)] sm:p-8">
+      <div className="mx-auto w-full max-w-7xl space-y-6 sm:space-y-8 py-6">
+        <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.2)]">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div>
               <h1 className="text-3xl font-bold text-white">Configurações</h1>
@@ -230,11 +230,11 @@ export function SettingsPage() {
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[1.5rem] border border-zinc-800 bg-zinc-950/70 p-4 shadow-[0_16px_45px_rgba(15,23,42,0.22)]">
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
                 <p className="text-sm text-zinc-400">Setores disponíveis</p>
                 <p className="text-2xl font-semibold text-white">{sectors.length}</p>
               </div>
-              <div className="rounded-[1.5rem] border border-zinc-800 bg-zinc-950/70 p-4 shadow-[0_16px_45px_rgba(15,23,42,0.22)]">
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
                 <p className="text-sm text-zinc-400">Funcionários cadastrados</p>
                 <p className="text-2xl font-semibold text-white">{employees.length}</p>
               </div>
@@ -243,7 +243,7 @@ export function SettingsPage() {
         </div>
 
         <div className="grid gap-6 xl:grid-cols-2">
-          <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.28)]">
+          <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
             <div className="mb-6">
               <h2 className="text-2xl font-semibold text-white">Setores</h2>
               <p className="mt-2 text-sm text-zinc-400">
@@ -256,36 +256,36 @@ export function SettingsPage() {
                 placeholder="Nome do setor"
                 value={newSectorName}
                 onChange={(e) => setNewSectorName(e.target.value)}
-                className="rounded-2xl border-zinc-800 bg-zinc-900 text-white focus-visible:border-sky-500"
+                className="bg-zinc-900 border-zinc-800 text-white"
               />
               <Input
                 placeholder="PIN"
                 value={newSectorPin}
                 onChange={(e) => setNewSectorPin(e.target.value)}
-                className="rounded-2xl border-zinc-800 bg-zinc-900 text-white focus-visible:border-sky-500"
+                className="bg-zinc-900 border-zinc-800 text-white"
               />
-              <Button className="w-full rounded-[1.5rem] border border-sky-500/30 bg-gradient-to-br from-sky-600 to-cyan-700 text-white shadow-lg shadow-sky-950/25 transition hover:-translate-y-0.5 hover:from-sky-500 hover:to-cyan-600" onClick={addSector}>
+              <Button className="w-full rounded-[1.5rem] bg-sky-600 text-white hover:bg-sky-500" onClick={addSector}>
                 Adicionar
               </Button>
             </div>
 
             <div className="mt-6 space-y-4">
               {sectors.map((sector) => (
-                <div key={sector.id} className="rounded-[1.75rem] border border-zinc-800 bg-zinc-900/80 p-4 shadow-[0_16px_45px_rgba(15,23,42,0.18)] transition hover:border-sky-500/20">
+                <div key={sector.id} className="rounded-[1.5rem] border border-zinc-800 bg-zinc-900 p-4">
                   <div className="grid gap-3 lg:grid-cols-[1.5fr_1fr]">
                     <Input
                       value={sector.name}
                       onChange={(e) => updateSectorState(sector.id, "name", e.target.value)}
-                      className="rounded-2xl border-zinc-800 bg-zinc-950 text-white focus-visible:border-sky-500"
+                      className="bg-zinc-950 border-zinc-800 text-white"
                     />
                     <Input
                       value={sector.pin}
                       onChange={(e) => updateSectorState(sector.id, "pin", e.target.value)}
-                      className="rounded-2xl border-zinc-800 bg-zinc-950 text-white focus-visible:border-sky-500"
+                      className="bg-zinc-950 border-zinc-800 text-white"
                     />
                   </div>
                   <div className="mt-4 flex flex-wrap gap-3 justify-end">
-                    <Button size="sm" className="rounded-[1.25rem] bg-sky-600 text-white hover:bg-sky-500" onClick={() => updateSector(sector)}>
+                    <Button size="sm" className="rounded-[1.25rem]" onClick={() => updateSector(sector)}>
                       Salvar
                     </Button>
                     <Button
@@ -302,7 +302,7 @@ export function SettingsPage() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.28)]">
+          <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
             <div className="mb-6">
               <h2 className="text-2xl font-semibold text-white">Funcionários</h2>
               <p className="mt-2 text-sm text-zinc-400">
@@ -315,20 +315,20 @@ export function SettingsPage() {
                 placeholder="Nome do funcionário"
                 value={newEmployeeName}
                 onChange={(e) => setNewEmployeeName(e.target.value)}
-                className="rounded-2xl border-zinc-800 bg-zinc-900 text-white focus-visible:border-sky-500"
+                className="bg-zinc-900 border-zinc-800 text-white"
               />
               <Input
                 placeholder="Usuário de acesso"
                 value={newEmployeeUsername}
                 onChange={(e) => setNewEmployeeUsername(e.target.value)}
-                className="rounded-2xl border-zinc-800 bg-zinc-900 text-white focus-visible:border-sky-500"
+                className="bg-zinc-900 border-zinc-800 text-white"
               />
               <Input
                 type="password"
                 placeholder="Senha inicial"
                 value={newEmployeePassword}
                 onChange={(e) => setNewEmployeePassword(e.target.value)}
-                className="rounded-2xl border-zinc-800 bg-zinc-900 text-white focus-visible:border-sky-500"
+                className="bg-zinc-900 border-zinc-800 text-white"
               />
               <select
                 value={newEmployeeSectorId}
@@ -341,14 +341,14 @@ export function SettingsPage() {
                   </option>
                 ))}
               </select>
-              <Button className="w-full rounded-[1.5rem] border border-sky-500/30 bg-gradient-to-br from-sky-600 to-cyan-700 text-white shadow-lg shadow-sky-950/25 transition hover:-translate-y-0.5 hover:from-sky-500 hover:to-cyan-600" onClick={addEmployee}>
+              <Button className="w-full rounded-[1.5rem] bg-sky-600 text-white hover:bg-sky-500" onClick={addEmployee}>
                 Adicionar
               </Button>
             </div>
 
             <div className="mt-6 space-y-4">
               {employees.map((employee) => (
-                <div key={employee.id} className="rounded-[1.75rem] border border-zinc-800 bg-zinc-900/80 p-4 shadow-[0_16px_45px_rgba(15,23,42,0.18)] transition hover:border-sky-500/20">
+                <div key={employee.id} className="rounded-[1.5rem] border border-zinc-800 bg-zinc-900 p-4">
                   <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="text-sm font-semibold text-white">{employee.name}</p>
@@ -363,20 +363,20 @@ export function SettingsPage() {
                     <Input
                       value={employee.name}
                       onChange={(e) => updateEmployeeState(employee.id, "name", e.target.value)}
-                      className="rounded-2xl border-zinc-800 bg-zinc-950 text-white focus-visible:border-sky-500"
+                      className="bg-zinc-950 border-zinc-800 text-white"
                     />
                     <Input
                       value={employee.username || ""}
                       onChange={(e) => updateEmployeeState(employee.id, "username", e.target.value)}
                       placeholder="usuário"
-                      className="rounded-2xl border-zinc-800 bg-zinc-950 text-white focus-visible:border-sky-500"
+                      className="bg-zinc-950 border-zinc-800 text-white"
                     />
                     <Input
                       type="password"
                       value={employee.password || ""}
                       onChange={(e) => updateEmployeeState(employee.id, "password", e.target.value)}
                       placeholder="Nova senha opcional"
-                      className="rounded-2xl border-zinc-800 bg-zinc-950 text-white focus-visible:border-sky-500"
+                      className="bg-zinc-950 border-zinc-800 text-white"
                     />
                     <select
                       value={employee.sectorId}
@@ -391,7 +391,7 @@ export function SettingsPage() {
                     </select>
                   </div>
                   <div className="mt-4 flex flex-wrap gap-3 justify-end">
-                    <Button size="sm" className="rounded-[1.25rem] bg-sky-600 text-white hover:bg-sky-500" onClick={() => updateEmployee(employee)}>
+                    <Button size="sm" className="rounded-[1.25rem]" onClick={() => updateEmployee(employee)}>
                       Salvar
                     </Button>
                     <Button

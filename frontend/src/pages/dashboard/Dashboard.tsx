@@ -139,14 +139,14 @@ export function Dashboard() {
 
   return (
     <AppLayout>
-      <div className="mx-auto w-full max-w-7xl space-y-8">
-        <div className="relative overflow-hidden rounded-[2.25rem] border border-zinc-800 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.14),transparent_32%),linear-gradient(135deg,#09090b,#18181b_45%,#09090b)] p-6 shadow-[0_28px_90px_rgba(15,23,42,0.48)] sm:p-8">
+      <div className="mx-auto w-full max-w-7xl space-y-6 sm:space-y-8">
+        <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.45)]">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.24em] text-cyan-300/80">
                 Visão geral
               </p>
-              <h1 className="mt-2 text-4xl font-bold text-white sm:text-5xl">
+              <h1 className="mt-2 text-3xl font-bold sm:text-4xl text-white lg:text-5xl">
                 Dashboard de Chamados
               </h1>
               <p className="mt-3 max-w-2xl text-zinc-400">
@@ -164,7 +164,7 @@ export function Dashboard() {
                   {filteredTickets.length}
                 </p>
               </div>
-              <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-5 text-center shadow-[0_18px_50px_rgba(15,23,42,0.25)] transition hover:-translate-y-1 hover:border-cyan-500/20">
+              <div className="rounded-3xl bg-zinc-950/60 p-4 text-center border border-zinc-800">
                 <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
                   Setores ativos
                 </p>
@@ -172,7 +172,7 @@ export function Dashboard() {
                   {uniqueSectors.length}
                 </p>
               </div>
-              <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-5 text-center shadow-[0_18px_50px_rgba(15,23,42,0.25)] transition hover:-translate-y-1 hover:border-cyan-500/20">
+              <div className="rounded-3xl bg-zinc-950/60 p-4 text-center border border-zinc-800">
                 <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
                   Categorias ativas
                 </p>
@@ -197,7 +197,7 @@ export function Dashboard() {
           )}
         </div>
 
-        <section className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.25)]">
+        <section className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.25)] sm:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-white">
@@ -214,7 +214,7 @@ export function Dashboard() {
                 setOriginFilter("Todas");
                 setStatusFilter("Todos");
               }}
-              className="inline-flex items-center justify-center rounded-2xl border border-sky-500/20 bg-sky-500/10 px-5 py-3 text-sm font-semibold text-sky-300 transition hover:-translate-y-0.5 hover:border-sky-400/40 hover:bg-sky-500/15 hover:text-sky-200"
+              className="inline-flex items-center justify-center rounded-full border border-zinc-700 bg-zinc-950 px-5 py-2 text-sm font-medium text-white transition hover:border-cyan-500 hover:text-cyan-200"
             >
               Limpar filtros
             </button>
@@ -337,7 +337,7 @@ export function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.28)] transition duration-300 hover:-translate-y-1 hover:border-cyan-500/20">
+          <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.25)] sm:p-6 transition hover:-translate-y-0.5">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-bold tracking-[-0.02em] text-white">
@@ -386,7 +386,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.28)] transition duration-300 hover:-translate-y-1 hover:border-cyan-500/20">
+          <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.25)] sm:p-6 transition hover:-translate-y-0.5">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-xl font-bold tracking-[-0.02em] text-white">
@@ -437,7 +437,7 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.28)] transition duration-300 hover:-translate-y-1 hover:border-cyan-500/20">
+          <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.25)] sm:p-6 transition hover:-translate-y-0.5">
             <h2 className="text-xl font-bold tracking-[-0.02em] text-white">
               Chamados por Status
             </h2>
@@ -483,11 +483,11 @@ label
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.28)] transition duration-300 hover:-translate-y-1 hover:border-cyan-500/20">
+          <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.25)] sm:p-6 transition hover:-translate-y-0.5">
             <h2 className="text-xl font-bold tracking-[-0.02em] text-white">
               Base x Offshore
             </h2>
-            <p className="mt-1 text-sm leading-relaxed text-zinc-400">
+            <p className="text-sm text-zinc-500 mt-1">
               Origem dos chamados no conjunto filtrado.
             </p>
 

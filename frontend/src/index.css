@@ -263,3 +263,30 @@ table {
 .rounded-\[1\.75rem\] {
   box-shadow: 0 18px 55px rgba(0, 0, 0, 0.26);
 }
+
+
+/* =========================================================
+   Mobile-first polish for Lifting Support
+   ========================================================= */
+@media (max-width: 640px) {
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  .recharts-wrapper,
+  .recharts-surface {
+    max-width: 100%;
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}

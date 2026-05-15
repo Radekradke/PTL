@@ -290,14 +290,14 @@ export function ReportsPage() {
 
   return (
     <AppLayout>
-      <div className="mx-auto w-full max-w-7xl space-y-8 py-6">
-        <div className="relative overflow-hidden rounded-[2.25rem] border border-zinc-800 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.14),transparent_32%),linear-gradient(135deg,#09090b,#18181b_45%,#09090b)] p-6 shadow-[0_28px_90px_rgba(15,23,42,0.48)] sm:p-8">
+      <div className="mx-auto w-full max-w-7xl space-y-6 sm:space-y-8 py-6">
+        <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.35)] sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
               <p className="text-sm uppercase tracking-[0.24em] text-cyan-300/80">
                 Central de relatórios
               </p>
-              <h1 className="mt-2 text-4xl font-bold tracking-[-0.04em] text-white sm:text-5xl">
+              <h1 className="mt-2 text-3xl font-bold sm:text-4xl tracking-[-0.04em] text-white lg:text-5xl">
                 Relatórios
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base">
@@ -322,7 +322,7 @@ export function ReportsPage() {
           </div>
         </div>
 
-        <Card className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 shadow-[0_24px_70px_rgba(15,23,42,0.30)]">
+        <Card className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 shadow-[0_20px_60px_rgba(15,23,42,0.28)]">
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-xl font-bold tracking-[-0.02em] text-white">
               <span className="rounded-2xl border border-cyan-500/20 bg-cyan-500/10 p-2 text-cyan-300">
@@ -477,7 +477,7 @@ export function ReportsPage() {
               <Button
                 onClick={clearFilters}
                 variant="outline"
-                className="inline-flex items-center justify-center rounded-2xl border border-sky-500/20 !bg-sky-500/10 px-5 py-3 text-sm font-semibold !text-sky-300 transition hover:-translate-y-0.5 hover:border-sky-400/40 hover:!bg-sky-500/15 hover:!text-sky-200"
+                className="inline-flex items-center justify-center rounded-full border border-zinc-700 bg-zinc-950 px-5 py-2 text-sm font-medium text-white transition hover:border-cyan-500 hover:text-cyan-200"
             >
                 <RotateCcw size={16} className="mr-2" /> Limpar filtros
               </Button>
@@ -538,14 +538,14 @@ export function ReportsPage() {
           </section>
         </div>
 
-        <Card className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 shadow-[0_24px_70px_rgba(15,23,42,0.30)]">
+        <Card className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 shadow-[0_20px_60px_rgba(15,23,42,0.28)]">
           <CardHeader>
             <CardTitle className="text-xl font-bold tracking-[-0.02em] text-white">
               Preview dos dados
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto rounded-[1.5rem] border border-zinc-800 bg-zinc-950/70 shadow-inner">
+            <div className="overflow-x-auto rounded-[1.5rem] border border-zinc-800 bg-zinc-900/80">
               <table className="min-w-[900px] w-full text-sm">
                 <thead>
                   <tr className="border-b border-zinc-800">
@@ -563,7 +563,7 @@ export function ReportsPage() {
                   {filteredTickets.slice(0, 20).map((ticket) => (
                     <tr
                       key={ticket.id}
-                      className="border-b border-zinc-800 transition hover:bg-sky-500/5"
+                      className="border-b border-zinc-800 transition hover:bg-zinc-800/50"
                     >
                       <td className="p-3 text-white">#{ticket.id}</td>
                       <td className="p-3 text-white">{ticket.user}</td>
