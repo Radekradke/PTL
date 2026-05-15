@@ -18,15 +18,6 @@ import {
   UserCircle2,
 } from "lucide-react"
 
-const THEME = {
-  petrol: "#073B2A",
-  emerald: "#00A859",
-  softGreen: "#39D98A",
-  blueDark: "#102A43",
-  ice: "#EAF0ED",
-  black: "#111827",
-}
-
 type Sector = {
   id: number
   name: string
@@ -72,6 +63,24 @@ type SuccessState = {
 
 const PORTAL_USER_KEY = "lifting-portal-employee"
 
+const styles = {
+  page:
+    "min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.16),transparent_30%),linear-gradient(180deg,#EAF0ED_0%,#F7FAF8_46%,#EAF0ED_100%)] text-[#111827]",
+  shell: "mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-3 py-4 sm:px-5 sm:py-6",
+  glass:
+    "rounded-[1.75rem] border border-white/75 bg-white/78 shadow-[0_18px_55px_rgba(7,59,42,0.10)] backdrop-blur-2xl ring-1 ring-white/50",
+  card:
+    "rounded-[1.75rem] border border-[#DDE7E2] bg-white shadow-[0_14px_38px_rgba(7,59,42,0.08)]",
+  input:
+    "h-11 rounded-2xl border-[#DDE7E2] bg-[#F8FAF9] text-[#111827] placeholder:text-slate-400 focus:border-[#00A859] focus:ring-[#00A859]/10",
+  select:
+    "h-11 w-full rounded-2xl border border-[#DDE7E2] bg-[#F8FAF9] px-4 text-sm font-semibold text-[#111827] shadow-sm outline-none transition focus:border-[#00A859] focus:ring-4 focus:ring-[#00A859]/10",
+  primary:
+    "rounded-2xl bg-[#00A859] font-bold text-white shadow-[0_14px_30px_rgba(0,168,89,0.20)] transition hover:-translate-y-0.5 hover:bg-[#07864A] disabled:opacity-50",
+  secondary:
+    "rounded-2xl border border-[#DDE7E2] bg-white font-bold text-[#102A43] transition hover:bg-[#F4F8F6] hover:text-[#073B2A]",
+}
+
 function formatTicket(ticket: any): PortalTicket {
   return {
     id: ticket.id,
@@ -111,11 +120,7 @@ function getStatusStyle(status: string) {
 }
 
 function PortalShell({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.16),transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(16,42,67,0.10),transparent_28%),#EAF0ED] text-[#111827]">
-      {children}
-    </div>
-  )
+  return <div className={styles.page}>{children}</div>
 }
 
 function GlassCard({
@@ -125,13 +130,7 @@ function GlassCard({
   children: React.ReactNode
   className?: string
 }) {
-  return (
-    <div
-      className={`rounded-[1.75rem] border border-white/70 bg-white/80 shadow-[0_20px_60px_rgba(7,59,42,0.10)] backdrop-blur-xl ${className}`}
-    >
-      {children}
-    </div>
-  )
+  return <div className={`${styles.glass} ${className}`}>{children}</div>
 }
 
 function CollapsibleSection({
@@ -146,7 +145,7 @@ function CollapsibleSection({
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white/75">
+    <div className="rounded-2xl border border-[#DDE7E2] bg-white/78">
       <button
         type="button"
         onClick={() => setOpen((current) => !current)}
@@ -160,7 +159,16 @@ function CollapsibleSection({
         )}
       </button>
 
-      {open && <div className="border-t border-slate-200/80 px-4 py-4">{children}</div>}
+      {open && <div className="border-t border-[#DDE7E2] px-4 py-4">{children}</div>}
+    </div>
+  )
+}
+
+function MiniMetric({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="rounded-2xl border border-[#DDE7E2] bg-white/78 px-4 py-3">
+      <p className="text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">{label}</p>
+      <p className="mt-1 text-lg font-black text-[#073B2A]">{value}</p>
     </div>
   )
 }
@@ -415,6 +423,9 @@ export function AdminPortal() {
     setSuccessState({ isVisible: false })
   }
 
+  const activeTickets = myTickets.filter((ticket) => ticket.status !== "Finalizado").length
+  const finishedTickets = myTickets.filter((ticket) => ticket.status === "Finalizado").length
+
   if (!loggedEmployee) {
     return (
       <PortalShell>
@@ -454,7 +465,7 @@ export function AdminPortal() {
                     Portal do funcionário
                   </p>
                   <p className="mt-1 text-sm text-white/70">
-                    Sem WhatsApp perdido, sem boca a boca. Só fluxo registrado.
+                    Acompanhe tudo pelo portal, sem depender de conversas soltas.
                   </p>
                 </div>
               </div>
@@ -486,7 +497,7 @@ export function AdminPortal() {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         placeholder="ex: andre.ti"
-                        className="h-12 rounded-2xl border-slate-200 bg-[#F8FAF9] px-4 text-slate-900 placeholder:text-slate-400 focus:border-[#00A859] focus:ring-[#00A859]/10"
+                        className={styles.input}
                       />
                     </div>
 
@@ -497,7 +508,7 @@ export function AdminPortal() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Digite sua senha"
-                        className="h-12 rounded-2xl border-slate-200 bg-[#F8FAF9] px-4 text-slate-900 placeholder:text-slate-400 focus:border-[#00A859] focus:ring-[#00A859]/10"
+                        className={styles.input}
                         onKeyDown={(event) => {
                           if (event.key === "Enter") handlePortalLogin()
                         }}
@@ -505,7 +516,7 @@ export function AdminPortal() {
                     </div>
 
                     <Button
-                      className="h-12 w-full rounded-2xl bg-[#00A859] font-bold text-white shadow-[0_16px_35px_rgba(0,168,89,0.22)] transition hover:-translate-y-0.5 hover:bg-[#07864A]"
+                      className={`h-12 w-full ${styles.primary}`}
                       onClick={handlePortalLogin}
                       disabled={isLoggingIn}
                     >
@@ -540,23 +551,23 @@ export function AdminPortal() {
               </p>
             </div>
 
-            <div className="mt-7 rounded-[1.5rem] border border-slate-200 bg-white/70 p-5">
+            <div className="mt-7 rounded-[1.5rem] border border-[#DDE7E2] bg-white/70 p-5">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">ID do chamado</p>
               <p className="mt-1 text-2xl font-black text-[#073B2A]">#{successState.ticketId}</p>
-              <div className="mt-4 border-t border-slate-200 pt-4">
+              <div className="mt-4 border-t border-[#DDE7E2] pt-4">
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Solicitante</p>
                 <p className="mt-1 text-base font-bold text-[#111827]">{successState.employeeName}</p>
               </div>
             </div>
 
             <div className="mt-7 grid gap-3 sm:grid-cols-3">
-              <Button variant="outline" className="rounded-2xl border-slate-200 bg-white text-slate-700 hover:bg-slate-50" onClick={handleExit}>
+              <Button variant="outline" className={styles.secondary} onClick={handleExit}>
                 Sair
               </Button>
-              <Button variant="outline" className="rounded-2xl border-[#00A859]/30 bg-[#00A859]/10 text-[#073B2A] hover:bg-[#00A859]/15" onClick={handleGoToMyTickets}>
+              <Button variant="outline" className="rounded-2xl border-[#00A859]/30 bg-[#00A859]/10 font-bold text-[#073B2A] hover:bg-[#00A859]/15" onClick={handleGoToMyTickets}>
                 Acompanhar
               </Button>
-              <Button className="rounded-2xl bg-[#00A859] text-white hover:bg-[#07864A]" onClick={handleContinue}>
+              <Button className={styles.primary} onClick={handleContinue}>
                 Novo chamado
               </Button>
             </div>
@@ -568,8 +579,8 @@ export function AdminPortal() {
 
   return (
     <PortalShell>
-      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-3 py-4 sm:px-5 sm:py-6">
-        <header className="rounded-[1.75rem] border border-white/70 bg-white/80 p-4 shadow-[0_18px_50px_rgba(7,59,42,0.08)] backdrop-blur-xl sm:p-5">
+      <div className={styles.shell}>
+        <header className={`${styles.glass} p-4 sm:p-5`}>
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#00A859]">Portal interno</p>
@@ -581,10 +592,46 @@ export function AdminPortal() {
               </p>
             </div>
 
+            <div className="grid gap-2 sm:grid-cols-3">
+              <MiniMetric label="Ativos" value={activeTickets} />
+              <MiniMetric label="Finalizados" value={finishedTickets} />
+              <MiniMetric label="Total" value={myTickets.length} />
+            </div>
+          </div>
+
+          <div className="mt-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="grid grid-cols-2 gap-2 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1 lg:w-[360px]">
+              <button
+                onClick={() => setActiveTab("new")}
+                className={`inline-flex h-11 items-center justify-center rounded-xl px-4 text-sm font-bold transition ${
+                  activeTab === "new"
+                    ? "bg-[#073B2A] text-white shadow-sm"
+                    : "text-slate-500 hover:bg-slate-50 hover:text-[#073B2A]"
+                }`}
+              >
+                <PlusCircle size={16} className="mr-2" />
+                Novo
+              </button>
+              <button
+                onClick={() => {
+                  setActiveTab("mine")
+                  loadMyTickets(loggedEmployee.id)
+                }}
+                className={`inline-flex h-11 items-center justify-center rounded-xl px-4 text-sm font-bold transition ${
+                  activeTab === "mine"
+                    ? "bg-[#073B2A] text-white shadow-sm"
+                    : "text-slate-500 hover:bg-slate-50 hover:text-[#073B2A]"
+                }`}
+              >
+                <MessageSquareText size={16} className="mr-2" />
+                Meus chamados
+              </button>
+            </div>
+
             <div className="flex flex-col gap-2 sm:flex-row">
               <Button
                 variant="outline"
-                className="h-10 rounded-2xl border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                className={`h-10 ${styles.secondary}`}
                 onClick={() => loadMyTickets(loggedEmployee.id)}
                 disabled={isLoadingTickets}
               >
@@ -593,41 +640,13 @@ export function AdminPortal() {
               </Button>
               <Button
                 variant="outline"
-                className="h-10 rounded-2xl border-slate-200 bg-white text-slate-700 hover:bg-red-50 hover:text-red-700"
+                className="h-10 rounded-2xl border border-[#DDE7E2] bg-white font-bold text-slate-700 transition hover:bg-red-50 hover:text-red-700"
                 onClick={handleExit}
               >
                 <LogOut size={16} className="mr-2" />
                 Sair
               </Button>
             </div>
-          </div>
-
-          <div className="mt-5 grid grid-cols-2 gap-2 rounded-2xl border border-slate-200 bg-white/70 p-1">
-            <button
-              onClick={() => setActiveTab("new")}
-              className={`inline-flex h-11 items-center justify-center rounded-xl px-4 text-sm font-bold transition ${
-                activeTab === "new"
-                  ? "bg-[#073B2A] text-white shadow-sm"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-[#073B2A]"
-              }`}
-            >
-              <PlusCircle size={16} className="mr-2" />
-              Novo
-            </button>
-            <button
-              onClick={() => {
-                setActiveTab("mine")
-                loadMyTickets(loggedEmployee.id)
-              }}
-              className={`inline-flex h-11 items-center justify-center rounded-xl px-4 text-sm font-bold transition ${
-                activeTab === "mine"
-                  ? "bg-[#073B2A] text-white shadow-sm"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-[#073B2A]"
-              }`}
-            >
-              <MessageSquareText size={16} className="mr-2" />
-              Meus chamados
-            </button>
           </div>
         </header>
 
@@ -647,11 +666,11 @@ export function AdminPortal() {
                   <div className="grid gap-3">
                     <div>
                       <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Solicitante</label>
-                      <Input value={loggedEmployee.name} disabled className="mt-2 h-11 rounded-2xl border-slate-200 bg-slate-50 text-slate-500" />
+                      <Input value={loggedEmployee.name} disabled className="mt-2 h-11 rounded-2xl border-[#DDE7E2] bg-slate-50 text-slate-500" />
                     </div>
                     <div>
                       <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Setor</label>
-                      <Input value={loggedEmployee.sector?.name || ""} disabled className="mt-2 h-11 rounded-2xl border-slate-200 bg-slate-50 text-slate-500" />
+                      <Input value={loggedEmployee.sector?.name || ""} disabled className="mt-2 h-11 rounded-2xl border-[#DDE7E2] bg-slate-50 text-slate-500" />
                     </div>
                   </div>
                 </CollapsibleSection>
@@ -663,7 +682,7 @@ export function AdminPortal() {
                       <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="mt-2 h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-800 shadow-sm outline-none focus:border-[#00A859]"
+                        className={`mt-2 ${styles.select}`}
                       >
                         {categories.map((category) => (
                           <option key={category}>{category}</option>
@@ -675,7 +694,7 @@ export function AdminPortal() {
                       <select
                         value={origin}
                         onChange={(e) => setOrigin(e.target.value)}
-                        className="mt-2 h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-800 shadow-sm outline-none focus:border-[#00A859]"
+                        className={`mt-2 ${styles.select}`}
                       >
                         <option>Base</option>
                         <option>Offshore</option>
@@ -692,12 +711,12 @@ export function AdminPortal() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Descreva o problema com contexto objetivo..."
-                    className="mt-2 min-h-[210px] rounded-2xl border-slate-200 bg-white/90 px-4 py-3 text-slate-950 focus:border-[#00A859]"
+                    className="mt-2 min-h-[210px] rounded-2xl border-[#DDE7E2] bg-white/90 px-4 py-3 text-slate-950 focus:border-[#00A859]"
                   />
                 </div>
 
                 <Button
-                  className="h-12 w-full rounded-2xl bg-[#00A859] font-bold text-white shadow-[0_16px_35px_rgba(0,168,89,0.18)] hover:bg-[#07864A] disabled:opacity-50"
+                  className={`h-12 w-full ${styles.primary}`}
                   onClick={handleSubmit}
                   disabled={isSubmitting || !description.trim()}
                 >
@@ -717,7 +736,7 @@ export function AdminPortal() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="rounded-xl border-slate-200 bg-white text-slate-700"
+                  className="rounded-xl border-[#DDE7E2] bg-white text-slate-700"
                   onClick={() => loadMyTickets(loggedEmployee.id)}
                   disabled={isLoadingTickets}
                 >
@@ -733,7 +752,7 @@ export function AdminPortal() {
                     className={`w-full rounded-2xl border p-4 text-left transition hover:border-[#00A859]/35 hover:bg-white ${
                       selectedTicket?.id === ticket.id
                         ? "border-[#00A859]/40 bg-[#00A859]/10"
-                        : "border-slate-200 bg-white/70"
+                        : "border-[#DDE7E2] bg-white/70"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -751,7 +770,7 @@ export function AdminPortal() {
                 ))}
 
                 {myTickets.length === 0 && (
-                  <div className="rounded-2xl border border-dashed border-slate-200 bg-white/60 p-6 text-center text-sm text-slate-500">
+                  <div className="rounded-2xl border border-dashed border-[#DDE7E2] bg-white/60 p-6 text-center text-sm text-slate-500">
                     Nenhum chamado encontrado.
                   </div>
                 )}
@@ -761,7 +780,7 @@ export function AdminPortal() {
             <GlassCard className="overflow-hidden p-0">
               {selectedTicket ? (
                 <div className="flex min-h-[620px] flex-col">
-                  <div className="border-b border-slate-200 bg-white/65 p-5">
+                  <div className="border-b border-[#DDE7E2] bg-white/65 p-5">
                     <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                       <div className="min-w-0">
                         <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">Conversa do chamado</p>
@@ -788,7 +807,7 @@ export function AdminPortal() {
                             className={`max-w-[88%] rounded-3xl border p-4 shadow-sm ${
                               isEmployee
                                 ? "border-[#00A859]/20 bg-[#00A859]/12 text-[#073B2A]"
-                                : "border-slate-200 bg-white text-[#111827]"
+                                : "border-[#DDE7E2] bg-white text-[#111827]"
                             }`}
                           >
                             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
@@ -806,13 +825,13 @@ export function AdminPortal() {
                     })}
 
                     {messages.length === 0 && (
-                      <div className="rounded-2xl border border-dashed border-slate-200 bg-white/60 p-8 text-center text-slate-500">
+                      <div className="rounded-2xl border border-dashed border-[#DDE7E2] bg-white/60 p-8 text-center text-slate-500">
                         Nenhuma mensagem nesse chamado ainda.
                       </div>
                     )}
                   </div>
 
-                  <div className="border-t border-slate-200 bg-white/70 p-4">
+                  <div className="border-t border-[#DDE7E2] bg-white/70 p-4">
                     {selectedTicket.status === "Finalizado" ? (
                       <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
                         Este chamado está finalizado. Caso o problema volte, abra um novo chamado.
@@ -823,10 +842,10 @@ export function AdminPortal() {
                           value={employeeReply}
                           onChange={(e) => setEmployeeReply(e.target.value)}
                           placeholder="Responda o técnico ou envie mais detalhes..."
-                          className="min-h-[92px] rounded-2xl border-slate-200 bg-white text-slate-950 focus:border-[#00A859]"
+                          className="min-h-[92px] rounded-2xl border-[#DDE7E2] bg-white text-slate-950 focus:border-[#00A859]"
                         />
                         <Button
-                          className="rounded-2xl bg-[#00A859] px-6 font-bold text-white hover:bg-[#07864A] disabled:opacity-50"
+                          className={`px-6 ${styles.primary}`}
                           onClick={handleEmployeeReply}
                           disabled={isSendingReply || !employeeReply.trim()}
                         >
