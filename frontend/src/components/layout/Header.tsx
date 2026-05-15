@@ -15,11 +15,11 @@ export function Header({ notificationCount = 0 }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[#DFE7E2] bg-white/90 px-4 py-3 backdrop-blur-xl sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/75 px-4 py-3 shadow-sm backdrop-blur-2xl sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#2FA866]">Lifting Support</p>
-          <h2 className="truncate text-lg font-bold tracking-[-0.03em] text-[#17221C] sm:text-xl">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600">Lifting Support</p>
+          <h2 className="truncate text-lg font-black tracking-[-0.04em] text-slate-950 sm:text-xl">
             Painel técnico
           </h2>
         </div>
@@ -27,22 +27,22 @@ export function Header({ notificationCount = 0 }: HeaderProps) {
         <div className="flex items-center gap-3">
           <button
             onClick={handleNotificationClick}
-            className={`relative rounded-2xl border border-[#DFE7E2] bg-[#F7FAF8] p-2.5 text-[#42534A] transition hover:border-[#2FA866]/30 hover:text-[#174A3A] ${notificationCount > 0 ? "cursor-pointer" : "cursor-default"}`}
+            className={`relative rounded-2xl border border-slate-200 bg-white p-2.5 text-slate-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 ${notificationCount > 0 ? "cursor-pointer" : "cursor-default"}`}
             aria-label="Notificações"
           >
             <Bell size={20} />
             {notificationCount > 0 && (
-              <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[10px] font-bold text-white shadow-sm">
+              <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-black text-white shadow-sm">
                 {notificationCount > 99 ? "99+" : notificationCount}
               </span>
             )}
           </button>
 
-          <div className="hidden items-center gap-3 rounded-2xl border border-[#DFE7E2] bg-[#F7FAF8] px-3 py-2 sm:flex">
-            <UserCircle2 className="text-[#2FA866]" size={22} />
+          <div className="hidden items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm sm:flex">
+            <UserCircle2 className="text-blue-600" size={22} />
             <div className="text-right leading-tight">
-              <p className="text-sm font-semibold text-[#17221C]">{parsedUser?.sector || "Usuário"}</p>
-              <p className="text-xs text-[#6D7A72]">Perfil ativo</p>
+              <p className="text-sm font-bold text-slate-950">{parsedUser?.sector || "Usuário"}</p>
+              <p className="text-xs text-slate-500">Perfil ativo</p>
             </div>
           </div>
         </div>

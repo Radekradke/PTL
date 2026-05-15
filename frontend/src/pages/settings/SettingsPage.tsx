@@ -221,32 +221,32 @@ export function SettingsPage() {
   return (
     <AppLayout>
       <div className="max-w-7xl mx-auto w-full space-y-8 py-6">
-        <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6 shadow-[0_24px_80px_rgba(15,23,42,0.2)]">
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+        <div className="ls-hero-blue rounded-[2rem] p-6 sm:p-8">
+          <div className="ls-hero-content flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-white">Configurações</h1>
-              <p className="mt-2 max-w-2xl text-zinc-400">
+              <h1 className="text-3xl font-black tracking-[-0.04em] text-white">Configurações</h1>
+              <p className="mt-2 max-w-2xl text-slate-300">
                 Cadastre funcionários com usuário, senha e setor correto. Esses dados serão usados no portal e nos chamados.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
-                <p className="text-sm text-zinc-400">Setores disponíveis</p>
-                <p className="text-2xl font-semibold text-white">{sectors.length}</p>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-sm text-slate-500">Setores disponíveis</p>
+                <p className="text-2xl font-semibold text-slate-950">{sectors.length}</p>
               </div>
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
-                <p className="text-sm text-zinc-400">Funcionários cadastrados</p>
-                <p className="text-2xl font-semibold text-white">{employees.length}</p>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-sm text-slate-500">Funcionários cadastrados</p>
+                <p className="text-2xl font-semibold text-slate-950">{employees.length}</p>
               </div>
             </div>
           </div>
         </div>
 
         <div className="grid gap-6 xl:grid-cols-2">
-          <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
             <div className="mb-6">
-              <h2 className="text-2xl font-semibold text-white">Setores</h2>
-              <p className="mt-2 text-sm text-zinc-400">
+              <h2 className="text-2xl font-semibold text-slate-950">Setores</h2>
+              <p className="mt-2 text-sm text-slate-500">
                 O PIN ainda pode ser usado para controle interno, mas o portal do funcionário passa a usar usuário e senha individual.
               </p>
             </div>
@@ -256,32 +256,32 @@ export function SettingsPage() {
                 placeholder="Nome do setor"
                 value={newSectorName}
                 onChange={(e) => setNewSectorName(e.target.value)}
-                className="bg-zinc-900 border-zinc-800 text-white"
+                className="bg-white border-slate-200 text-slate-950"
               />
               <Input
                 placeholder="PIN"
                 value={newSectorPin}
                 onChange={(e) => setNewSectorPin(e.target.value)}
-                className="bg-zinc-900 border-zinc-800 text-white"
+                className="bg-white border-slate-200 text-slate-950"
               />
-              <Button className="w-full rounded-[1.5rem] bg-sky-600 text-white hover:bg-sky-500" onClick={addSector}>
+              <Button className="w-full rounded-[1.5rem] bg-blue-600 text-slate-950 hover:bg-blue-700" onClick={addSector}>
                 Adicionar
               </Button>
             </div>
 
             <div className="mt-6 space-y-4">
               {sectors.map((sector) => (
-                <div key={sector.id} className="rounded-[1.5rem] border border-zinc-800 bg-zinc-900 p-4">
+                <div key={sector.id} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
                   <div className="grid gap-3 lg:grid-cols-[1.5fr_1fr]">
                     <Input
                       value={sector.name}
                       onChange={(e) => updateSectorState(sector.id, "name", e.target.value)}
-                      className="bg-zinc-950 border-zinc-800 text-white"
+                      className="bg-white border-slate-200 text-slate-950"
                     />
                     <Input
                       value={sector.pin}
                       onChange={(e) => updateSectorState(sector.id, "pin", e.target.value)}
-                      className="bg-zinc-950 border-zinc-800 text-white"
+                      className="bg-white border-slate-200 text-slate-950"
                     />
                   </div>
                   <div className="mt-4 flex flex-wrap gap-3 justify-end">
@@ -302,10 +302,10 @@ export function SettingsPage() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
             <div className="mb-6">
-              <h2 className="text-2xl font-semibold text-white">Funcionários</h2>
-              <p className="mt-2 text-sm text-zinc-400">
+              <h2 className="text-2xl font-semibold text-slate-950">Funcionários</h2>
+              <p className="mt-2 text-sm text-slate-500">
                 O setor do funcionário define automaticamente onde o chamado será registrado. Capricha aqui, porque agora esse cadastro manda em tudo.
               </p>
             </div>
@@ -315,25 +315,25 @@ export function SettingsPage() {
                 placeholder="Nome do funcionário"
                 value={newEmployeeName}
                 onChange={(e) => setNewEmployeeName(e.target.value)}
-                className="bg-zinc-900 border-zinc-800 text-white"
+                className="bg-white border-slate-200 text-slate-950"
               />
               <Input
                 placeholder="Usuário de acesso"
                 value={newEmployeeUsername}
                 onChange={(e) => setNewEmployeeUsername(e.target.value)}
-                className="bg-zinc-900 border-zinc-800 text-white"
+                className="bg-white border-slate-200 text-slate-950"
               />
               <Input
                 type="password"
                 placeholder="Senha inicial"
                 value={newEmployeePassword}
                 onChange={(e) => setNewEmployeePassword(e.target.value)}
-                className="bg-zinc-900 border-zinc-800 text-white"
+                className="bg-white border-slate-200 text-slate-950"
               />
               <select
                 value={newEmployeeSectorId}
                 onChange={(e) => setNewEmployeeSectorId(e.target.value)}
-                className="rounded-2xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-zinc-300 shadow-sm"
+                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-700 shadow-sm"
               >
                 {sectors.map((sector) => (
                   <option key={sector.id} value={sector.id}>
@@ -341,20 +341,20 @@ export function SettingsPage() {
                   </option>
                 ))}
               </select>
-              <Button className="w-full rounded-[1.5rem] bg-sky-600 text-white hover:bg-sky-500" onClick={addEmployee}>
+              <Button className="w-full rounded-[1.5rem] bg-blue-600 text-slate-950 hover:bg-blue-700" onClick={addEmployee}>
                 Adicionar
               </Button>
             </div>
 
             <div className="mt-6 space-y-4">
               {employees.map((employee) => (
-                <div key={employee.id} className="rounded-[1.5rem] border border-zinc-800 bg-zinc-900 p-4">
+                <div key={employee.id} className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
                   <div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                      <p className="text-sm font-semibold text-white">{employee.name}</p>
-                      <p className="text-xs text-zinc-500">Usuário: {employee.username || "não configurado"}</p>
+                      <p className="text-sm font-semibold text-slate-950">{employee.name}</p>
+                      <p className="text-xs text-slate-500">Usuário: {employee.username || "não configurado"}</p>
                     </div>
-                    <span className="w-fit rounded-full border border-sky-500/20 bg-sky-500/10 px-3 py-1 text-xs font-semibold text-sky-300">
+                    <span className="w-fit rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
                       {sectors.find((sector) => sector.id === employee.sectorId)?.name || employee.sector?.name || "Sem setor"}
                     </span>
                   </div>
@@ -363,25 +363,25 @@ export function SettingsPage() {
                     <Input
                       value={employee.name}
                       onChange={(e) => updateEmployeeState(employee.id, "name", e.target.value)}
-                      className="bg-zinc-950 border-zinc-800 text-white"
+                      className="bg-white border-slate-200 text-slate-950"
                     />
                     <Input
                       value={employee.username || ""}
                       onChange={(e) => updateEmployeeState(employee.id, "username", e.target.value)}
                       placeholder="usuário"
-                      className="bg-zinc-950 border-zinc-800 text-white"
+                      className="bg-white border-slate-200 text-slate-950"
                     />
                     <Input
                       type="password"
                       value={employee.password || ""}
                       onChange={(e) => updateEmployeeState(employee.id, "password", e.target.value)}
                       placeholder="Nova senha opcional"
-                      className="bg-zinc-950 border-zinc-800 text-white"
+                      className="bg-white border-slate-200 text-slate-950"
                     />
                     <select
                       value={employee.sectorId}
                       onChange={(e) => updateEmployeeState(employee.id, "sectorId", e.target.value)}
-                      className="rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-zinc-300 shadow-sm"
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-700 shadow-sm"
                     >
                       {sectors.map((sector) => (
                         <option key={sector.id} value={sector.id}>

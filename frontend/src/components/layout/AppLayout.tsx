@@ -11,7 +11,7 @@ export function AppLayout({ children }: Props) {
   const { notificationCount } = useNotifications()
 
   return (
-    <div className="min-h-screen bg-[#F4F7F5] text-[#17221C]">
+    <div className="ls-page-shell min-h-screen text-slate-950">
       <div className="flex min-h-screen">
         <Sidebar />
 

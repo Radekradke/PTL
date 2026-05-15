@@ -7,54 +7,42 @@ interface Props {
   tone?: StatsCardTone
 }
 
-const toneStyles: Record<StatsCardTone, {
-  card: string
-  label: string
-  value: string
-  dot: string
-  glow: string
-}> = {
+const toneStyles: Record<StatsCardTone, { ring: string; icon: string; value: string; accent: string }> = {
   neutral: {
-    card: "border-white/15 bg-[linear-gradient(135deg,#061B16_0%,#0F3D2E_50%,#164A6B_145%)]",
-    label: "text-emerald-50/80",
-    value: "text-white",
-    dot: "bg-emerald-300",
-    glow: "shadow-emerald-950/25",
+    ring: "border-slate-200 bg-white",
+    icon: "bg-slate-100 text-slate-600",
+    value: "text-slate-950",
+    accent: "from-slate-400 to-slate-600",
   },
   warning: {
-    card: "border-amber-300/25 bg-[linear-gradient(135deg,#241708_0%,#0F3D2E_58%,#F59E0B_160%)]",
-    label: "text-amber-50/85",
-    value: "text-white",
-    dot: "bg-amber-300",
-    glow: "shadow-amber-950/20",
+    ring: "border-amber-200 bg-amber-50/70",
+    icon: "bg-amber-100 text-amber-700",
+    value: "text-amber-800",
+    accent: "from-amber-400 to-orange-500",
   },
   info: {
-    card: "border-sky-300/25 bg-[linear-gradient(135deg,#061C24_0%,#0F3D2E_58%,#2563EB_150%)]",
-    label: "text-sky-50/85",
-    value: "text-white",
-    dot: "bg-sky-300",
-    glow: "shadow-sky-950/20",
+    ring: "border-blue-200 bg-blue-50/70",
+    icon: "bg-blue-100 text-blue-700",
+    value: "text-blue-800",
+    accent: "from-blue-500 to-cyan-500",
   },
   success: {
-    card: "border-emerald-300/25 bg-[linear-gradient(135deg,#08241B_0%,#0F5138_58%,#2FA866_150%)]",
-    label: "text-emerald-50/85",
-    value: "text-white",
-    dot: "bg-emerald-200",
-    glow: "shadow-emerald-950/20",
+    ring: "border-emerald-200 bg-emerald-50/70",
+    icon: "bg-emerald-100 text-emerald-700",
+    value: "text-emerald-800",
+    accent: "from-emerald-500 to-teal-500",
   },
   danger: {
-    card: "border-rose-300/25 bg-[linear-gradient(135deg,#2C1115_0%,#0F3D2E_58%,#EF4444_160%)]",
-    label: "text-rose-50/85",
-    value: "text-white",
-    dot: "bg-rose-300",
-    glow: "shadow-rose-950/20",
+    ring: "border-rose-200 bg-rose-50/70",
+    icon: "bg-rose-100 text-rose-700",
+    value: "text-rose-800",
+    accent: "from-rose-500 to-red-500",
   },
   base: {
-    card: "border-blue-300/25 bg-[linear-gradient(135deg,#061C24_0%,#0F3D2E_56%,#2563EB_150%)]",
-    label: "text-blue-50/85",
-    value: "text-white",
-    dot: "bg-blue-300",
-    glow: "shadow-blue-950/20",
+    ring: "border-cyan-200 bg-cyan-50/70",
+    icon: "bg-cyan-100 text-cyan-700",
+    value: "text-cyan-800",
+    accent: "from-cyan-500 to-blue-500",
   },
 }
 
@@ -72,18 +60,17 @@ export function StatsCard({ title, value, color, tone }: Props) {
   const styles = toneStyles[resolveTone(tone, color)]
 
   return (
-    <div
-      className={`${styles.card} ${styles.glow} group relative min-h-[126px] overflow-hidden rounded-[1.65rem] border p-5 shadow-[0_18px_44px_rgba(15,23,42,0.22)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(15,23,42,0.28)]`}
-    >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.22),transparent_34%)]" />
-      <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-white/10 blur-2xl" />
-      <div className="relative flex items-start justify-between gap-3">
-        <p className={`${styles.label} max-w-[12rem] text-xs font-bold uppercase leading-5 tracking-[0.13em]`}>
+    <div className={`${styles.ring} group relative min-h-[112px] overflow-hidden rounded-3xl border p-4 shadow-[0_16px_40px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_52px_rgba(15,23,42,0.10)] sm:min-h-[132px] sm:p-5`}>
+      <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${styles.accent}`} />
+      <div className="flex items-start justify-between gap-3">
+        <p className="max-w-[12rem] text-[11px] font-black uppercase leading-5 tracking-[0.12em] text-slate-500 sm:text-xs">
           {title}
         </p>
-        <span className={`${styles.dot} mt-1 h-2.5 w-2.5 shrink-0 rounded-full shadow-[0_0_18px_currentColor]`} />
+        <span className={`${styles.icon} grid h-9 w-9 shrink-0 place-items-center rounded-2xl text-xs font-black ring-1 ring-black/5`}>
+          {value}
+        </span>
       </div>
-      <h2 className={`${styles.value} relative mt-5 text-4xl font-black leading-none tracking-[-0.06em]`}>
+      <h2 className={`${styles.value} mt-4 text-3xl font-black leading-none tracking-[-0.06em] sm:text-4xl`}>
         {value}
       </h2>
     </div>

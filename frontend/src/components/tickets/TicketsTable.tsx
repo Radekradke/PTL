@@ -61,7 +61,7 @@ function DetailsSection({
         className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
       >
         <span className="text-sm font-bold text-slate-900">{title}</span>
-        <span className="text-sm font-bold text-emerald-700">
+        <span className="text-sm font-bold text-blue-700">
           {open ? "−" : "+"}
         </span>
       </button>
@@ -251,7 +251,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
     }
 
     if (status === "Finalizado") {
-      return "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
+      return "bg-blue-50 text-blue-700 ring-1 ring-emerald-200"
     }
 
     return "bg-slate-100 text-slate-600 ring-1 ring-slate-200"
@@ -332,7 +332,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
     if (ticket.status === "Finalizado") {
       return {
         label: "Concluído",
-        className: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
+        className: "bg-blue-50 text-blue-700 ring-1 ring-emerald-200",
       }
     }
 
@@ -383,7 +383,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       <div className="ls-product-card rounded-3xl p-4 sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-600">Chamados</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-600">Chamados</p>
             <h2 className="mt-1 text-2xl font-bold tracking-[-0.03em] text-slate-950">Fila de atendimento</h2>
             <p className="mt-1 text-sm text-slate-600">Filtre, abra e responda chamados em um só lugar.</p>
           </div>
@@ -391,7 +391,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto lg:shrink-0">
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="h-11 w-full rounded-2xl bg-emerald-600 px-5 text-white hover:bg-emerald-700 sm:w-auto whitespace-nowrap">
+                <Button className="h-11 w-full rounded-2xl bg-blue-600 px-5 text-white hover:bg-blue-700 sm:w-auto whitespace-nowrap">
                   Novo chamado
                 </Button>
               </DialogTrigger>
@@ -407,7 +407,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     <select
                       value={employeeId}
                       onChange={(e) => handleEmployeeChange(e.target.value)}
-                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none focus:border-emerald-500"
+                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none focus:border-blue-500"
                     >
                       <option value="">Selecione um funcionário</option>
                       {employees.map((emp) => (
@@ -432,7 +432,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                       <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none focus:border-emerald-500"
+                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none focus:border-blue-500"
                       >
                         {categories.map((categoryItem) => (
                           <option key={categoryItem}>{categoryItem}</option>
@@ -447,7 +447,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                       <select
                         value={origin}
                         onChange={(e) => setOrigin(e.target.value)}
-                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none focus:border-emerald-500"
+                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none focus:border-blue-500"
                       >
                         <option>Base</option>
                         <option>Offshore</option>
@@ -459,7 +459,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                       <select
                         value={priority}
                         onChange={(e) => setPriority(e.target.value)}
-                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none focus:border-emerald-500"
+                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none focus:border-blue-500"
                       >
                         <option>Baixa</option>
                         <option>Normal</option>
@@ -480,7 +480,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                   </div>
 
                   <Button
-                    className="h-11 w-full rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50"
+                    className="h-11 w-full rounded-2xl bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
                     onClick={handleCreateTicket}
                     disabled={isSubmitting}
                   >
@@ -492,7 +492,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
             <Button
               variant="outline"
-              className="h-11 w-full rounded-2xl border-emerald-200 bg-white text-emerald-700 hover:bg-emerald-50 sm:w-auto whitespace-nowrap"
+              className="h-11 w-full rounded-2xl border-blue-200 bg-white text-blue-700 hover:bg-blue-50 sm:w-auto whitespace-nowrap"
               onClick={() => {
                 setSearch("")
                 setStatusFilter("Todos")
@@ -517,7 +517,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 shadow-sm outline-none focus:border-emerald-500"
+            className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 shadow-sm outline-none focus:border-blue-500"
           >
             <option value="Todos">Todos status</option>
             <option value="Aberto">Aberto</option>
@@ -529,7 +529,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           <select
             value={originFilter}
             onChange={(e) => setOriginFilter(e.target.value)}
-            className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 shadow-sm outline-none focus:border-emerald-500"
+            className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 shadow-sm outline-none focus:border-blue-500"
           >
             <option value="Todas">Todas origens</option>
             <option value="Offshore">Offshore</option>
@@ -539,7 +539,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 shadow-sm outline-none focus:border-emerald-500"
+            className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 shadow-sm outline-none focus:border-blue-500"
           >
             <option value="Todas">Todas prioridades</option>
             <option value="Baixa">Baixa</option>
@@ -551,7 +551,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           <select
             value={sectorFilter}
             onChange={(e) => setSectorFilter(e.target.value)}
-            className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 shadow-sm outline-none focus:border-emerald-500"
+            className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 shadow-sm outline-none focus:border-blue-500"
           >
             <option value="Todos">Todos setores</option>
             {sectors.map((sectorItem) => (
@@ -587,7 +587,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             </thead>
             <tbody>
               {filteredTickets.map((ticket) => (
-                <tr key={ticket.id} className="border-t border-slate-100 transition-all hover:bg-emerald-50/50">
+                <tr key={ticket.id} className="border-t border-slate-100 transition-all hover:bg-blue-50/50">
                   <td className="px-3 py-3 text-slate-950 whitespace-nowrap">#{ticket.id}</td>
                   <td className="px-3 py-3 text-slate-800 whitespace-nowrap">{ticket.user}</td>
                   <td className="px-3 py-3 text-slate-700 whitespace-nowrap">{ticket.sector}</td>
@@ -611,7 +611,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     <select
                       value={ticket.status}
                       onChange={(e) => handleChangeStatus(ticket.id, e.target.value)}
-                      className="w-full min-w-[138px] rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 outline-none focus:border-emerald-500"
+                      className="w-full min-w-[138px] rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 outline-none focus:border-blue-500"
                     >
                       <option>Aberto</option>
                       <option>Em andamento</option>
@@ -620,7 +620,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     </select>
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">
-                    <Button variant="outline" size="sm" className="rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-emerald-50" onClick={() => setSelectedTicket(ticket)}>
+                    <Button variant="outline" size="sm" className="rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-blue-50" onClick={() => setSelectedTicket(ticket)}>
                       Ver detalhes
                     </Button>
                   </td>
@@ -635,7 +635,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             <div key={ticket.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-600">#{ticket.id}</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-600">#{ticket.id}</p>
                   <h3 className="mt-1 truncate text-base font-bold text-slate-950">{ticket.category}</h3>
                   <p className="mt-1 text-sm text-slate-600">{ticket.user} · {ticket.sector}</p>
                 </div>
@@ -661,14 +661,14 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 <select
                   value={ticket.status}
                   onChange={(e) => handleChangeStatus(ticket.id, e.target.value)}
-                  className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none focus:border-emerald-500"
+                  className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none focus:border-blue-500"
                 >
                   <option>Aberto</option>
                   <option>Em andamento</option>
                   <option>Aguardando usuário</option>
                   <option>Finalizado</option>
                 </select>
-                <Button variant="outline" className="h-11 rounded-2xl border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100" onClick={() => setSelectedTicket(ticket)}>
+                <Button variant="outline" className="h-11 rounded-2xl border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100" onClick={() => setSelectedTicket(ticket)}>
                   Ver detalhes
                 </Button>
               </div>
@@ -686,7 +686,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
     <DialogHeader className="border-b border-slate-200 bg-white px-5 py-4 sm:px-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-600">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600">
             Chamado #{selectedTicket?.id}
           </p>
           <DialogTitle className="mt-1 text-xl font-bold tracking-[-0.02em] text-slate-950">
@@ -709,7 +709,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       <div className="max-h-[calc(92vh-96px)] overflow-y-auto p-4 sm:p-5">
         <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
           <section className="space-y-4">
-            <div className="rounded-3xl border border-emerald-100 bg-white p-4 shadow-sm">
+            <div className="rounded-3xl border border-blue-100 bg-white p-4 shadow-sm">
               <div className="mb-3">
                 <p className="text-sm font-bold text-slate-950">
                   Responder ao usuário
@@ -736,7 +736,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 </Button>
 
                 <Button
-                  className="h-11 rounded-2xl bg-emerald-600 px-6 text-white hover:bg-emerald-700 disabled:opacity-50"
+                  className="h-11 rounded-2xl bg-blue-600 px-6 text-white hover:bg-blue-700 disabled:opacity-50"
                   onClick={handleAddResponse}
                   disabled={!technicalResponse.trim()}
                 >
@@ -745,7 +745,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
               </div>
             </div>
 
-            <DetailsSection title="Descrição do problema">
+            <DetailsSection title="Descrição do problema" defaultOpen>
               <div className="max-h-44 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 ring-1 ring-slate-200">
                 {selectedTicket.description || "Sem descrição."}
               </div>
@@ -761,7 +761,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           </section>
 
           <aside className="space-y-4">
-            <DetailsSection title="Informações principais" >
+            <DetailsSection title="Informações principais" defaultOpen>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
                 <FieldCard label="Solicitante" value={selectedTicket.user} />
                 <FieldCard label="Setor" value={selectedTicket.sector} />
