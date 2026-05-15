@@ -67,7 +67,7 @@ export function Login() {
             </div>
 
             <div className="rounded-3xl border border-white/14 bg-white/10 p-4 backdrop-blur-xl">
-              <p className="text-xs uppercase tracking-[0.18em] text-[#000000]/40">
+              <p className="text-xs uppercase tracking-[0.18em] text-[#39D98A]">
                 Lifting Support
               </p>
               <p className="mt-1 text-sm text-white/70">
