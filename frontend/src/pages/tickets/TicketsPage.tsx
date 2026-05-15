@@ -5,7 +5,7 @@ import { TicketsTable } from "@/components/tickets/TicketsTable"
 import { API_URL } from "@/services/api"
 import { useNotifications } from "@/contexts/NotificationContext"
 
-const metallicPanel = "rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,#061B16_0%,#0F3D2E_46%,#164A6B_145%)] shadow-[0_24px_70px_rgba(6,27,22,0.32)]"
+const metallicPanel = "rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.22),transparent_34%),linear-gradient(135deg,#07111F_0%,#0F2742_42%,#1E5B8F_100%)] shadow-[0_24px_80px_rgba(2,8,23,0.34)]"
 
 export function TicketsPage() {
   const [tickets, setTickets] = useState<any[]>([])
@@ -60,7 +60,7 @@ export function TicketsPage() {
         <section className={`${metallicPanel} p-5 text-white sm:p-8`}>
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-emerald-100/85">Operação técnica</p>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-cyan-200/90">Operação técnica</p>
               <h1 className="mt-2 text-3xl font-black tracking-[-0.05em] text-white sm:text-5xl">Chamados</h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-white/75 sm:text-base">
                 Gerencie a fila, atualize status e responda usuários com foco no atendimento.

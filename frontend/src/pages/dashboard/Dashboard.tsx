@@ -15,16 +15,16 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { StatsCard } from "@/components/dashboard/StatsCard";
 import { useNotifications } from "@/contexts/NotificationContext";
 
-const metallicPanel = "rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,#061B16_0%,#0F3D2E_46%,#164A6B_145%)] shadow-[0_24px_70px_rgba(6,27,22,0.32)]";
-const metallicSoft = "rounded-[1.75rem] border border-white/15 bg-white/12 shadow-[inset_0_1px_0_rgba(255,255,255,0.15)] backdrop-blur";
-const inputClass = "mt-2 w-full rounded-2xl border border-white/15 bg-white/95 px-4 py-3 text-slate-900 outline-none transition focus:border-emerald-300 focus:ring-2 focus:ring-emerald-200/40";
-const chartCard = "rounded-[1.75rem] border border-white/10 bg-[linear-gradient(135deg,#08221B_0%,#103B2F_56%,#143E57_145%)] p-5 text-white shadow-[0_18px_48px_rgba(6,27,22,0.24)] sm:p-6";
+const metallicPanel = "rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.22),transparent_34%),linear-gradient(135deg,#07111F_0%,#0F2742_42%,#1E5B8F_100%)] shadow-[0_24px_80px_rgba(2,8,23,0.34)]";
+const metallicSoft = "rounded-[1.75rem] border border-white/10 bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] backdrop-blur";
+const inputClass = "mt-2 w-full rounded-2xl border border-white/15 bg-white/95 px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200/40";
+const chartCard = "rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_16px_45px_rgba(15,23,42,0.08)] sm:p-6";
 const tooltipStyle = {
-  backgroundColor: "#08221B",
+  backgroundColor: "#ffffff",
   borderRadius: 18,
-  border: "1px solid rgba(255,255,255,0.14)",
-  color: "#F8FAFC",
-  boxShadow: "0 18px 50px rgba(6,27,22,0.35)",
+  border: "1px solid rgba(23,74,58,0.16)",
+  color: "#17221C",
+  boxShadow: "0 18px 50px rgba(15,23,42,0.18)",
 };
 
 export function Dashboard() {
@@ -101,7 +101,7 @@ export function Dashboard() {
         <section className={`${metallicPanel} p-5 text-white sm:p-8`}>
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-emerald-100/85">Visão geral</p>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-cyan-200/90">Visão geral</p>
               <h1 className="mt-2 text-3xl font-black tracking-[-0.05em] text-white sm:text-5xl">Dashboard</h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-white/75 sm:text-base">
                 Indicadores da operação em tempo real, com leitura rápida por status, origem e setor.
@@ -180,7 +180,7 @@ export function Dashboard() {
 
         <div className="space-y-6">
           <div>
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.16em] text-[#0F3D2E]">Resumo por status</h3>
+            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.16em] text-[#174A3A]">Resumo por status</h3>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
               <StatsCard title="Total" value={String(totalTickets)} tone="neutral" />
               <StatsCard title="Abertos" value={String(openTickets)} tone="info" />
@@ -191,7 +191,7 @@ export function Dashboard() {
           </div>
 
           <div>
-            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.16em] text-[#0F3D2E]">Resumo por origem</h3>
+            <h3 className="mb-4 text-sm font-black uppercase tracking-[0.16em] text-[#174A3A]">Resumo por origem</h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <StatsCard title="Offshore" value={String(offshoreTickets)} tone="danger" />
               <StatsCard title="Base" value={String(baseTickets)} tone="base" />
@@ -202,28 +202,28 @@ export function Dashboard() {
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
           <div className={chartCard}>
             <div className="flex items-center justify-between gap-4">
-              <div><h2 className="text-xl font-black tracking-[-0.03em] text-white">Chamados por setor</h2><p className="text-sm text-emerald-50/70">Volume por área no filtro atual.</p></div>
-              <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-bold text-emerald-50">{filteredTickets.length} itens</span>
+              <div><h2 className="text-xl font-black tracking-[-0.03em] text-[#17221C]">Chamados por setor</h2><p className="text-sm text-[#5A685F]">Volume por área no filtro atual.</p></div>
+              <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">{filteredTickets.length} itens</span>
             </div>
-            <div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={ticketsBySector}><XAxis dataKey="name" stroke="#6EE7B7" tick={{ fill: "#174A3A", fontSize: 12 }} /><YAxis stroke="#6EE7B7" tick={{ fill: "#174A3A", fontSize: 12 }} /><Tooltip cursor={{ fill: "rgba(23,74,58,0.05)" }} contentStyle={tooltipStyle} labelStyle={{ color: "#17221C", fontWeight: 700 }} /><Bar dataKey="total" fill="#2FA866" radius={[12, 12, 4, 4]} /></BarChart></ResponsiveContainer></div>
+            <div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={ticketsBySector}><XAxis dataKey="name" stroke="#80B092" tick={{ fill: "#174A3A", fontSize: 12 }} /><YAxis stroke="#80B092" tick={{ fill: "#174A3A", fontSize: 12 }} /><Tooltip cursor={{ fill: "rgba(23,74,58,0.05)" }} contentStyle={tooltipStyle} labelStyle={{ color: "#17221C", fontWeight: 700 }} /><Bar dataKey="total" fill="#2FA866" radius={[12, 12, 4, 4]} /></BarChart></ResponsiveContainer></div>
           </div>
 
           <div className={chartCard}>
             <div className="flex items-center justify-between gap-4">
-              <div><h2 className="text-xl font-black tracking-[-0.03em] text-white">Chamados por categoria</h2><p className="text-sm text-emerald-50/70">Tipos de demanda mais frequentes.</p></div>
-              <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-bold text-sky-50">{uniqueCategories.length} categorias</span>
+              <div><h2 className="text-xl font-black tracking-[-0.03em] text-[#17221C]">Chamados por categoria</h2><p className="text-sm text-[#5A685F]">Tipos de demanda mais frequentes.</p></div>
+              <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700">{uniqueCategories.length} categorias</span>
             </div>
-            <div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={ticketsByCategory}><XAxis dataKey="name" stroke="#6EE7B7" tick={{ fill: "#174A3A", fontSize: 12 }} /><YAxis stroke="#6EE7B7" tick={{ fill: "#174A3A", fontSize: 12 }} /><Tooltip cursor={{ fill: "rgba(23,74,58,0.05)" }} contentStyle={tooltipStyle} labelStyle={{ color: "#17221C", fontWeight: 700 }} /><Bar dataKey="total" fill="#2563EB" radius={[12, 12, 4, 4]} /></BarChart></ResponsiveContainer></div>
+            <div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={ticketsByCategory}><XAxis dataKey="name" stroke="#80B092" tick={{ fill: "#174A3A", fontSize: 12 }} /><YAxis stroke="#80B092" tick={{ fill: "#174A3A", fontSize: 12 }} /><Tooltip cursor={{ fill: "rgba(23,74,58,0.05)" }} contentStyle={tooltipStyle} labelStyle={{ color: "#17221C", fontWeight: 700 }} /><Bar dataKey="total" fill="#2563EB" radius={[12, 12, 4, 4]} /></BarChart></ResponsiveContainer></div>
           </div>
 
           <div className={chartCard}>
-            <h2 className="text-xl font-black tracking-[-0.03em] text-white">Chamados por status</h2><p className="text-sm text-emerald-50/70">Distribuição atual da fila.</p>
-            <div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={ticketsByStatus} dataKey="total" nameKey="name" outerRadius={105} innerRadius={58} paddingAngle={4} label><Cell fill="#60A5FA" /><Cell fill="#FBBF24" /><Cell fill="#FB7185" /><Cell fill="#2FA866" /></Pie><Tooltip contentStyle={tooltipStyle} labelStyle={{ color: "#17221C", fontWeight: 700 }} /></PieChart></ResponsiveContainer></div>
+            <h2 className="text-xl font-black tracking-[-0.03em] text-[#17221C]">Chamados por status</h2><p className="text-sm text-[#5A685F]">Distribuição atual da fila.</p>
+            <div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={ticketsByStatus} dataKey="total" nameKey="name" outerRadius={105} innerRadius={58} paddingAngle={4} label><Cell fill="#4F93D2" /><Cell fill="#F59E0B" /><Cell fill="#EF4444" /><Cell fill="#2FA866" /></Pie><Tooltip contentStyle={tooltipStyle} labelStyle={{ color: "#17221C", fontWeight: 700 }} /></PieChart></ResponsiveContainer></div>
           </div>
 
           <div className={chartCard}>
-            <h2 className="text-xl font-black tracking-[-0.03em] text-white">Base x Offshore</h2><p className="text-sm text-emerald-50/70">Origem dos chamados filtrados.</p>
-            <div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={ticketsByOrigin} dataKey="total" nameKey="name" outerRadius={105} innerRadius={58} paddingAngle={4} label><Cell fill="#2563EB" /><Cell fill="#FB7185" /></Pie><Tooltip contentStyle={tooltipStyle} labelStyle={{ color: "#17221C", fontWeight: 700 }} /></PieChart></ResponsiveContainer></div>
+            <h2 className="text-xl font-black tracking-[-0.03em] text-[#17221C]">Base x Offshore</h2><p className="text-sm text-[#5A685F]">Origem dos chamados filtrados.</p>
+            <div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={ticketsByOrigin} dataKey="total" nameKey="name" outerRadius={105} innerRadius={58} paddingAngle={4} label><Cell fill="#2563EB" /><Cell fill="#EF4444" /></Pie><Tooltip contentStyle={tooltipStyle} labelStyle={{ color: "#17221C", fontWeight: 700 }} /></PieChart></ResponsiveContainer></div>
           </div>
         </div>
       </div>
