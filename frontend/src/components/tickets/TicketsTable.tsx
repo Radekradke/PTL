@@ -745,7 +745,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
               </div>
             </div>
 
-            <DetailsSection title="Descrição do problema" defaultOpen>
+            <DetailsSection title="Descrição do problema">
               <div className="max-h-44 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 ring-1 ring-slate-200">
                 {selectedTicket.description || "Sem descrição."}
               </div>
@@ -761,7 +761,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           </section>
 
           <aside className="space-y-4">
-            <DetailsSection title="Informações principais" defaultOpen>
+            <DetailsSection title="Informações principais" >
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
                 <FieldCard label="Solicitante" value={selectedTicket.user} />
                 <FieldCard label="Setor" value={selectedTicket.sector} />
