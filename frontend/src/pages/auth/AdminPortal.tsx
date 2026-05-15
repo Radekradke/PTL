@@ -623,7 +623,7 @@ export function AdminPortal() {
                     : "text-slate-500 hover:bg-slate-50 hover:text-[#073B2A]"
                 }`}
               >
-                <PlusCircle size={16} className="mr-2" />
+                <PlusCircle size={16} className="mr-2 text-white" />
                 Novo
               </button>
               <button
