@@ -81,97 +81,79 @@ export function Login() {
           </div>
         </section>
 
-        <section className="flex min-h-[620px] items-center justify-center bg-white p-6 sm:p-10">
-          <Card className="w-full max-w-md border-0 bg-transparent shadow-none">
-            <CardContent className="space-y-8 p-0">
-              <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 rounded-full border border-[#00A859]/20 bg-[#00A859]/8 px-4 py-2 text-sm font-bold text-[#073B2A]">
-                  <LockKeyhole size={16} />
-                  Ambiente seguro
-                </div>
+        <section className="flex min-h-[620px] items-center justify-center bg-white px-6 py-10 sm:px-12">
+  <div className="w-full max-w-[360px]">
+    <div className="mb-9 text-center">
+      <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00A859]/10 text-[#00A859] ring-1 ring-[#00A859]/20">
+        <LockKeyhole size={24} />
+      </div>
 
-                <div>
-                  <h2 className="text-4xl font-black tracking-[-0.05em] text-[#111827]">
-                    Entrar no painel
-                  </h2>
+      <h2 className="text-4xl font-black tracking-[-0.06em] text-[#111827]">
+        Entrar
+      </h2>
 
-                  <p className="mt-3 text-sm leading-6 text-slate-500">
-                    Acesse chamados, relatórios e gestão técnica.
-                  </p>
-                </div>
-              </div>
+      <p className="mt-3 text-sm leading-6 text-slate-500">
+        Acesse o painel técnico com seu perfil autorizado.
+      </p>
+    </div>
 
-              <div className="space-y-5">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">
-                    Perfil de acesso
-                  </label>
+    <div className="space-y-4">
+      <div className="relative">
+        <UserRound
+          size={18}
+          className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
+        />
 
-                  <div className="relative">
-                    <UserRound
-                      size={18}
-                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                    />
+        <select
+          value={sector}
+          onChange={(e) => setSector(e.target.value)}
+          className="h-13 w-full appearance-none rounded-full border border-slate-200 bg-white pl-12 pr-5 text-sm font-semibold text-slate-800 shadow-[0_8px_25px_rgba(15,23,42,0.04)] outline-none transition hover:border-[#00A859]/40 focus:border-[#00A859] focus:ring-4 focus:ring-[#39D98A]/10"
+        >
+          {technicalSectors.map((sector) => (
+            <option key={sector} value={sector}>
+              {sector}
+            </option>
+          ))}
+        </select>
+      </div>
 
-                    <select
-                      value={sector}
-                      onChange={(e) => setSector(e.target.value)}
-                      className="h-12 w-full appearance-none rounded-2xl border border-[#D7E3DC] bg-white pl-11 pr-4 text-sm font-semibold text-slate-900 shadow-[0_2px_10px_rgba(7,59,42,0.04)] outline-none transition hover:border-[#00A859]/40 focus:border-[#00A859] focus:ring-4 focus:ring-[#39D98A]/10"
-                    >
-                      {technicalSectors.map((sector) => (
-                        <option key={sector} value={sector}>
-                          {sector}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
+      <div className="relative">
+        <LockKeyhole
+          size={18}
+          className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
+        />
 
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">
-                    PIN
-                  </label>
+        <Input
+          type="password"
+          placeholder="Digite seu PIN"
+          value={pin}
+          onChange={(e) => setPin(e.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") handleLogin()
+          }}
+          className="h-13 rounded-full border-slate-200 bg-white pl-12 pr-5 text-sm text-slate-900 shadow-[0_8px_25px_rgba(15,23,42,0.04)] placeholder:text-slate-400 focus:border-[#00A859] focus:ring-[#39D98A]/10"
+        />
+      </div>
 
-                  <Input
-                    type="password"
-                    placeholder="Digite seu PIN"
-                    value={pin}
-                    onChange={(e) => setPin(e.target.value)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") handleLogin()
-                    }}
-                    className="h-12 rounded-2xl border-[#D7E3DC] bg-white px-4 text-slate-900 shadow-[0_2px_10px_rgba(7,59,42,0.04)] placeholder:text-slate-400 focus:border-[#00A859] focus:ring-[#39D98A]/10"
-                  />
-                </div>
+      <Button
+        className="mt-3 h-13 w-full rounded-full bg-gradient-to-r from-[#073B2A] via-[#00A859] to-[#073B2A] font-bold text-white shadow-[0_18px_45px_rgba(0,168,89,0.28)] transition hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0"
+        onClick={handleLogin}
+      >
+        Entrar no painel
+        <ArrowRight
+          size={18}
+          className="ml-2"
+        />
+      </Button>
+    </div>
 
-                <Button
-                  className="group h-12 w-full rounded-2xl bg-gradient-to-r from-[#00A859] to-[#07864A] font-bold text-white shadow-[0_16px_40px_rgba(0,168,89,0.24)] transition hover:-translate-y-0.5 hover:from-[#08B864] hover:to-[#067A43] active:translate-y-0"
-                  onClick={handleLogin}
-                >
-                  Entrar no painel
-                  <ArrowRight
-                    size={18}
-                    className="ml-2 transition group-hover:translate-x-0.5"
-                  />
-                </Button>
-              </div>
-
-              <div className="rounded-2xl border border-[#D7E3DC] bg-[#F8FAF9] p-4">
-                <div className="flex items-start gap-3">
-                  <ShieldCheck className="mt-0.5 text-[#00A859]" size={18} />
-                  <div>
-                    <p className="text-sm font-bold text-[#111827]">
-                      Acesso protegido
-                    </p>
-                    <p className="mt-1 text-xs leading-5 text-slate-500">
-                      Uso exclusivo para usuários autorizados do painel técnico.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
+    <div className="mt-8 text-center">
+      <p className="text-xs leading-5 text-slate-400">
+        Acesso restrito para equipes autorizadas.
+      </p>
+    </div>
+  </div>
+</section>
       </div>
     </div>
   )
