@@ -74,40 +74,40 @@ export function TicketsPage() {
 
   return (
     <AppLayout>
-      <div className="mx-auto w-full max-w-7xl space-y-6 sm:space-y-8 py-4">
-        <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-6 shadow-[0_18px_55px_rgba(50,98,74,0.11)] sm:p-8">
+      <div className="max-w-7xl mx-auto w-full space-y-8 py-4">
+        <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.35)] sm:p-8">
           <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.24em] text-[#42A95E]/80">
+              <p className="text-sm uppercase tracking-[0.24em] text-cyan-300/80">
                 Operação técnica
               </p>
-              <h1 className="mt-2 text-3xl font-bold sm:text-4xl tracking-[-0.04em] text-[#2B2B2B] lg:text-5xl">
+              <h1 className="mt-2 text-4xl font-bold tracking-[-0.04em] text-white sm:text-5xl">
                 Chamados
               </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#66736B] sm:text-base">
-                Fila, conversa e status em uma visão clara.
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base">
+                Gerencie a fila, converse com usuários e acompanhe cada atendimento com leitura clara de status.
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="rounded-3xl border border-[#B4D7C4]/60 bg-white/60 p-4 text-center">
-                <p className="text-xs uppercase tracking-[0.2em] text-[#66736B]">Total</p>
-                <p className="mt-3 text-3xl font-semibold text-[#2B2B2B]">{totalTickets}</p>
+              <div className="rounded-3xl border border-zinc-800 bg-zinc-950/60 p-4 text-center">
+                <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">Total</p>
+                <p className="mt-3 text-3xl font-semibold text-white">{totalTickets}</p>
               </div>
               <div className="rounded-3xl border border-amber-500/20 bg-amber-500/10 p-4 text-center">
                 <p className="text-xs uppercase tracking-[0.2em] text-amber-200">Pendentes</p>
                 <p className="mt-3 text-3xl font-semibold text-amber-300">{openTickets + waitingUserTickets}</p>
               </div>
-              <div className="rounded-3xl border border-[#42A95E]/25 bg-[#42A95E]/10 p-4 text-center sm:col-span-2 lg:col-span-1">
-                <p className="text-xs uppercase tracking-[0.2em] text-[#32624A]">Em atendimento</p>
-                <p className="mt-3 text-3xl font-semibold text-[#32624A]">{progressTickets}</p>
+              <div className="rounded-3xl border border-sky-500/20 bg-sky-500/10 p-4 text-center sm:col-span-2 lg:col-span-1">
+                <p className="text-xs uppercase tracking-[0.2em] text-sky-200">Em atendimento</p>
+                <p className="mt-3 text-3xl font-semibold text-sky-300">{progressTickets}</p>
               </div>
             </div>
           </div>
 
           <div className="space-y-6">
             <div>
-              <h3 className="text-sm uppercase tracking-[0.16em] text-[#32624A] mb-4">
+              <h3 className="text-sm uppercase tracking-[0.16em] text-zinc-300 mb-4">
                 Resumo por status
               </h3>
               <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
@@ -140,7 +140,7 @@ export function TicketsPage() {
             </div>
 
             <div>
-              <h3 className="text-sm uppercase tracking-[0.16em] text-[#32624A] mb-4">
+              <h3 className="text-sm uppercase tracking-[0.16em] text-zinc-300 mb-4">
                 Resumo por origem
               </h3>
               <div className="grid gap-4 sm:grid-cols-2">

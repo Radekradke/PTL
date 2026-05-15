@@ -8,98 +8,83 @@ import {
 } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
 
-function getCurrentUser() {
+type NavItem = {
+  label: string
+  path: string
+  icon: React.ElementType
+  allowed: string[]
+}
+
+const navItems: NavItem[] = [
+  { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard, allowed: ["Admin", "TI", "Diretoria"] },
+  { label: "Chamados", path: "/tickets", icon: Ticket, allowed: ["Admin", "TI"] },
+  { label: "Relatórios", path: "/reports", icon: FileText, allowed: ["Admin", "TI", "Diretoria"] },
+  { label: "Configurações", path: "/settings", icon: Settings, allowed: ["Admin"] },
+]
+
+function getUserRole() {
   try {
-    return JSON.parse(localStorage.getItem("lifting-user") || "{}")
+    const stored = localStorage.getItem("lifting-user")
+    if (!stored) return ""
+    return JSON.parse(stored)?.sector || ""
   } catch {
-    return {}
+    return ""
   }
 }
 
 export function Sidebar() {
   const navigate = useNavigate()
   const location = useLocation()
-  const user = getCurrentUser()
-  const role = user?.sector || ""
-
-  const items = [
-    {
-      label: "Dashboard",
-      path: "/dashboard",
-      icon: LayoutDashboard,
-      allowed: ["Admin", "TI", "Diretoria"],
-    },
-    {
-      label: "Chamados",
-      path: "/tickets",
-      icon: Ticket,
-      allowed: ["Admin", "TI"],
-    },
-    {
-      label: "Relatórios",
-      path: "/reports",
-      icon: FileText,
-      allowed: ["Admin", "TI", "Diretoria"],
-    },
-    {
-      label: "Config.",
-      path: "/settings",
-      icon: Settings,
-      allowed: ["Admin"],
-    },
-  ].filter((item) => item.allowed.includes(role))
+  const role = getUserRole()
+  const visibleItems = navItems.filter((item) => item.allowed.includes(role))
 
   function handleLogout() {
     localStorage.removeItem("lifting-user")
     navigate("/")
   }
 
-  function isActive(path: string) {
-    return location.pathname === path
+  function itemClass(path: string) {
+    const active = location.pathname === path
+    return `flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold transition ${
+      active
+        ? "bg-emerald-600 text-white shadow-sm"
+        : "text-slate-600 hover:bg-emerald-50 hover:text-emerald-800"
+    }`
   }
 
   return (
     <>
-      <aside className="hidden min-h-screen w-64 shrink-0 border-r border-[#B4D7C4]/60 bg-white/95 p-4 text-[#2B2B2B] lg:block">
-        <div className="rounded-[1.75rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.12)]">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 border-r border-slate-200 bg-white p-5 shadow-sm lg:block">
+        <div className="mb-7 rounded-3xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-white p-4">
           <div className="flex items-center gap-3">
-            <div className="rounded-2xl border border-[#42A95E]/25 bg-[#42A95E]/10 p-3 text-[#32624A]">
+            <div className="rounded-2xl bg-emerald-600 p-2.5 text-white">
               <ShieldCheck size={22} />
             </div>
             <div>
-              <h1 className="text-2xl font-extrabold tracking-[-0.04em] text-[#2B2B2B]">Lifting</h1>
-              <p className="text-sm font-medium tracking-wide text-[#66736B]">Support Panel</p>
+              <h1 className="text-xl font-black tracking-[-0.04em] text-slate-950">Lifting</h1>
+              <p className="text-sm font-medium text-slate-500">Support</p>
             </div>
           </div>
-
-          <div className="mt-4 rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 px-3 py-2">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#7C8A80]">Perfil</p>
-            <p className="mt-1 text-sm font-bold text-[#32624A]">{role || "Sem acesso"}</p>
+          <div className="mt-4 rounded-2xl border border-emerald-100 bg-white px-3 py-2">
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">Perfil</p>
+            <p className="mt-1 text-sm font-bold text-emerald-700">{role || "Não logado"}</p>
           </div>
         </div>
 
-        <nav className="mt-5 space-y-2">
-          {items.map((item) => {
+        <nav className="space-y-2">
+          {visibleItems.map((item) => {
             const Icon = item.icon
             return (
-              <button
-                key={item.path}
-                onClick={() => navigate(item.path)}
-                className={`flex w-full items-center gap-3 rounded-2xl p-3 text-sm font-semibold transition ${
-                  isActive(item.path)
-                    ? "border border-[#42A95E]/25 bg-[#42A95E] text-white shadow-lg shadow-[#42A95E]/20"
-                    : "text-[#32624A] hover:bg-[#F8FBF9] hover:text-[#2B2B2B]"
-                }`}
-              >
+              <button key={item.path} onClick={() => navigate(item.path)} className={itemClass(item.path)}>
                 <Icon size={18} />
-                {item.label === "Config." ? "Configurações" : item.label}
+                {item.label}
               </button>
             )
           })}
 
           <button
             onClick={handleLogout}
-            className="mt-4 flex w-full items-center gap-3 rounded-2xl border border-red-500/15 bg-red-500/5 p-3 text-sm font-semibold text-red-600 transition hover:bg-red-500/10 hover:text-red-700"
+            className="mt-3 flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold text-rose-600 transition hover:bg-rose-50"
           >
             <LogOut size={18} />
             Sair
@@ -107,32 +92,24 @@ export function Sidebar() {
         </nav>
       </aside>
 
-      <nav className="fixed inset-x-3 bottom-3 z-50 rounded-[1.75rem] border border-[#B4D7C4]/60 bg-white/95 p-2 shadow-[0_16px_45px_rgba(50,98,74,0.18)] backdrop-blur-xl lg:hidden">
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(64px,1fr))] gap-1">
-          {items.map((item) => {
+      <nav className="fixed inset-x-3 bottom-3 z-50 rounded-3xl border border-slate-200 bg-white/95 p-2 shadow-[0_18px_50px_rgba(15,23,42,0.18)] backdrop-blur lg:hidden">
+        <div className="grid grid-cols-4 gap-1">
+          {visibleItems.slice(0, 4).map((item) => {
             const Icon = item.icon
+            const active = location.pathname === item.path
             return (
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
-                className={`flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-2xl px-2 text-[11px] font-semibold transition ${
-                  isActive(item.path)
-                    ? "bg-[#42A95E] text-white shadow-lg shadow-[#42A95E]/20"
-                    : "text-[#66736B] hover:bg-[#F8FBF9] hover:text-[#2B2B2B]"
+                className={`flex flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-semibold transition ${
+                  active ? "bg-emerald-600 text-white" : "text-slate-500 hover:bg-emerald-50 hover:text-emerald-800"
                 }`}
               >
                 <Icon size={18} />
-                <span className="max-w-full truncate">{item.label}</span>
+                <span className="truncate">{item.label}</span>
               </button>
             )
           })}
-          <button
-            onClick={handleLogout}
-            className="flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-2xl px-2 text-[11px] font-semibold text-red-600 transition hover:bg-red-500/10"
-          >
-            <LogOut size={18} />
-            Sair
-          </button>
         </div>
       </nav>
     </>
