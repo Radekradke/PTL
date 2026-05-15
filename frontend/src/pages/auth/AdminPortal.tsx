@@ -613,7 +613,7 @@ export function AdminPortal() {
             </div>
           </div>
 
-          <div className="mt-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="mt-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between text-white">
             <div className="grid grid-cols-2 gap-2 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1 lg:w-[360px]">
               <button
                 onClick={() => setActiveTab("new")}
