@@ -1,21 +1,17 @@
 import { useEffect, useState } from "react"
 
-import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { categories } from "@/lib/categories"
 import { API_URL } from "@/services/api"
 import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
-  LogOut,
-  MessageSquareText,
-  PlusCircle,
-  RefreshCw,
   ShieldCheck,
   UserCircle2,
+  UserRound,
+  ArrowRight,
+  LockKeyhole,
 } from "lucide-react"
 
 type Sector = {
@@ -428,115 +424,128 @@ export function AdminPortal() {
 
   if (!loggedEmployee) {
     return (
-      <PortalShell>
-        <div className="flex min-h-screen items-center justify-center px-4 py-8">
-          <div className="grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_28px_90px_rgba(7,59,42,0.16)] lg:grid-cols-[1.02fr_0.98fr]">
-            <section className="relative hidden min-h-[590px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.28),transparent_32%),linear-gradient(135deg,#073B2A,#102A43)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
-              <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-[#39D98A]/20 blur-[90px]" />
-              <div className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-[#00A859]/20 blur-[100px]" />
+      <div className="flex min-h-screen items-center justify-center bg-[#EAF0ED] px-4 py-8 text-[#111827]">
+        <div className="grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_28px_90px_rgba(7,59,42,0.16)] lg:grid-cols-[1.05fr_0.95fr]">
+          <section className="relative hidden min-h-[620px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.28),transparent_32%),linear-gradient(135deg,#073B2A,#102A43)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
+            <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-[#39D98A]/20 blur-[90px]" />
+            <div className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-[#00A859]/20 blur-[100px]" />
 
-              <div className="relative">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/12 text-2xl font-black shadow-inner ring-1 ring-white/20">
-                  L
+            <div className="relative">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/12 text-2xl font-black text-white shadow-inner ring-1 ring-white/20">
+                L
+              </div>
+
+              <h1 className="mt-8 text-5xl font-black tracking-[-0.06em] text-white">
+                Lifting
+              </h1>
+
+              <p className="mt-3 max-w-sm text-sm leading-6 text-emerald-50/80">
+                Portal do funcionário para abrir chamados, acompanhar respostas e conversar com a equipe técnica.
+              </p>
+            </div>
+
+            <div className="relative space-y-3">
+              <div className="rounded-3xl border border-white/14 bg-white/10 p-4 backdrop-blur-xl">
+                <div className="flex items-center gap-3">
+                  <ShieldCheck className="text-[#39D98A]" size={22} />
+                  <div>
+                    <p className="text-sm font-bold text-white">
+                      Atendimento conectado
+                    </p>
+                    <p className="text-xs text-emerald-50/65">
+                      Chamado, resposta e histórico no mesmo lugar
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-white/14 bg-white/10 p-4 backdrop-blur-xl">
+                <p className="text-xs uppercase tracking-[0.18em] text-[#39D98A]">
+                  Portal do funcionário
+                </p>
+                <p className="mt-1 text-sm text-emerald-50/70">
+                  Abra chamados e acompanhe tudo em um só lugar.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section className="flex min-h-[620px] items-center justify-center bg-white px-6 py-10 sm:px-12">
+            <div className="w-full max-w-[360px]">
+              <div className="mb-9 text-center">
+                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00A859]/10 text-[#00A859] ring-1 ring-[#00A859]/20">
+                  <UserCircle2 size={24} />
                 </div>
 
-                <h1 className="mt-8 text-5xl font-black tracking-[-0.06em]">
-                  Lifting
-                </h1>
+                <h2 className="text-4xl font-black tracking-[-0.06em] text-[#111827]">
+                  Entrar
+                </h2>
 
-                <p className="mt-3 max-w-sm text-sm leading-6 text-white/72">
-                  Portal interno para abrir chamados, acompanhar respostas e conversar com a equipe técnica.
+                <p className="mt-3 text-sm leading-6 text-slate-500">
+                  Acesse seu portal de chamados com usuário e senha.
                 </p>
               </div>
 
-              <div className="relative space-y-3">
-                <div className="rounded-3xl border border-white/14 bg-white/10 p-4 backdrop-blur-xl">
-                  <div className="flex items-center gap-3">
-                    <ShieldCheck className="text-[#39D98A]" size={22} />
-                    <div>
-                      <p className="text-sm font-bold">Atendimento conectado</p>
-                      <p className="text-xs text-white/60">Chamado, resposta e histórico no mesmo lugar</p>
-                    </div>
-                  </div>
+              <div className="space-y-4">
+                <div className="relative">
+                  <UserRound
+                    size={18}
+                    className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
+                  />
+
+                  <Input
+                    type="text"
+                    placeholder="Digite seu usuário"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="h-[52px] w-full rounded-full border border-slate-200 bg-white pl-12 pr-5 text-sm font-semibold text-slate-800 shadow-[0_8px_25px_rgba(15,23,42,0.04)] outline-none transition hover:border-[#00A859]/40 focus:border-[#00A859] focus:ring-4 focus:ring-[#39D98A]/10"
+                  />
                 </div>
 
-                <div className="rounded-3xl border border-white/14 bg-white/10 p-4 backdrop-blur-xl">
-                  <p className="text-xs uppercase tracking-[0.18em] text-[#39D98A]">
-                    Portal do funcionário
-                  </p>
-                  <p className="mt-1 text-sm text-white/70">
-                    Acompanhe tudo pelo portal, sem depender de conversas soltas.
-                  </p>
+                <div className="relative">
+                  <LockKeyhole
+                    size={18}
+                    className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
+                  />
+
+                  <Input
+                    type="password"
+                    placeholder="Digite sua senha"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") handlePortalLogin()
+                    }}
+                    className="h-[52px] w-full rounded-full border border-slate-200 bg-white pl-12 pr-5 text-sm font-semibold text-slate-800 shadow-[0_8px_25px_rgba(15,23,42,0.04)] outline-none transition hover:border-[#00A859]/40 focus:border-[#00A859] focus:ring-4 focus:ring-[#39D98A]/10"
+                  />
                 </div>
+
+                <Button
+                  className="mt-3 h-[52px] w-full rounded-full bg-gradient-to-r from-[#073B2A] via-[#00A859] to-[#073B2A] font-bold text-white shadow-[0_18px_45px_rgba(0,168,89,0.28)] transition hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 disabled:opacity-50"
+                  onClick={handlePortalLogin}
+                  disabled={isLoggingIn}
+                >
+                  {isLoggingIn ? "Entrando..." : "Entrar no portal"}
+                  <ArrowRight size={18} className="ml-2" />
+                </Button>
               </div>
-            </section>
 
-            <section className="flex min-h-[590px] items-center justify-center bg-white p-6 sm:p-10">
-              <Card className="w-full max-w-md border-0 bg-transparent shadow-none">
-                <CardContent className="space-y-8 p-0">
-                  <div className="space-y-3">
-                    <div className="inline-flex items-center gap-2 rounded-full border border-[#00A859]/20 bg-[#00A859]/10 px-4 py-2 text-sm font-bold text-[#073B2A]">
-                      <UserCircle2 size={16} />
-                      Portal de Chamados
-                    </div>
-
-                    <div>
-                      <h1 className="text-4xl font-black tracking-[-0.05em] text-[#111827]">
-                        Acesse sua conta
-                      </h1>
-                      <p className="mt-3 text-sm leading-6 text-slate-500">
-                        Entre com usuário e senha para abrir e acompanhar seus chamados.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-5">
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold text-slate-700">Usuário</label>
-                      <Input
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="ex: andre.ti"
-                        className={styles.input}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-semibold text-slate-700">Senha</label>
-                      <Input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Digite sua senha"
-                        className={styles.input}
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter") handlePortalLogin()
-                        }}
-                      />
-                    </div>
-
-                    <Button
-                      className={`h-12 w-full ${styles.primary}`}
-                      onClick={handlePortalLogin}
-                      disabled={isLoggingIn}
-                    >
-                      {isLoggingIn ? "Entrando..." : "Entrar no portal"}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </section>
-          </div>
+              <div className="mt-8 text-center">
+                <p className="text-xs leading-5 text-slate-400">
+                  Acesso restrito para funcionários autorizados.
+                </p>
+              </div>
+            </div>
+          </section>
         </div>
-      </PortalShell>
+      </div>
     )
   }
 
   if (successState.isVisible) {
     return (
-      <PortalShell>
-        <div className="flex min-h-screen items-center justify-center p-4">
-          <GlassCard className="w-full max-w-md p-8 text-center sm:p-10">
+      <div className="flex min-h-screen items-center justify-center bg-[#EAF0ED] px-4 py-8">
+        <GlassCard className="w-full max-w-md p-8 text-center sm:p-10">
             <div className="flex justify-center">
               <div className="relative">
                 <div className="absolute inset-0 rounded-full bg-[#39D98A]/25 blur-2xl" />
@@ -573,9 +582,8 @@ export function AdminPortal() {
             </div>
           </GlassCard>
         </div>
-      </PortalShell>
-    )
-  }
+      )
+    }
 
   return (
     <PortalShell>
