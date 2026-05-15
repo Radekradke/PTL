@@ -42,7 +42,7 @@ export function Login() {
             </div>
             <h1 className="text-4xl font-bold text-[#2B2B2B]">Acessar sistema</h1>
             <p className="text-[#66736B]">
-              Acesso restrito para Admin, TI e Diretoria.
+              Acesso técnico autorizado.
             </p>
           </div>
 

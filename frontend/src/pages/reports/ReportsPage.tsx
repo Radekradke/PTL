@@ -291,7 +291,7 @@ export function ReportsPage() {
   return (
     <AppLayout>
       <div className="mx-auto w-full max-w-7xl space-y-6 sm:space-y-8 py-6">
-        <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-6 shadow-[0_25px_70px_rgba(15,23,42,0.35)] sm:p-8">
+        <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-6 shadow-[0_18px_55px_rgba(50,98,74,0.11)] sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
               <p className="text-sm uppercase tracking-[0.24em] text-[#42A95E]/80">
@@ -301,7 +301,7 @@ export function ReportsPage() {
                 Relatórios
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-[#66736B] sm:text-base">
-                Gere arquivos, filtre indicadores e acompanhe os chamados com a mesma leitura visual do dashboard.
+                Filtre dados e exporte relatórios em poucos cliques.
               </p>
             </div>
 
@@ -328,7 +328,7 @@ export function ReportsPage() {
               <span className="rounded-2xl border border-[#42A95E]/25 bg-[#42A95E]/10 p-2 text-[#42A95E]">
                 <FileText size={20} />
               </span>
-              Filtros do relatório
+              <span className="ls-section-title">Filtros <span className="ls-help" title="Refina a lista, cards e arquivos exportados.">?</span></span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">

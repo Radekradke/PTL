@@ -226,7 +226,7 @@ export function SettingsPage() {
             <div>
               <h1 className="text-3xl font-bold text-[#2B2B2B]">Configurações</h1>
               <p className="mt-2 max-w-2xl text-[#66736B]">
-                Cadastre funcionários com usuário, senha e setor correto. Esses dados serão usados no portal e nos chamados.
+                Gerencie setores, usuários e acessos do portal.
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -306,7 +306,7 @@ export function SettingsPage() {
             <div className="mb-6">
               <h2 className="text-2xl font-semibold text-[#2B2B2B]">Funcionários</h2>
               <p className="mt-2 text-sm text-[#66736B]">
-                O setor do funcionário define automaticamente onde o chamado será registrado. Capricha aqui, porque agora esse cadastro manda em tudo.
+                O setor do funcionário define automaticamente seus chamados.
               </p>
             </div>
 

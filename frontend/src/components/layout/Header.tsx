@@ -34,7 +34,7 @@ export function Header({ notificationCount = 0 }: HeaderProps) {
             Painel Técnico
           </h2>
           <p className="hidden text-sm text-[#66736B] sm:block">
-            Gerencie chamados e suporte interno
+            Operação de suporte
           </p>
         </div>
 
@@ -45,7 +45,7 @@ export function Header({ notificationCount = 0 }: HeaderProps) {
           >
             <Bell size={18} />
             {notificationCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-[#2B2B2B] shadow-lg shadow-red-500/30">
+              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-lg shadow-red-500/30">
                 {notificationCount > 99 ? "99+" : notificationCount}
               </span>
             )}

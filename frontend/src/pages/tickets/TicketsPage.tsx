@@ -75,7 +75,7 @@ export function TicketsPage() {
   return (
     <AppLayout>
       <div className="mx-auto w-full max-w-7xl space-y-6 sm:space-y-8 py-4">
-        <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-6 shadow-[0_25px_70px_rgba(15,23,42,0.35)] sm:p-8">
+        <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-6 shadow-[0_18px_55px_rgba(50,98,74,0.11)] sm:p-8">
           <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.24em] text-[#42A95E]/80">
@@ -85,7 +85,7 @@ export function TicketsPage() {
                 Chamados
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-[#66736B] sm:text-base">
-                Gerencie a fila, converse com usuários e acompanhe cada atendimento com leitura clara de status.
+                Fila, conversa e status em uma visão clara.
               </p>
             </div>
 

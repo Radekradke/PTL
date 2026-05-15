@@ -56,7 +56,7 @@ export function Dashboard() {
   ).length;
 
   const waitingUserTickets = filteredTickets.filter(
-    (ticket) => ticket.status === "Aguardando usuário",
+    (ticket) => ticket.status === "Aguardando",
   ).length;
 
   const finishedTickets = filteredTickets.filter(
@@ -95,7 +95,7 @@ export function Dashboard() {
       total: progressTickets,
     },
     {
-      name: "Aguardando usuário",
+      name: "Aguardando",
       total: waitingUserTickets,
     },
     {
@@ -147,11 +147,10 @@ export function Dashboard() {
                 Visão geral
               </p>
               <h1 className="mt-2 text-3xl font-bold sm:text-4xl text-[#2B2B2B] lg:text-5xl">
-                Dashboard de Chamados
+                Dashboard
               </h1>
               <p className="mt-3 max-w-2xl text-[#66736B]">
-                Monitoramento em tempo real das demandas. Filtros inteligentes e
-                gráficos rápidos para você tomar decisão com clareza.
+                Visão rápida da operação, filtros essenciais e indicadores para decidir sem ruído.
               </p>
             </div>
 
@@ -164,7 +163,7 @@ export function Dashboard() {
                   {filteredTickets.length}
                 </p>
               </div>
-              <div className="rounded-3xl bg-white/60 p-4 text-center border border-[#B4D7C4]/60">
+              <div className="rounded-[1.5rem] border border-[#B4D7C4]/70 bg-white p-4 text-center shadow-[0_10px_28px_rgba(50,98,74,0.08)]">
                 <p className="text-xs uppercase tracking-[0.2em] text-[#66736B]">
                   Setores ativos
                 </p>
@@ -172,7 +171,7 @@ export function Dashboard() {
                   {uniqueSectors.length}
                 </p>
               </div>
-              <div className="rounded-3xl bg-white/60 p-4 text-center border border-[#B4D7C4]/60">
+              <div className="rounded-[1.5rem] border border-[#B4D7C4]/70 bg-white p-4 text-center shadow-[0_10px_28px_rgba(50,98,74,0.08)]">
                 <p className="text-xs uppercase tracking-[0.2em] text-[#66736B]">
                   Categorias ativas
                 </p>
@@ -200,11 +199,12 @@ export function Dashboard() {
         <section className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-[#2B2B2B]">
-                Filtros rápidos
+              <h2 className="ls-section-title text-xl">
+                Filtros
+                <span className="ls-help" title="Refina todos os cards e gráficos desta tela.">?</span>
               </h2>
               <p className="text-sm text-[#66736B]">
-                Use os filtros para segmentar os resultados do dashboard.
+                Filtre os indicadores por operação.
               </p>
             </div>
             <button
@@ -276,7 +276,7 @@ export function Dashboard() {
                 <option value="Todos">Todos Status</option>
                 <option value="Aberto">Aberto</option>
                 <option value="Em andamento">Em andamento</option>
-                <option value="Aguardando usuário">Aguardando usuário</option>
+                <option value="Aguardando">Aguardando</option>
                 <option value="Finalizado">Finalizado</option>
               </select>
             </label>
@@ -286,16 +286,16 @@ export function Dashboard() {
         <div className="space-y-6">
           <div>
             <h3 className="text-sm uppercase tracking-[0.16em] text-[#32624A] mb-4">
-              Resumo por status
+              Status
             </h3>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
               <StatsCard
-                title="Total de Chamados"
+                title="Total"
                 value={String(totalTickets)}
                 tone="neutral"
               />
               <StatsCard
-                title="Chamados Abertos"
+                title="Abertos"
                 value={String(openTickets)}
                 tone="warning"
               />
@@ -305,7 +305,7 @@ export function Dashboard() {
                 tone="info"
               />
               <StatsCard
-                title="Aguardando usuário"
+                title="Aguardando"
                 value={String(waitingUserTickets)}
                 tone="danger"
               />
@@ -319,16 +319,16 @@ export function Dashboard() {
 
           <div>
             <h3 className="text-sm uppercase tracking-[0.16em] text-[#32624A] mb-4">
-              Resumo por origem
+              Origem
             </h3>
             <div className="grid gap-4 sm:grid-cols-2">
               <StatsCard
-                title="Chamados Offshore"
+                title="Offshore"
                 value={String(offshoreTickets)}
                 tone="danger"
               />
               <StatsCard
-                title="Chamados da Base"
+                title="Base"
                 value={String(baseTickets)}
                 tone="base"
               />
@@ -337,22 +337,23 @@ export function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:p-6 transition hover:-translate-y-0.5">
+          <div className="dashboard-chart-card rounded-[1.65rem] border border-[#B4D7C4]/70 bg-white p-4 shadow-[0_14px_38px_rgba(50,98,74,0.10)] transition hover:-translate-y-0.5 hover:border-[#42A95E]/35 sm:p-6">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-bold tracking-[-0.02em] text-[#2B2B2B]">
-                  Chamados por Setor
+                <h2 className="ls-section-title text-xl">
+                  Por setor
+                  <span className="ls-help" title="Mostra quais áreas mais abriram chamados no filtro atual.">?</span>
                 </h2>
                 <p className="text-sm leading-relaxed text-[#66736B]">
-                  Comparativo por setor com base no conjunto filtrado.
+                  Volume por área.
                 </p>
               </div>
-              <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-200">
+              <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-[#2F75B5]">
                 {filteredTickets.length} itens
               </span>
             </div>
 
-            <div className="mt-6 h-80">
+            <div className="dashboard-chart mt-5 h-[320px] min-h-[320px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={ticketsBySector}>
                   <XAxis
@@ -386,22 +387,23 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:p-6 transition hover:-translate-y-0.5">
+          <div className="dashboard-chart-card rounded-[1.65rem] border border-[#B4D7C4]/70 bg-white p-4 shadow-[0_14px_38px_rgba(50,98,74,0.10)] transition hover:-translate-y-0.5 hover:border-[#42A95E]/35 sm:p-6">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-bold tracking-[-0.02em] text-[#2B2B2B]">
-                  Chamados por Categoria
+                <h2 className="ls-section-title text-xl">
+                  Por categoria
+                  <span className="ls-help" title="Ajuda a identificar os tipos de problema mais recorrentes.">?</span>
                 </h2>
                 <p className="text-sm leading-relaxed text-[#66736B]">
-                  Categorias mais frequentes no filtro atual.
+                  Principais tipos de demanda.
                 </p>
               </div>
-              <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200">
+              <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-[#32624A]">
                 {uniqueCategories.length} categorias
               </span>
             </div>
 
-            <div className="mt-6 h-80">
+            <div className="dashboard-chart mt-5 h-[320px] min-h-[320px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={ticketsByCategory}>
                   <XAxis
@@ -437,15 +439,16 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:p-6 transition hover:-translate-y-0.5">
-            <h2 className="text-xl font-bold tracking-[-0.02em] text-[#2B2B2B]">
-              Chamados por Status
+          <div className="dashboard-chart-card rounded-[1.65rem] border border-[#B4D7C4]/70 bg-white p-4 shadow-[0_14px_38px_rgba(50,98,74,0.10)] transition hover:-translate-y-0.5 hover:border-[#42A95E]/35 sm:p-6">
+            <h2 className="ls-section-title text-xl">
+              Por status
+              <span className="ls-help" title="Mostra a distribuição atual da fila de atendimento.">?</span>
             </h2>
             <p className="text-sm leading-relaxed text-[#66736B]">
-              Distribuição atual de status.
+              Etapas atuais da fila.
             </p>
 
-            <div className="mt-6 h-80">
+            <div className="dashboard-chart mt-5 h-[320px] min-h-[320px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart style={{
   filter: "drop-shadow(0 12px 24px rgba(0,0,0,0.25))",
@@ -483,15 +486,16 @@ label
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:p-6 transition hover:-translate-y-0.5">
-            <h2 className="text-xl font-bold tracking-[-0.02em] text-[#2B2B2B]">
+          <div className="dashboard-chart-card rounded-[1.65rem] border border-[#B4D7C4]/70 bg-white p-4 shadow-[0_14px_38px_rgba(50,98,74,0.10)] transition hover:-translate-y-0.5 hover:border-[#42A95E]/35 sm:p-6">
+            <h2 className="ls-section-title text-xl">
               Base x Offshore
+              <span className="ls-help" title="Compara a origem dos chamados no período filtrado.">?</span>
             </h2>
             <p className="text-sm text-[#7C8A80] mt-1">
-              Origem dos chamados no conjunto filtrado.
+              Base versus offshore.
             </p>
 
-            <div className="mt-6 h-80">
+            <div className="dashboard-chart mt-5 h-[320px] min-h-[320px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart style={{
   filter: "drop-shadow(0 12px 24px rgba(0,0,0,0.25))",

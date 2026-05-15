@@ -358,7 +358,7 @@ export function AdminPortal() {
               </p>
               <h1 className="text-3xl font-bold text-[#2B2B2B]">Acesse sua conta</h1>
               <p className="text-[#66736B]">
-                Entre com seu usuário e senha para abrir, acompanhar e responder seus chamados.
+                Acesse para abrir e acompanhar chamados.
               </p>
             </div>
 
@@ -474,7 +474,7 @@ export function AdminPortal() {
                 Olá, {loggedEmployee.name}
               </h1>
               <p className="mt-2 max-w-2xl text-[#66736B]">
-                Setor vinculado: <strong className="text-[#2B2B2B]">{loggedEmployee.sector?.name}</strong>. Seu setor é puxado do cadastro e será usado em todos os chamados.
+                Setor vinculado: <strong className="text-[#2B2B2B]">{loggedEmployee.sector?.name}</strong>. Setor definido pelo cadastro.
               </p>
             </div>
 
@@ -548,7 +548,7 @@ export function AdminPortal() {
                 </div>
                 <h2 className="text-3xl font-bold text-[#2B2B2B]">Preencha os dados</h2>
                 <p className="text-[#66736B]">
-                  O solicitante e o setor já estão definidos pelo seu login. Agora é só informar a categoria, origem e descrição.
+                  Seu nome e setor já vêm do login.
                 </p>
               </div>
 

@@ -99,7 +99,7 @@ export function Sidebar() {
 
           <button
             onClick={handleLogout}
-            className="mt-4 flex w-full items-center gap-3 rounded-2xl border border-red-500/15 bg-red-500/5 p-3 text-sm font-semibold text-red-300 transition hover:bg-red-500/10 hover:text-red-200"
+            className="mt-4 flex w-full items-center gap-3 rounded-2xl border border-red-500/15 bg-red-500/5 p-3 text-sm font-semibold text-red-600 transition hover:bg-red-500/10 hover:text-red-700"
           >
             <LogOut size={18} />
             Sair
@@ -107,7 +107,7 @@ export function Sidebar() {
         </nav>
       </aside>
 
-      <nav className="fixed inset-x-3 bottom-3 z-50 rounded-[1.75rem] border border-[#B4D7C4]/60 bg-white/95 p-2 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl lg:hidden">
+      <nav className="fixed inset-x-3 bottom-3 z-50 rounded-[1.75rem] border border-[#B4D7C4]/60 bg-white/95 p-2 shadow-[0_16px_45px_rgba(50,98,74,0.18)] backdrop-blur-xl lg:hidden">
         <div className="grid grid-cols-[repeat(auto-fit,minmax(64px,1fr))] gap-1">
           {items.map((item) => {
             const Icon = item.icon
@@ -128,7 +128,7 @@ export function Sidebar() {
           })}
           <button
             onClick={handleLogout}
-            className="flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-2xl px-2 text-[11px] font-semibold text-red-300 transition hover:bg-red-500/10"
+            className="flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-2xl px-2 text-[11px] font-semibold text-red-600 transition hover:bg-red-500/10"
           >
             <LogOut size={18} />
             Sair

@@ -308,3 +308,78 @@ table {
     font-size: 16px;
   }
 }
+
+
+/* =========================================================
+   Final product polish — mobile readability + official UI
+   ========================================================= */
+:root {
+  --surface: #ffffff;
+  --surface-soft: #f7fbf8;
+  --surface-muted: #eef6f1;
+  --line: rgba(180, 215, 196, 0.72);
+  --line-strong: rgba(50, 98, 74, 0.18);
+}
+
+.ls-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbf9 100%);
+  border: 1px solid var(--line);
+  box-shadow: 0 14px 38px rgba(50, 98, 74, 0.09);
+}
+
+.ls-help {
+  display: inline-flex;
+  width: 1.35rem;
+  height: 1.35rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(79, 147, 210, 0.30);
+  background: rgba(79, 147, 210, 0.10);
+  color: #2f75b5;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: help;
+}
+
+.ls-section-title {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  color: #22352B;
+  font-weight: 850;
+  letter-spacing: -0.035em;
+}
+
+.recharts-wrapper,
+.recharts-responsive-container,
+.recharts-surface {
+  max-width: 100% !important;
+  overflow: visible;
+}
+
+.recharts-cartesian-axis-tick-value,
+.recharts-text {
+  fill: #32624A !important;
+  font-weight: 650;
+}
+
+@media (max-width: 768px) {
+  .dashboard-chart {
+    min-height: 285px !important;
+    height: 285px !important;
+  }
+
+  .dashboard-chart-card {
+    padding: 1rem !important;
+    border-radius: 1.5rem !important;
+  }
+
+  .dashboard-chart-card h2 {
+    font-size: 1.05rem !important;
+  }
+
+  .dashboard-chart-card p {
+    display: none;
+  }
+}

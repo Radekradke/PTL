@@ -357,10 +357,10 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
-            <p className="text-xs uppercase tracking-[0.22em] text-[#42A95E]/70">Central de chamados</p>
-            <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em] text-[#2B2B2B] sm:text-3xl">Lista de chamados</h2>
+            <p className="text-xs uppercase tracking-[0.22em] text-[#42A95E]/70">Fila técnica</p>
+            <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em] text-[#2B2B2B] sm:text-3xl">Chamados</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-[#66736B]">
-              Filtre, acompanhe e atualize os chamados sem bagunça visual. O botão de criação fica aqui no topo, estilo cockpit.
+              Filtre, acompanhe e responda chamados com rapidez.
             </p>
           </div>
 
@@ -368,7 +368,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             <Dialog>
               <DialogTrigger asChild>
                 <Button className="h-11 w-full rounded-2xl bg-[#42A95E] px-5 text-white hover:bg-[#2F8B4C] sm:w-auto whitespace-nowrap">
-                  Abrir novo chamado
+                  Novo chamado
                 </Button>
               </DialogTrigger>
 
