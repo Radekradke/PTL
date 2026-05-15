@@ -107,7 +107,7 @@ export function Login() {
         <select
           value={sector}
           onChange={(e) => setSector(e.target.value)}
-          className="h-13 w-full appearance-none rounded-full border border-slate-200 bg-white pl-12 pr-5 text-sm font-semibold text-slate-800 shadow-[0_8px_25px_rgba(15,23,42,0.04)] outline-none transition hover:border-[#00A859]/40 focus:border-[#00A859] focus:ring-4 focus:ring-[#39D98A]/10"
+          className="h-[52px] w-full appearance-none rounded-full border border-slate-200 bg-white pl-12 pr-5 text-sm font-semibold text-slate-800 shadow-[0_8px_25px_rgba(15,23,42,0.04)] outline-none transition hover:border-[#00A859]/40 focus:border-[#00A859] focus:ring-4 focus:ring-[#39D98A]/10"
         >
           {technicalSectors.map((sector) => (
             <option key={sector} value={sector}>
@@ -131,12 +131,12 @@ export function Login() {
           onKeyDown={(event) => {
             if (event.key === "Enter") handleLogin()
           }}
-          className="h-13 rounded-full border-slate-200 bg-white pl-12 pr-5 text-sm text-slate-900 shadow-[0_8px_25px_rgba(15,23,42,0.04)] placeholder:text-slate-400 focus:border-[#00A859] focus:ring-[#39D98A]/10"
+          className="h-[52px] rounded-full border-slate-200 bg-white pl-12 pr-5 text-sm text-slate-900 shadow-[0_8px_25px_rgba(15,23,42,0.04)] placeholder:text-slate-400 focus:border-[#00A859] focus:ring-[#39D98A]/10"
         />
       </div>
 
       <Button
-        className="mt-3 h-13 w-full rounded-full bg-gradient-to-r from-[#073B2A] via-[#00A859] to-[#073B2A] font-bold text-white shadow-[0_18px_45px_rgba(0,168,89,0.28)] transition hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0"
+        className="mt-3 h-[52px] w-full rounded-full bg-gradient-to-r from-[#073B2A] via-[#00A859] to-[#073B2A] font-bold text-white shadow-[0_18px_45px_rgba(0,168,89,0.28)] transition hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0"
         onClick={handleLogin}
       >
         Entrar no painel
