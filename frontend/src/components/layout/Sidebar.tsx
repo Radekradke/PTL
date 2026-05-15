@@ -60,21 +60,21 @@ export function Sidebar() {
 
   return (
     <>
-      <aside className="hidden min-h-screen w-64 shrink-0 border-r border-zinc-800 bg-zinc-950/95 p-4 text-zinc-100 lg:block">
-        <div className="rounded-[1.75rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.35)]">
+      <aside className="hidden min-h-screen w-64 shrink-0 border-r border-[#B4D7C4]/60 bg-white/95 p-4 text-[#2B2B2B] lg:block">
+        <div className="rounded-[1.75rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.12)]">
           <div className="flex items-center gap-3">
-            <div className="rounded-2xl border border-sky-500/20 bg-sky-500/10 p-3 text-sky-300">
+            <div className="rounded-2xl border border-[#42A95E]/25 bg-[#42A95E]/10 p-3 text-[#32624A]">
               <ShieldCheck size={22} />
             </div>
             <div>
-              <h1 className="text-2xl font-extrabold tracking-[-0.04em] text-white">Lifting</h1>
-              <p className="text-sm font-medium tracking-wide text-zinc-400">Support Panel</p>
+              <h1 className="text-2xl font-extrabold tracking-[-0.04em] text-[#2B2B2B]">Lifting</h1>
+              <p className="text-sm font-medium tracking-wide text-[#66736B]">Support Panel</p>
             </div>
           </div>
 
-          <div className="mt-4 rounded-2xl border border-zinc-800 bg-zinc-900/70 px-3 py-2">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">Perfil</p>
-            <p className="mt-1 text-sm font-bold text-sky-300">{role || "Sem acesso"}</p>
+          <div className="mt-4 rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 px-3 py-2">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#7C8A80]">Perfil</p>
+            <p className="mt-1 text-sm font-bold text-[#32624A]">{role || "Sem acesso"}</p>
           </div>
         </div>
 
@@ -87,8 +87,8 @@ export function Sidebar() {
                 onClick={() => navigate(item.path)}
                 className={`flex w-full items-center gap-3 rounded-2xl p-3 text-sm font-semibold transition ${
                   isActive(item.path)
-                    ? "border border-sky-500/20 bg-sky-600 text-white shadow-lg shadow-sky-500/20"
-                    : "text-zinc-300 hover:bg-zinc-900 hover:text-white"
+                    ? "border border-[#42A95E]/25 bg-[#42A95E] text-white shadow-lg shadow-[#42A95E]/20"
+                    : "text-[#32624A] hover:bg-[#F8FBF9] hover:text-[#2B2B2B]"
                 }`}
               >
                 <Icon size={18} />
@@ -107,7 +107,7 @@ export function Sidebar() {
         </nav>
       </aside>
 
-      <nav className="fixed inset-x-3 bottom-3 z-50 rounded-[1.75rem] border border-zinc-800 bg-zinc-950/95 p-2 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl lg:hidden">
+      <nav className="fixed inset-x-3 bottom-3 z-50 rounded-[1.75rem] border border-[#B4D7C4]/60 bg-white/95 p-2 shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl lg:hidden">
         <div className="grid grid-cols-[repeat(auto-fit,minmax(64px,1fr))] gap-1">
           {items.map((item) => {
             const Icon = item.icon
@@ -117,8 +117,8 @@ export function Sidebar() {
                 onClick={() => navigate(item.path)}
                 className={`flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-2xl px-2 text-[11px] font-semibold transition ${
                   isActive(item.path)
-                    ? "bg-sky-600 text-white shadow-lg shadow-sky-500/20"
-                    : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
+                    ? "bg-[#42A95E] text-white shadow-lg shadow-[#42A95E]/20"
+                    : "text-[#66736B] hover:bg-[#F8FBF9] hover:text-[#2B2B2B]"
                 }`}
               >
                 <Icon size={18} />

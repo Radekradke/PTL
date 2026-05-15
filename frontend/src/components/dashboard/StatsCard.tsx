@@ -15,46 +15,46 @@ const toneStyles: Record<StatsCardTone, {
   glow: string
 }> = {
   neutral: {
-    card: "border-slate-700/70 bg-gradient-to-br from-slate-900 via-zinc-900 to-zinc-950",
-    label: "text-slate-300",
-    value: "text-slate-50",
-    dot: "bg-slate-300",
-    glow: "shadow-slate-950/40",
+    card: "border-[#B4D7C4]/70 bg-white",
+    label: "text-[#66736B]",
+    value: "text-[#2B2B2B]",
+    dot: "bg-[#32624A]",
+    glow: "shadow-[0_18px_50px_rgba(50,98,74,0.10)]",
   },
   warning: {
-    card: "border-amber-500/35 bg-gradient-to-br from-amber-500/15 via-zinc-950 to-zinc-950",
-    label: "text-amber-200",
-    value: "text-amber-300",
-    dot: "bg-amber-300",
-    glow: "shadow-amber-950/30",
+    card: "border-[#F59E0B]/30 bg-gradient-to-br from-white to-[#FFF8EA]",
+    label: "text-[#9A6505]",
+    value: "text-[#B56F00]",
+    dot: "bg-[#F59E0B]",
+    glow: "shadow-[0_18px_50px_rgba(245,158,11,0.12)]",
   },
   info: {
-    card: "border-sky-500/35 bg-gradient-to-br from-sky-500/15 via-zinc-950 to-zinc-950",
-    label: "text-sky-200",
-    value: "text-sky-300",
-    dot: "bg-sky-300",
-    glow: "shadow-sky-950/30",
+    card: "border-[#4F93D2]/30 bg-gradient-to-br from-white to-[#EEF7FF]",
+    label: "text-[#356D9E]",
+    value: "text-[#4F93D2]",
+    dot: "bg-[#4F93D2]",
+    glow: "shadow-[0_18px_50px_rgba(79,147,210,0.12)]",
   },
   success: {
-    card: "border-emerald-500/35 bg-gradient-to-br from-emerald-500/15 via-zinc-950 to-zinc-950",
-    label: "text-emerald-200",
-    value: "text-emerald-300",
-    dot: "bg-emerald-300",
-    glow: "shadow-emerald-950/30",
+    card: "border-[#42A95E]/35 bg-gradient-to-br from-white to-[#EBF8EF]",
+    label: "text-[#32624A]",
+    value: "text-[#42A95E]",
+    dot: "bg-[#42A95E]",
+    glow: "shadow-[0_18px_50px_rgba(66,169,94,0.14)]",
   },
   danger: {
-    card: "border-rose-500/35 bg-gradient-to-br from-rose-500/15 via-zinc-950 to-zinc-950",
-    label: "text-rose-200",
-    value: "text-rose-300",
-    dot: "bg-rose-300",
-    glow: "shadow-rose-950/30",
+    card: "border-[#EF4444]/30 bg-gradient-to-br from-white to-[#FFF0F0]",
+    label: "text-[#A23A3A]",
+    value: "text-[#EF4444]",
+    dot: "bg-[#EF4444]",
+    glow: "shadow-[0_18px_50px_rgba(239,68,68,0.12)]",
   },
   base: {
-    card: "border-indigo-500/35 bg-gradient-to-br from-indigo-500/15 via-zinc-950 to-zinc-950",
-    label: "text-indigo-200",
-    value: "text-indigo-300",
-    dot: "bg-indigo-300",
-    glow: "shadow-indigo-950/30",
+    card: "border-[#80B092]/40 bg-gradient-to-br from-white to-[#F0F8F3]",
+    label: "text-[#32624A]",
+    value: "text-[#32624A]",
+    dot: "bg-[#80B092]",
+    glow: "shadow-[0_18px_50px_rgba(128,176,146,0.14)]",
   },
 }
 
@@ -76,9 +76,9 @@ export function StatsCard({ title, value, color, tone }: Props) {
 
   return (
     <div
-      className={`${styles.card} ${styles.glow} relative min-h-[150px] overflow-hidden rounded-[1.75rem] border p-5 shadow-[0_18px_45px_rgba(15,23,42,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.45)] sm:p-6`}
+      className={`${styles.card} ${styles.glow} relative min-h-[150px] overflow-hidden rounded-[1.75rem] border p-5 shadow transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(50,98,74,0.16)] sm:p-6`}
     >
-      <div className="absolute right-4 top-4 h-20 w-20 rounded-full bg-white/5 blur-2xl" />
+      <div className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-[#DFF5E6] blur-2xl" />
 
       <div className="relative flex min-h-[40px] items-start gap-3">
         <span className={`${styles.dot} mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full shadow-[0_0_18px_currentColor]`} />

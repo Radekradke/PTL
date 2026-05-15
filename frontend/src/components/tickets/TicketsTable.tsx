@@ -203,18 +203,18 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
   function getStatusStyle(status: string) {
     if (status === "Aberto") {
-      return "bg-yellow-500/20 text-yellow-400"
+      return "bg-[#4F93D2]/15 text-[#4F93D2] border border-[#4F93D2]/25"
     }
 
     if (status === "Em andamento") {
-      return "bg-blue-500/20 text-blue-400"
+      return "bg-[#F59E0B]/15 text-[#B56F00] border border-[#F59E0B]/25"
     }
 
     if (status === "Finalizado") {
-      return "bg-green-500/20 text-green-400"
+      return "bg-[#42A95E]/15 text-[#32624A] border border-[#42A95E]/25"
     }
 
-    return "bg-zinc-500/20 text-zinc-400"
+    return "bg-zinc-500/20 text-[#66736B]"
   }
 
   function handleAddResponse() {
@@ -298,21 +298,21 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
     if (ticket.status === "Finalizado") {
       return {
         label: "Concluído",
-        className: "bg-green-500/20 text-green-400",
+        className: "bg-[#42A95E]/15 text-[#32624A] border border-[#42A95E]/25",
       }
     }
 
     if (ticket.origin === "Offshore") {
       return {
         label: "Prioridade Offshore",
-        className: "bg-red-500/20 text-red-400",
+        className: "bg-[#EF4444]/15 text-[#EF4444] border border-[#EF4444]/25",
       }
     }
 
     if (ticket.priority === "Urgente") {
       return {
         label: "Urgente",
-        className: "bg-red-500/20 text-red-400",
+        className: "bg-[#EF4444]/15 text-[#EF4444] border border-[#EF4444]/25",
       }
     }
 
@@ -325,7 +325,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
     return {
       label: "Dentro do prazo",
-      className: "bg-blue-500/20 text-blue-400",
+      className: "bg-[#F59E0B]/15 text-[#B56F00] border border-[#F59E0B]/25",
     }
   }
 
@@ -354,12 +354,12 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.25)] sm:p-6">
+      <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
-            <p className="text-xs uppercase tracking-[0.22em] text-cyan-300/70">Central de chamados</p>
-            <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em] text-white sm:text-3xl">Lista de chamados</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400">
+            <p className="text-xs uppercase tracking-[0.22em] text-[#42A95E]/70">Central de chamados</p>
+            <h2 className="mt-2 text-2xl font-bold tracking-[-0.03em] text-[#2B2B2B] sm:text-3xl">Lista de chamados</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#66736B]">
               Filtre, acompanhe e atualize os chamados sem bagunça visual. O botão de criação fica aqui no topo, estilo cockpit.
             </p>
           </div>
@@ -367,23 +367,23 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto lg:shrink-0">
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="h-11 w-full rounded-2xl bg-sky-600 px-5 text-white hover:bg-sky-500 sm:w-auto whitespace-nowrap">
+                <Button className="h-11 w-full rounded-2xl bg-[#42A95E] px-5 text-white hover:bg-[#2F8B4C] sm:w-auto whitespace-nowrap">
                   Abrir novo chamado
                 </Button>
               </DialogTrigger>
 
-              <DialogContent className="max-h-[90vh] overflow-y-auto rounded-[2rem] border border-zinc-800 bg-zinc-950 p-6 text-white shadow-[0_20px_60px_rgba(15,23,42,0.25)] sm:max-w-2xl">
+              <DialogContent className="max-h-[90vh] overflow-y-auto rounded-[2rem] border border-[#B4D7C4]/60 bg-white p-6 text-[#2B2B2B] shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>Novo chamado</DialogTitle>
                 </DialogHeader>
 
                 <div className="grid gap-4">
                   <div className="grid gap-2">
-                    <label className="text-sm text-zinc-300">Solicitante</label>
+                    <label className="text-sm text-[#32624A]">Solicitante</label>
                     <select
                       value={employeeId}
                       onChange={(e) => handleEmployeeChange(e.target.value)}
-                      className="w-full rounded-2xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-zinc-300 shadow-sm outline-none focus:border-sky-500"
+                      className="w-full rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9] px-4 py-3 text-[#32624A] shadow-sm outline-none focus:border-[#42A95E]"
                     >
                       <option value="">Selecione um funcionário</option>
                       {employees.map((emp) => (
@@ -396,21 +396,21 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="grid gap-2">
-                      <label className="text-sm text-zinc-300">Setor vinculado</label>
-                      <div className="min-h-[48px] rounded-2xl border border-zinc-800 bg-zinc-900/80 px-4 py-3 text-zinc-300 shadow-sm">
+                      <label className="text-sm text-[#32624A]">Setor vinculado</label>
+                      <div className="min-h-[48px] rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 px-4 py-3 text-[#32624A] shadow-sm">
                         {selectedEmployeeSector?.name || sectors.find((sect) => String(sect.id) === sectorId)?.name || "Selecione um funcionário"}
                       </div>
-                      <p className="text-xs text-zinc-500">
+                      <p className="text-xs text-[#7C8A80]">
                         O setor é preenchido automaticamente pelo cadastro do funcionário.
                       </p>
                     </div>
 
                     <div className="grid gap-2">
-                      <label className="text-sm text-zinc-300">Categoria</label>
+                      <label className="text-sm text-[#32624A]">Categoria</label>
                       <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full rounded-2xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-zinc-300 shadow-sm outline-none focus:border-sky-500"
+                        className="w-full rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9] px-4 py-3 text-[#32624A] shadow-sm outline-none focus:border-[#42A95E]"
                       >
                         {categories.map((categoryItem) => (
                           <option key={categoryItem}>{categoryItem}</option>
@@ -421,11 +421,11 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="grid gap-2">
-                      <label className="text-sm text-zinc-300">Origem</label>
+                      <label className="text-sm text-[#32624A]">Origem</label>
                       <select
                         value={origin}
                         onChange={(e) => setOrigin(e.target.value)}
-                        className="w-full rounded-2xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-zinc-300 shadow-sm outline-none focus:border-sky-500"
+                        className="w-full rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9] px-4 py-3 text-[#32624A] shadow-sm outline-none focus:border-[#42A95E]"
                       >
                         <option>Base</option>
                         <option>Offshore</option>
@@ -433,11 +433,11 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     </div>
 
                     <div className="grid gap-2">
-                      <label className="text-sm text-zinc-300">Prioridade</label>
+                      <label className="text-sm text-[#32624A]">Prioridade</label>
                       <select
                         value={priority}
                         onChange={(e) => setPriority(e.target.value)}
-                        className="w-full rounded-2xl border border-zinc-800 bg-zinc-900 px-4 py-3 text-zinc-300 shadow-sm outline-none focus:border-sky-500"
+                        className="w-full rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9] px-4 py-3 text-[#32624A] shadow-sm outline-none focus:border-[#42A95E]"
                       >
                         <option>Baixa</option>
                         <option>Normal</option>
@@ -448,17 +448,17 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                   </div>
 
                   <div className="grid gap-2">
-                    <label className="text-sm text-zinc-300">Descrição</label>
+                    <label className="text-sm text-[#32624A]">Descrição</label>
                     <Textarea
                       placeholder="Descreva o problema..."
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      className="min-h-[140px] border-zinc-800 bg-zinc-900 text-white"
+                      className="min-h-[140px] border-[#B4D7C4]/60 bg-[#F8FBF9] text-[#2B2B2B]"
                     />
                   </div>
 
                   <Button
-                    className="h-11 w-full rounded-2xl bg-sky-600 text-white hover:bg-sky-500 disabled:opacity-50"
+                    className="h-11 w-full rounded-2xl bg-[#42A95E] text-white hover:bg-[#2F8B4C] disabled:opacity-50"
                     onClick={handleCreateTicket}
                     disabled={isSubmitting}
                   >
@@ -470,7 +470,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
             <Button
               variant="outline"
-              className="h-11 w-full rounded-2xl border-sky-500/20 bg-sky-500/10 text-sky-300 hover:bg-sky-500/15 hover:text-sky-200 sm:w-auto whitespace-nowrap"
+              className="h-11 w-full rounded-2xl border-[#42A95E]/25 bg-[#42A95E]/10 text-[#32624A] hover:bg-[#2F8B4C]/15 hover:text-[#32624A] sm:w-auto whitespace-nowrap"
               onClick={() => {
                 setSearch("")
                 setStatusFilter("Todos")
@@ -489,13 +489,13 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             placeholder="Buscar chamado..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-11 border-zinc-800 bg-zinc-900 text-white xl:col-span-1"
+            className="h-11 border-[#B4D7C4]/60 bg-[#F8FBF9] text-[#2B2B2B] xl:col-span-1"
           />
 
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-11 w-full rounded-2xl border border-zinc-800 bg-zinc-900 px-4 text-zinc-300 shadow-sm outline-none focus:border-sky-500"
+            className="h-11 w-full rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9] px-4 text-[#32624A] shadow-sm outline-none focus:border-[#42A95E]"
           >
             <option value="Todos">Todos status</option>
             <option value="Aberto">Aberto</option>
@@ -506,7 +506,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           <select
             value={originFilter}
             onChange={(e) => setOriginFilter(e.target.value)}
-            className="h-11 w-full rounded-2xl border border-zinc-800 bg-zinc-900 px-4 text-zinc-300 shadow-sm outline-none focus:border-sky-500"
+            className="h-11 w-full rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9] px-4 text-[#32624A] shadow-sm outline-none focus:border-[#42A95E]"
           >
             <option value="Todas">Todas origens</option>
             <option value="Offshore">Offshore</option>
@@ -516,7 +516,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="h-11 w-full rounded-2xl border border-zinc-800 bg-zinc-900 px-4 text-zinc-300 shadow-sm outline-none focus:border-sky-500"
+            className="h-11 w-full rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9] px-4 text-[#32624A] shadow-sm outline-none focus:border-[#42A95E]"
           >
             <option value="Todas">Todas prioridades</option>
             <option value="Baixa">Baixa</option>
@@ -528,7 +528,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           <select
             value={sectorFilter}
             onChange={(e) => setSectorFilter(e.target.value)}
-            className="h-11 w-full rounded-2xl border border-zinc-800 bg-zinc-900 px-4 text-zinc-300 shadow-sm outline-none focus:border-sky-500"
+            className="h-11 w-full rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9] px-4 text-[#32624A] shadow-sm outline-none focus:border-[#42A95E]"
           >
             <option value="Todos">Todos setores</option>
             {sectors.map((sectorItem) => (
@@ -541,15 +541,15 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       </div>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-zinc-400">
-          <span className="font-semibold text-white">{filteredTickets.length}</span> chamado(s) encontrado(s)
+        <p className="text-sm text-[#66736B]">
+          <span className="font-semibold text-[#2B2B2B]">{filteredTickets.length}</span> chamado(s) encontrado(s)
         </p>
       </div>
 
-      <div className="rounded-[2rem] border border-zinc-800 bg-zinc-950 p-3 shadow-[0_20px_60px_rgba(15,23,42,0.2)] sm:p-4">
-        <div className="hidden overflow-x-auto rounded-[1.5rem] border border-zinc-800 bg-zinc-900 lg:block">
+      <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-white p-3 shadow-[0_20px_60px_rgba(15,23,42,0.2)] sm:p-4">
+        <div className="hidden overflow-x-auto rounded-[1.5rem] border border-[#B4D7C4]/60 bg-[#F8FBF9] lg:block">
           <table className="min-w-[1120px] w-full text-left text-sm">
-            <thead className="bg-zinc-800 text-xs uppercase tracking-[0.12em] text-zinc-300">
+            <thead className="bg-[#EAF6EE] text-xs uppercase tracking-[0.12em] text-[#32624A]">
               <tr>
                 <th className="px-4 py-3 whitespace-nowrap">ID</th>
                 <th className="px-4 py-3 whitespace-nowrap">Usuário</th>
@@ -566,18 +566,18 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             </thead>
             <tbody>
               {filteredTickets.map((ticket) => (
-                <tr key={ticket.id} className="border-t border-zinc-800 transition-all hover:bg-zinc-800/40">
-                  <td className="px-4 py-4 text-white whitespace-nowrap">#{ticket.id}</td>
-                  <td className="px-4 py-4 text-zinc-300 whitespace-nowrap">{ticket.user}</td>
-                  <td className="px-4 py-4 text-zinc-300 whitespace-nowrap">{ticket.sector}</td>
-                  <td className="px-4 py-4 text-zinc-300 whitespace-nowrap">{ticket.category}</td>
+                <tr key={ticket.id} className="border-t border-[#B4D7C4]/60 transition-all hover:bg-[#EAF6EE]/40">
+                  <td className="px-4 py-4 text-[#2B2B2B] whitespace-nowrap">#{ticket.id}</td>
+                  <td className="px-4 py-4 text-[#32624A] whitespace-nowrap">{ticket.user}</td>
+                  <td className="px-4 py-4 text-[#32624A] whitespace-nowrap">{ticket.sector}</td>
+                  <td className="px-4 py-4 text-[#32624A] whitespace-nowrap">{ticket.category}</td>
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${ticket.origin === "Offshore" ? "bg-red-500/20 text-red-400" : "bg-blue-500/20 text-blue-400"}`}>
+                    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${ticket.origin === "Offshore" ? "bg-[#EF4444]/15 text-[#EF4444] border border-[#EF4444]/25" : "bg-[#F59E0B]/15 text-[#B56F00] border border-[#F59E0B]/25"}`}>
                       {ticket.origin}
                     </span>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${ticket.priority === "Urgente" ? "bg-red-500/20 text-red-400" : ticket.priority === "Alta" ? "bg-orange-500/20 text-orange-400" : ticket.priority === "Normal" ? "bg-blue-500/20 text-blue-400" : "bg-zinc-500/20 text-zinc-400"}`}>
+                    <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${ticket.priority === "Urgente" ? "bg-[#EF4444]/15 text-[#EF4444] border border-[#EF4444]/25" : ticket.priority === "Alta" ? "bg-orange-500/20 text-orange-400" : ticket.priority === "Normal" ? "bg-[#F59E0B]/15 text-[#B56F00] border border-[#F59E0B]/25" : "bg-zinc-500/20 text-[#66736B]"}`}>
                       {ticket.priority}
                     </span>
                   </td>
@@ -586,7 +586,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                       {getSlaStatus(ticket).label}
                     </span>
                   </td>
-                  <td className="px-4 py-4 text-zinc-300 whitespace-nowrap">{ticket.createdAt}</td>
+                  <td className="px-4 py-4 text-[#32624A] whitespace-nowrap">{ticket.createdAt}</td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(ticket.status)}`}>
                       {ticket.status}
@@ -596,7 +596,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     <select
                       value={ticket.status}
                       onChange={(e) => handleChangeStatus(ticket.id, e.target.value)}
-                      className="w-full min-w-[150px] rounded-2xl border border-zinc-800 bg-zinc-900 px-3 py-2 text-zinc-300 outline-none focus:border-sky-500"
+                      className="w-full min-w-[150px] rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9] px-3 py-2 text-[#32624A] outline-none focus:border-[#42A95E]"
                     >
                       <option>Aberto</option>
                       <option>Em andamento</option>
@@ -617,24 +617,24 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
         <div className="space-y-3 lg:hidden">
           {filteredTickets.map((ticket) => (
-            <div key={ticket.id} className="rounded-[1.5rem] border border-zinc-800 bg-zinc-900/80 p-4 shadow-[0_16px_40px_rgba(15,23,42,0.2)]">
+            <div key={ticket.id} className="rounded-[1.5rem] border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4 shadow-[0_16px_40px_rgba(15,23,42,0.2)]">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-300">Chamado #{ticket.id}</p>
-                  <h3 className="mt-1 truncate text-base font-bold text-white">{ticket.category}</h3>
-                  <p className="mt-1 text-sm text-zinc-400">{ticket.user} · {ticket.sector}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#32624A]">Chamado #{ticket.id}</p>
+                  <h3 className="mt-1 truncate text-base font-bold text-[#2B2B2B]">{ticket.category}</h3>
+                  <p className="mt-1 text-sm text-[#66736B]">{ticket.user} · {ticket.sector}</p>
                 </div>
                 <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${getStatusStyle(ticket.status)}`}>
                   {ticket.status}
                 </span>
               </div>
 
-              <p className="mt-3 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-zinc-300">
+              <p className="mt-3 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-[#32624A]">
                 {ticket.description || "Sem descrição."}
               </p>
 
               <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-                <span className={`rounded-full px-3 py-2 text-center font-semibold ${ticket.origin === "Offshore" ? "bg-red-500/20 text-red-300" : "bg-blue-500/20 text-blue-300"}`}>
+                <span className={`rounded-full px-3 py-2 text-center font-semibold ${ticket.origin === "Offshore" ? "bg-[#EF4444]/15 text-[#EF4444] border border-[#EF4444]/25" : "bg-blue-500/20 text-blue-300"}`}>
                   {ticket.origin}
                 </span>
                 <span className={`rounded-full px-3 py-2 text-center font-semibold ${getSlaStatus(ticket).className}`}>
@@ -646,14 +646,14 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 <select
                   value={ticket.status}
                   onChange={(e) => handleChangeStatus(ticket.id, e.target.value)}
-                  className="h-11 w-full rounded-2xl border border-zinc-800 bg-zinc-950 px-3 text-sm text-zinc-300 outline-none focus:border-sky-500"
+                  className="h-11 w-full rounded-2xl border border-[#B4D7C4]/60 bg-white px-3 text-sm text-[#32624A] outline-none focus:border-[#42A95E]"
                 >
                   <option>Aberto</option>
                   <option>Em andamento</option>
                   <option>Aguardando usuário</option>
                   <option>Finalizado</option>
                 </select>
-                <Button variant="outline" className="h-11 rounded-2xl border-sky-500/20 bg-sky-500/10 text-sky-300 hover:bg-sky-500/15" onClick={() => setSelectedTicket(ticket)}>
+                <Button variant="outline" className="h-11 rounded-2xl border-[#42A95E]/25 bg-[#42A95E]/10 text-[#32624A] hover:bg-[#2F8B4C]/15" onClick={() => setSelectedTicket(ticket)}>
                   Ver detalhes
                 </Button>
               </div>
@@ -662,19 +662,19 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
         </div>
 
         {filteredTickets.length === 0 && (
-          <div className="p-8 text-center text-sm text-zinc-400">
+          <div className="p-8 text-center text-sm text-[#66736B]">
             Nenhum chamado encontrado com os filtros aplicados.
           </div>
         )}
       </div>
 
       <Dialog open={!!selectedTicket} onOpenChange={() => setSelectedTicket(null)}>
-        <DialogContent className="max-h-[92vh] w-[calc(100vw-1rem)] overflow-hidden rounded-[1.5rem] border border-zinc-800 bg-zinc-950 p-0 text-white shadow-[0_24px_80px_rgba(15,23,42,0.45)] sm:max-w-3xl sm:rounded-[2rem]">
-          <DialogHeader className="border-b border-zinc-800 px-4 py-4 sm:px-6 sm:py-5">
+        <DialogContent className="max-h-[92vh] w-[calc(100vw-1rem)] overflow-hidden rounded-[1.5rem] border border-[#B4D7C4]/60 bg-white p-0 text-[#2B2B2B] shadow-[0_24px_80px_rgba(15,23,42,0.45)] sm:max-w-3xl sm:rounded-[2rem]">
+          <DialogHeader className="border-b border-[#B4D7C4]/60 px-4 py-4 sm:px-6 sm:py-5">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <DialogTitle className="text-xl font-semibold">Detalhes do chamado #{selectedTicket?.id}</DialogTitle>
-                <p className="mt-1 text-sm text-zinc-400">
+                <p className="mt-1 text-sm text-[#66736B]">
                   Acompanhe informações, resposta técnica e histórico do atendimento.
                 </p>
               </div>
@@ -691,59 +691,59 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             <div className="max-h-[calc(92vh-92px)] overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
               <div className="grid gap-5 lg:grid-cols-[1fr_0.9fr]">
                 <div className="space-y-5">
-                  <div className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-4">
-                    <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-cyan-300/70">
+                  <div className="rounded-3xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4">
+                    <h3 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-[#42A95E]/70">
                       Informações principais
                     </h3>
 
                     <div className="grid gap-3 sm:grid-cols-2">
-                      <div className="rounded-2xl bg-zinc-950/70 p-3">
-                        <p className="text-xs text-zinc-500">Solicitante</p>
-                        <p className="mt-1 break-words text-sm font-medium text-white">{selectedTicket.user}</p>
+                      <div className="rounded-2xl bg-white/70 p-3">
+                        <p className="text-xs text-[#7C8A80]">Solicitante</p>
+                        <p className="mt-1 break-words text-sm font-medium text-[#2B2B2B]">{selectedTicket.user}</p>
                       </div>
 
-                      <div className="rounded-2xl bg-zinc-950/70 p-3">
-                        <p className="text-xs text-zinc-500">Setor</p>
-                        <p className="mt-1 break-words text-sm font-medium text-white">{selectedTicket.sector}</p>
+                      <div className="rounded-2xl bg-white/70 p-3">
+                        <p className="text-xs text-[#7C8A80]">Setor</p>
+                        <p className="mt-1 break-words text-sm font-medium text-[#2B2B2B]">{selectedTicket.sector}</p>
                       </div>
 
-                      <div className="rounded-2xl bg-zinc-950/70 p-3">
-                        <p className="text-xs text-zinc-500">Categoria</p>
-                        <p className="mt-1 break-words text-sm font-medium text-white">{selectedTicket.category}</p>
+                      <div className="rounded-2xl bg-white/70 p-3">
+                        <p className="text-xs text-[#7C8A80]">Categoria</p>
+                        <p className="mt-1 break-words text-sm font-medium text-[#2B2B2B]">{selectedTicket.category}</p>
                       </div>
 
-                      <div className="rounded-2xl bg-zinc-950/70 p-3">
-                        <p className="text-xs text-zinc-500">Criado em</p>
-                        <p className="mt-1 break-words text-sm font-medium text-white">{selectedTicket.createdAt}</p>
+                      <div className="rounded-2xl bg-white/70 p-3">
+                        <p className="text-xs text-[#7C8A80]">Criado em</p>
+                        <p className="mt-1 break-words text-sm font-medium text-[#2B2B2B]">{selectedTicket.createdAt}</p>
                       </div>
 
-                      <div className="rounded-2xl bg-zinc-950/70 p-3">
-                        <p className="text-xs text-zinc-500">Origem</p>
-                        <p className="mt-1 break-words text-sm font-medium text-white">{selectedTicket.origin}</p>
+                      <div className="rounded-2xl bg-white/70 p-3">
+                        <p className="text-xs text-[#7C8A80]">Origem</p>
+                        <p className="mt-1 break-words text-sm font-medium text-[#2B2B2B]">{selectedTicket.origin}</p>
                       </div>
 
-                      <div className="rounded-2xl bg-zinc-950/70 p-3">
-                        <p className="text-xs text-zinc-500">Prioridade</p>
-                        <p className="mt-1 break-words text-sm font-medium text-white">{selectedTicket.priority}</p>
+                      <div className="rounded-2xl bg-white/70 p-3">
+                        <p className="text-xs text-[#7C8A80]">Prioridade</p>
+                        <p className="mt-1 break-words text-sm font-medium text-[#2B2B2B]">{selectedTicket.priority}</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-4">
-                    <p className="text-sm font-semibold text-zinc-200">Descrição</p>
-                    <div className="mt-3 max-h-40 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 text-sm leading-6 text-zinc-300">
+                  <div className="rounded-3xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4">
+                    <p className="text-sm font-semibold text-[#2B2B2B]">Descrição</p>
+                    <div className="mt-3 max-h-40 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl border border-[#B4D7C4]/60 bg-white/70 p-4 text-sm leading-6 text-[#32624A]">
                       {selectedTicket.description || "Sem descrição."}
                     </div>
                   </div>
 
-                  <div className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-4">
-                    <p className="text-sm font-semibold text-zinc-200">Resposta técnica</p>
+                  <div className="rounded-3xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4">
+                    <p className="text-sm font-semibold text-[#2B2B2B]">Resposta técnica</p>
                     {selectedTicket.technicalResponse ? (
-                      <div className="mt-3 max-h-40 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 text-sm leading-6 text-zinc-300">
+                      <div className="mt-3 max-h-40 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl border border-[#B4D7C4]/60 bg-white/70 p-4 text-sm leading-6 text-[#32624A]">
                         {selectedTicket.technicalResponse}
                       </div>
                     ) : (
-                      <p className="mt-3 rounded-2xl border border-dashed border-zinc-800 bg-zinc-950/50 p-4 text-sm text-zinc-500">
+                      <p className="mt-3 rounded-2xl border border-dashed border-[#B4D7C4]/60 bg-white/50 p-4 text-sm text-[#7C8A80]">
                         Nenhuma resposta adicionada ainda.
                       </p>
                     )}
@@ -752,38 +752,38 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
                 <aside className="space-y-5">
 
-                  <div className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-4">
-                    <p className="text-sm font-semibold text-zinc-200">Timeline</p>
+                  <div className="rounded-3xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4">
+                    <p className="text-sm font-semibold text-[#2B2B2B]">Timeline</p>
                     <div className="mt-3 max-h-56 space-y-3 overflow-y-auto pr-1">
                       {selectedTicket.timeline?.length ? (
                         selectedTicket.timeline.map((event: { date: string; action: string }, index: number) => (
-                          <div key={index} className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-3">
-                            <p className="break-words text-sm text-white">{event.action}</p>
-                            <p className="mt-1 text-xs text-zinc-500">{event.date}</p>
+                          <div key={index} className="rounded-2xl border border-[#B4D7C4]/60 bg-white/70 p-3">
+                            <p className="break-words text-sm text-[#2B2B2B]">{event.action}</p>
+                            <p className="mt-1 text-xs text-[#7C8A80]">{event.date}</p>
                           </div>
                         ))
                       ) : (
-                        <p className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-950/50 p-4 text-sm text-zinc-500">
+                        <p className="rounded-2xl border border-dashed border-[#B4D7C4]/60 bg-white/50 p-4 text-sm text-[#7C8A80]">
                           Nenhum evento registrado.
                         </p>
                       )}
                     </div>
                   </div>
 
-                  <div className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-4">
-                    <label className="text-sm font-semibold text-zinc-200">Nova resposta técnica</label>
+                  <div className="rounded-3xl border border-[#B4D7C4]/60 bg-[#F8FBF9]/90 p-4">
+                    <label className="text-sm font-semibold text-[#2B2B2B]">Nova resposta técnica</label>
                     <Textarea
                       placeholder="Digite a resposta técnica..."
                       value={technicalResponse}
                       onChange={(e) => setTechnicalResponse(e.target.value)}
-                      className="mt-3 min-h-[120px] border border-zinc-800 bg-zinc-950 text-white"
+                      className="mt-3 min-h-[120px] border border-[#B4D7C4]/60 bg-white text-[#2B2B2B]"
                     />
 
                     <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                      <Button className="h-11 rounded-2xl bg-sky-600 text-white hover:bg-sky-500" onClick={handleAddResponse}>
+                      <Button className="h-11 rounded-2xl bg-[#42A95E] text-white hover:bg-[#2F8B4C]" onClick={handleAddResponse}>
                         Salvar resposta
                       </Button>
-                      <Button className="h-11 rounded-2xl bg-green-700 text-white hover:bg-green-800" onClick={handleFinishTicket}>
+                      <Button className="h-11 rounded-2xl bg-green-700 text-[#2B2B2B] hover:bg-green-800" onClick={handleFinishTicket}>
                         Finalizar chamado
                       </Button>
                     </div>

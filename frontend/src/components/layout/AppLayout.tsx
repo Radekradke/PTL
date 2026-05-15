@@ -10,7 +10,7 @@ export function AppLayout({ children }: Props) {
   const { notificationCount } = useNotifications()
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(14,165,233,0.08),transparent_32%),#09090b] text-zinc-100">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(66,169,94,0.18),transparent_32%),linear-gradient(180deg,#DFF5E6_0%,#F2F2F2_44%,#F7FAF8_100%)] text-[#2B2B2B]">
       <div className="flex min-h-screen">
         <Sidebar />
 

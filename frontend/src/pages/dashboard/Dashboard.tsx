@@ -140,43 +140,43 @@ export function Dashboard() {
   return (
     <AppLayout>
       <div className="mx-auto w-full max-w-7xl space-y-6 sm:space-y-8">
-        <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.45)]">
+        <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-5 shadow-[0_20px_60px_rgba(15,23,42,0.45)]">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.24em] text-cyan-300/80">
+              <p className="text-sm uppercase tracking-[0.24em] text-[#42A95E]/80">
                 Visão geral
               </p>
-              <h1 className="mt-2 text-3xl font-bold sm:text-4xl text-white lg:text-5xl">
+              <h1 className="mt-2 text-3xl font-bold sm:text-4xl text-[#2B2B2B] lg:text-5xl">
                 Dashboard de Chamados
               </h1>
-              <p className="mt-3 max-w-2xl text-zinc-400">
+              <p className="mt-3 max-w-2xl text-[#66736B]">
                 Monitoramento em tempo real das demandas. Filtros inteligentes e
                 gráficos rápidos para você tomar decisão com clareza.
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.28)] transition duration-300 hover:-translate-y-1 hover:border-cyan-500/20">
-                <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
+              <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-6 shadow-[0_18px_50px_rgba(50,98,74,0.10)] transition duration-300 hover:-translate-y-1 hover:border-[#42A95E]/25">
+                <p className="text-xs uppercase tracking-[0.2em] text-[#66736B]">
                   Chamados filtrados
                 </p>
-                <p className="mt-3 text-3xl font-semibold text-white">
+                <p className="mt-3 text-3xl font-semibold text-[#2B2B2B]">
                   {filteredTickets.length}
                 </p>
               </div>
-              <div className="rounded-3xl bg-zinc-950/60 p-4 text-center border border-zinc-800">
-                <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
+              <div className="rounded-3xl bg-white/60 p-4 text-center border border-[#B4D7C4]/60">
+                <p className="text-xs uppercase tracking-[0.2em] text-[#66736B]">
                   Setores ativos
                 </p>
-                <p className="mt-3 text-3xl font-semibold text-white">
+                <p className="mt-3 text-3xl font-semibold text-[#2B2B2B]">
                   {uniqueSectors.length}
                 </p>
               </div>
-              <div className="rounded-3xl bg-zinc-950/60 p-4 text-center border border-zinc-800">
-                <p className="text-xs uppercase tracking-[0.2em] text-zinc-400">
+              <div className="rounded-3xl bg-white/60 p-4 text-center border border-[#B4D7C4]/60">
+                <p className="text-xs uppercase tracking-[0.2em] text-[#66736B]">
                   Categorias ativas
                 </p>
-                <p className="mt-3 text-3xl font-semibold text-white">
+                <p className="mt-3 text-3xl font-semibold text-[#2B2B2B]">
                   {uniqueCategories.length}
                 </p>
               </div>
@@ -188,7 +188,7 @@ export function Dashboard() {
               {currentFilters.map((filter) => (
                 <span
                   key={filter}
-                  className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-3 py-1 text-xs text-cyan-300"
+                  className="rounded-full border border-[#42A95E]/25 bg-[#42A95E]/10 px-3 py-1 text-xs text-[#42A95E]"
                 >
                   {filter}
                 </span>
@@ -197,13 +197,13 @@ export function Dashboard() {
           )}
         </div>
 
-        <section className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.25)] sm:p-6">
+        <section className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:p-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-[#2B2B2B]">
                 Filtros rápidos
               </h2>
-              <p className="text-sm text-zinc-400">
+              <p className="text-sm text-[#66736B]">
                 Use os filtros para segmentar os resultados do dashboard.
               </p>
             </div>
@@ -214,7 +214,7 @@ export function Dashboard() {
                 setOriginFilter("Todas");
                 setStatusFilter("Todos");
               }}
-              className="inline-flex items-center justify-center rounded-full border border-zinc-700 bg-zinc-950 px-5 py-2 text-sm font-medium text-white transition hover:border-cyan-500 hover:text-cyan-200"
+              className="inline-flex items-center justify-center rounded-full border border-[#80B092]/60 bg-white px-5 py-2 text-sm font-medium text-[#2B2B2B] transition hover:border-[#42A95E] hover:text-[#32624A]"
             >
               Limpar filtros
             </button>
@@ -222,11 +222,11 @@ export function Dashboard() {
 
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
             <label className="block">
-              <span className="text-sm text-zinc-400">Setor</span>
+              <span className="text-sm text-[#66736B]">Setor</span>
               <select
                 value={sectorFilter}
                 onChange={(e) => setSectorFilter(e.target.value)}
-                className="mt-2 w-full rounded-3xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-white outline-none transition focus:border-cyan-500"
+                className="mt-2 w-full rounded-3xl border border-[#B4D7C4]/60 bg-white px-4 py-3 text-[#2B2B2B] outline-none transition focus:border-[#42A95E]"
               >
                 <option value="Todos">Todos Setores</option>
                 {uniqueSectors.map((sector) => (
@@ -238,11 +238,11 @@ export function Dashboard() {
             </label>
 
             <label className="block">
-              <span className="text-sm text-zinc-400">Categoria</span>
+              <span className="text-sm text-[#66736B]">Categoria</span>
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="mt-2 w-full rounded-3xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-white outline-none transition focus:border-cyan-500"
+                className="mt-2 w-full rounded-3xl border border-[#B4D7C4]/60 bg-white px-4 py-3 text-[#2B2B2B] outline-none transition focus:border-[#42A95E]"
               >
                 <option value="Todas">Todas Categorias</option>
                 {uniqueCategories.map((category) => (
@@ -254,11 +254,11 @@ export function Dashboard() {
             </label>
 
             <label className="block">
-              <span className="text-sm text-zinc-400">Origem</span>
+              <span className="text-sm text-[#66736B]">Origem</span>
               <select
                 value={originFilter}
                 onChange={(e) => setOriginFilter(e.target.value)}
-                className="mt-2 w-full rounded-3xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-white outline-none transition focus:border-cyan-500"
+                className="mt-2 w-full rounded-3xl border border-[#B4D7C4]/60 bg-white px-4 py-3 text-[#2B2B2B] outline-none transition focus:border-[#42A95E]"
               >
                 <option value="Todas">Todas Origens</option>
                 <option value="Base">Base</option>
@@ -267,11 +267,11 @@ export function Dashboard() {
             </label>
 
             <label className="block">
-              <span className="text-sm text-zinc-400">Status</span>
+              <span className="text-sm text-[#66736B]">Status</span>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="mt-2 w-full rounded-3xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-white outline-none transition focus:border-cyan-500"
+                className="mt-2 w-full rounded-3xl border border-[#B4D7C4]/60 bg-white px-4 py-3 text-[#2B2B2B] outline-none transition focus:border-[#42A95E]"
               >
                 <option value="Todos">Todos Status</option>
                 <option value="Aberto">Aberto</option>
@@ -285,7 +285,7 @@ export function Dashboard() {
 
         <div className="space-y-6">
           <div>
-            <h3 className="text-sm uppercase tracking-[0.16em] text-zinc-300 mb-4">
+            <h3 className="text-sm uppercase tracking-[0.16em] text-[#32624A] mb-4">
               Resumo por status
             </h3>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
@@ -318,7 +318,7 @@ export function Dashboard() {
           </div>
 
           <div>
-            <h3 className="text-sm uppercase tracking-[0.16em] text-zinc-300 mb-4">
+            <h3 className="text-sm uppercase tracking-[0.16em] text-[#32624A] mb-4">
               Resumo por origem
             </h3>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -337,13 +337,13 @@ export function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.25)] sm:p-6 transition hover:-translate-y-0.5">
+          <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:p-6 transition hover:-translate-y-0.5">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-bold tracking-[-0.02em] text-white">
+                <h2 className="text-xl font-bold tracking-[-0.02em] text-[#2B2B2B]">
                   Chamados por Setor
                 </h2>
-                <p className="text-sm leading-relaxed text-zinc-400">
+                <p className="text-sm leading-relaxed text-[#66736B]">
                   Comparativo por setor com base no conjunto filtrado.
                 </p>
               </div>
@@ -357,42 +357,42 @@ export function Dashboard() {
                 <BarChart data={ticketsBySector}>
                   <XAxis
                     dataKey="name"
-                    stroke="#a1a1aa"
-                    tick={{ fill: "#cbd5e1", fontSize: 12 }}
+                    stroke="#80B092"
+                    tick={{ fill: "#32624A", fontSize: 12 }}
                   />
                   <YAxis
-                    stroke="#a1a1aa"
-                    tick={{ fill: "#cbd5e1", fontSize: 12 }}
+                    stroke="#80B092"
+                    tick={{ fill: "#32624A", fontSize: 12 }}
                   />
                  <Tooltip
   cursor={{ fill: "rgba(255,255,255,0.03)" }}
   contentStyle={{
-    backgroundColor: "#09090b",
+    backgroundColor: "#ffffff",
     borderRadius: 20,
-    border: "1px solid rgba(56,189,248,0.18)",
-    color: "#f8fafc",
+    border: "1px solid rgba(66,169,94,0.22)",
+    color: "#2B2B2B",
     boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
   }}
   labelStyle={{
-    color: "#f8fafc",
+    color: "#2B2B2B",
     fontWeight: 600,
   }}
 />
                  <Bar
                      dataKey="total"
-                      fill="#38bdf8"
+                      fill="#42A95E"
                     radius={[14, 14, 4, 4]}/></BarChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.25)] sm:p-6 transition hover:-translate-y-0.5">
+          <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:p-6 transition hover:-translate-y-0.5">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-bold tracking-[-0.02em] text-white">
+                <h2 className="text-xl font-bold tracking-[-0.02em] text-[#2B2B2B]">
                   Chamados por Categoria
                 </h2>
-                <p className="text-sm leading-relaxed text-zinc-400">
+                <p className="text-sm leading-relaxed text-[#66736B]">
                   Categorias mais frequentes no filtro atual.
                 </p>
               </div>
@@ -406,30 +406,30 @@ export function Dashboard() {
                 <BarChart data={ticketsByCategory}>
                   <XAxis
                     dataKey="name"
-                    stroke="#a1a1aa"
-                    tick={{ fill: "#cbd5e1", fontSize: 12 }}
+                    stroke="#80B092"
+                    tick={{ fill: "#32624A", fontSize: 12 }}
                   />
                   <YAxis
-                    stroke="#a1a1aa"
-                    tick={{ fill: "#cbd5e1", fontSize: 12 }}
+                    stroke="#80B092"
+                    tick={{ fill: "#32624A", fontSize: 12 }}
                   />
                   <Tooltip
   cursor={{ fill: "rgba(255,255,255,0.03)" }}
   contentStyle={{
-    backgroundColor: "#09090b",
+    backgroundColor: "#ffffff",
     borderRadius: 20,
-    border: "1px solid rgba(56,189,248,0.18)",
-    color: "#f8fafc",
+    border: "1px solid rgba(66,169,94,0.22)",
+    color: "#2B2B2B",
     boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
   }}
   labelStyle={{
-    color: "#f8fafc",
+    color: "#2B2B2B",
     fontWeight: 600,
   }}
 />
                   <Bar
   dataKey="total"
-  fill="#22c55e"
+  fill="#32624A"
   radius={[14, 14, 4, 4]}
 />
                 </BarChart>
@@ -437,11 +437,11 @@ export function Dashboard() {
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.25)] sm:p-6 transition hover:-translate-y-0.5">
-            <h2 className="text-xl font-bold tracking-[-0.02em] text-white">
+          <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:p-6 transition hover:-translate-y-0.5">
+            <h2 className="text-xl font-bold tracking-[-0.02em] text-[#2B2B2B]">
               Chamados por Status
             </h2>
-            <p className="text-sm leading-relaxed text-zinc-400">
+            <p className="text-sm leading-relaxed text-[#66736B]">
               Distribuição atual de status.
             </p>
 
@@ -459,22 +459,22 @@ innerRadius={55}
 paddingAngle={4}
 label
                   >
-                    <Cell fill="#eab308" />
-                    <Cell fill="#3b82f6" />
-                    <Cell fill="#f97316" />
-                    <Cell fill="#22c55e" />
+                    <Cell fill="#4F93D2" />
+                    <Cell fill="#F59E0B" />
+                    <Cell fill="#F59E0B" />
+                    <Cell fill="#32624A" />
                   </Pie>
                  <Tooltip
   cursor={{ fill: "rgba(255,255,255,0.03)" }}
   contentStyle={{
-    backgroundColor: "#09090b",
+    backgroundColor: "#ffffff",
     borderRadius: 20,
-    border: "1px solid rgba(56,189,248,0.18)",
-    color: "#f8fafc",
+    border: "1px solid rgba(66,169,94,0.22)",
+    color: "#2B2B2B",
     boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
   }}
   labelStyle={{
-    color: "#f8fafc",
+    color: "#2B2B2B",
     fontWeight: 600,
   }}
 />
@@ -483,11 +483,11 @@ label
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.25)] sm:p-6 transition hover:-translate-y-0.5">
-            <h2 className="text-xl font-bold tracking-[-0.02em] text-white">
+          <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-4 shadow-[0_18px_50px_rgba(50,98,74,0.10)] sm:p-6 transition hover:-translate-y-0.5">
+            <h2 className="text-xl font-bold tracking-[-0.02em] text-[#2B2B2B]">
               Base x Offshore
             </h2>
-            <p className="text-sm text-zinc-500 mt-1">
+            <p className="text-sm text-[#7C8A80] mt-1">
               Origem dos chamados no conjunto filtrado.
             </p>
 
@@ -505,20 +505,20 @@ innerRadius={55}
 paddingAngle={4}
 label
                   >
-                    <Cell fill="#3b82f6" />
-                    <Cell fill="#ef4444" />
+                    <Cell fill="#F59E0B" />
+                    <Cell fill="#EF4444" />
                   </Pie>
                  <Tooltip
   cursor={{ fill: "rgba(255,255,255,0.03)" }}
   contentStyle={{
-    backgroundColor: "#09090b",
+    backgroundColor: "#ffffff",
     borderRadius: 20,
-    border: "1px solid rgba(56,189,248,0.18)",
-    color: "#f8fafc",
+    border: "1px solid rgba(66,169,94,0.22)",
+    color: "#2B2B2B",
     boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
   }}
   labelStyle={{
-    color: "#f8fafc",
+    color: "#2B2B2B",
     fontWeight: 600,
   }}
 />

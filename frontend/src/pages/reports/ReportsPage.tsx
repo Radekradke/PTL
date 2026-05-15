@@ -264,15 +264,15 @@ export function ReportsPage() {
   function getStatusColor(status: string) {
     switch (status) {
       case "Aberto":
-        return "bg-yellow-500/20 text-yellow-400";
+        return "bg-[#4F93D2]/15 text-[#4F93D2] border border-[#4F93D2]/25";
       case "Em andamento":
-        return "bg-blue-500/20 text-blue-400";
+        return "bg-[#F59E0B]/15 text-[#B56F00] border border-[#F59E0B]/25";
       case "Aguardando usuário":
-        return "bg-orange-500/20 text-orange-300";
+        return "bg-[#F59E0B]/15 text-[#B56F00] border border-[#F59E0B]/25";
       case "Finalizado":
-        return "bg-green-500/20 text-green-400";
+        return "bg-[#42A95E]/15 text-[#32624A] border border-[#42A95E]/25";
       default:
-        return "bg-zinc-500/20 text-zinc-400";
+        return "bg-zinc-500/20 text-[#66736B]";
     }
   }
 
@@ -280,7 +280,7 @@ export function ReportsPage() {
     return (
       <AppLayout>
         <div className="flex h-64 items-center justify-center">
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-950 px-6 py-4 text-sm font-medium text-zinc-300 shadow-[0_20px_60px_rgba(15,23,42,0.25)]">
+          <div className="rounded-3xl border border-[#B4D7C4]/60 bg-white px-6 py-4 text-sm font-medium text-[#32624A] shadow-[0_18px_50px_rgba(50,98,74,0.10)]">
             Carregando relatórios...
           </div>
         </div>
@@ -291,16 +291,16 @@ export function ReportsPage() {
   return (
     <AppLayout>
       <div className="mx-auto w-full max-w-7xl space-y-6 sm:space-y-8 py-6">
-        <div className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.35)] sm:p-8">
+        <div className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] p-6 shadow-[0_25px_70px_rgba(15,23,42,0.35)] sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
-              <p className="text-sm uppercase tracking-[0.24em] text-cyan-300/80">
+              <p className="text-sm uppercase tracking-[0.24em] text-[#42A95E]/80">
                 Central de relatórios
               </p>
-              <h1 className="mt-2 text-3xl font-bold sm:text-4xl tracking-[-0.04em] text-white lg:text-5xl">
+              <h1 className="mt-2 text-3xl font-bold sm:text-4xl tracking-[-0.04em] text-[#2B2B2B] lg:text-5xl">
                 Relatórios
               </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base">
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#66736B] sm:text-base">
                 Gere arquivos, filtre indicadores e acompanhe os chamados com a mesma leitura visual do dashboard.
               </p>
             </div>
@@ -308,13 +308,13 @@ export function ReportsPage() {
             <div className="grid w-full gap-3 sm:w-auto sm:grid-cols-2">
               <Button
                 onClick={exportPDF}
-                className="h-12 rounded-2xl border border-rose-500/30 bg-gradient-to-br from-rose-600 to-red-700 px-5 font-semibold text-white shadow-lg shadow-red-950/30 transition hover:-translate-y-0.5 hover:from-rose-500 hover:to-red-600 whitespace-nowrap"
+                className="h-12 rounded-2xl border border-rose-500/30 bg-gradient-to-br from-rose-600 to-red-700 px-5 font-semibold text-[#2B2B2B] shadow-lg shadow-red-950/30 transition hover:-translate-y-0.5 hover:from-rose-500 hover:to-red-600 whitespace-nowrap"
               >
                 <Download size={16} className="mr-2" /> Gerar PDF
               </Button>
               <Button
                 onClick={exportExcel}
-                className="h-12 rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-600 to-green-700 px-5 font-semibold text-white shadow-lg shadow-emerald-950/30 transition hover:-translate-y-0.5 hover:from-emerald-500 hover:to-green-600 whitespace-nowrap"
+                className="h-12 rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-[#42A95E] to-[#32624A] px-5 font-semibold text-[#2B2B2B] shadow-lg shadow-emerald-950/30 transition hover:-translate-y-0.5 hover:from-emerald-500 hover:to-green-600 whitespace-nowrap"
               >
                 <FileSpreadsheet size={16} className="mr-2" /> Gerar Excel
               </Button>
@@ -322,10 +322,10 @@ export function ReportsPage() {
           </div>
         </div>
 
-        <Card className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 shadow-[0_20px_60px_rgba(15,23,42,0.28)]">
+        <Card className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] shadow-[0_18px_50px_rgba(50,98,74,0.10)]">
           <CardHeader>
-            <CardTitle className="flex items-center gap-3 text-xl font-bold tracking-[-0.02em] text-white">
-              <span className="rounded-2xl border border-cyan-500/20 bg-cyan-500/10 p-2 text-cyan-300">
+            <CardTitle className="flex items-center gap-3 text-xl font-bold tracking-[-0.02em] text-[#2B2B2B]">
+              <span className="rounded-2xl border border-[#42A95E]/25 bg-[#42A95E]/10 p-2 text-[#42A95E]">
                 <FileText size={20} />
               </span>
               Filtros do relatório
@@ -334,21 +334,21 @@ export function ReportsPage() {
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
               <div className="space-y-2">
-                <label className="text-sm text-zinc-400 flex items-center gap-2">
+                <label className="text-sm text-[#66736B] flex items-center gap-2">
                   <Search size={14} /> Buscar
                 </label>
                 <Input
                   placeholder="Nome, descrição ou categoria"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="h-11 rounded-2xl border-zinc-800 bg-zinc-900 text-white"
+                  className="h-11 rounded-2xl border-[#B4D7C4]/60 bg-[#F8FBF9] text-[#2B2B2B]"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm text-zinc-400">Setor</label>
+                <label className="text-sm text-[#66736B]">Setor</label>
                 <Select value={sectorFilter} onValueChange={setSectorFilter}>
-                  <SelectTrigger className="h-11 rounded-2xl border border-zinc-800 bg-zinc-900 text-white">
+                  <SelectTrigger className="h-11 rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9] text-[#2B2B2B]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -365,12 +365,12 @@ export function ReportsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm text-zinc-400">Categoria</label>
+                <label className="text-sm text-[#66736B]">Categoria</label>
                 <Select
                   value={categoryFilter}
                   onValueChange={setCategoryFilter}
                 >
-                  <SelectTrigger className="h-11 rounded-2xl border border-zinc-800 bg-zinc-900 text-white">
+                  <SelectTrigger className="h-11 rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9] text-[#2B2B2B]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -387,9 +387,9 @@ export function ReportsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm text-zinc-400">Origem</label>
+                <label className="text-sm text-[#66736B]">Origem</label>
                 <Select value={originFilter} onValueChange={setOriginFilter}>
-                  <SelectTrigger className="h-11 rounded-2xl border border-zinc-800 bg-zinc-900 text-white">
+                  <SelectTrigger className="h-11 rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9] text-[#2B2B2B]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -403,9 +403,9 @@ export function ReportsPage() {
 
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
               <div className="space-y-2">
-                <label className="text-sm text-zinc-400">Status</label>
+                <label className="text-sm text-[#66736B]">Status</label>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="h-11 rounded-2xl border border-zinc-800 bg-zinc-900 text-white">
+                  <SelectTrigger className="h-11 rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9] text-[#2B2B2B]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -421,12 +421,12 @@ export function ReportsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm text-zinc-400">Prioridade</label>
+                <label className="text-sm text-[#66736B]">Prioridade</label>
                 <Select
                   value={priorityFilter}
                   onValueChange={setPriorityFilter}
                 >
-                  <SelectTrigger className="h-11 rounded-2xl border border-zinc-800 bg-zinc-900 text-white">
+                  <SelectTrigger className="h-11 rounded-2xl border border-[#B4D7C4]/60 bg-[#F8FBF9] text-[#2B2B2B]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -440,44 +440,44 @@ export function ReportsPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm text-zinc-400 flex items-center gap-2">
+                <label className="text-sm text-[#66736B] flex items-center gap-2">
                   <Calendar size={14} /> Data Inicial
                 </label>
                 <Input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="h-11 rounded-2xl border-zinc-800 bg-zinc-900 text-white"
+                  className="h-11 rounded-2xl border-[#B4D7C4]/60 bg-[#F8FBF9] text-[#2B2B2B]"
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm text-zinc-400 flex items-center gap-2">
+                <label className="text-sm text-[#66736B] flex items-center gap-2">
                   <Calendar size={14} /> Data Final
                 </label>
                 <Input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="h-11 rounded-2xl border-zinc-800 bg-zinc-900 text-white"
+                  className="h-11 rounded-2xl border-[#B4D7C4]/60 bg-[#F8FBF9] text-[#2B2B2B]"
                 />
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 rounded-[1.5rem] border border-cyan-500/10 bg-zinc-900/80 p-4 text-sm text-zinc-400 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 rounded-[1.5rem] border border-[#42A95E]/15 bg-[#F8FBF9]/90 p-4 text-sm text-[#66736B] sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <p>
-                  <strong className="text-white">{filteredTickets.length}</strong>{" "}
+                  <strong className="text-[#2B2B2B]">{filteredTickets.length}</strong>{" "}
                   chamados encontrados
                 </p>
-                <div className="mt-2 break-words text-xs leading-5 text-zinc-500">
+                <div className="mt-2 break-words text-xs leading-5 text-[#7C8A80]">
                   {getFiltersSummary()}
                 </div>
               </div>
               <Button
                 onClick={clearFilters}
                 variant="outline"
-                className="inline-flex items-center justify-center rounded-full border border-zinc-700 bg-zinc-950 px-5 py-2 text-sm font-medium text-white transition hover:border-cyan-500 hover:text-cyan-200"
+                className="inline-flex items-center justify-center rounded-full border border-[#80B092]/60 bg-white px-5 py-2 text-sm font-medium text-[#2B2B2B] transition hover:border-[#42A95E] hover:text-[#32624A]"
             >
                 <RotateCcw size={16} className="mr-2" /> Limpar filtros
               </Button>
@@ -487,7 +487,7 @@ export function ReportsPage() {
 
         <div className="space-y-6">
           <section>
-            <h3 className="mb-4 text-sm uppercase tracking-[0.16em] text-zinc-300">
+            <h3 className="mb-4 text-sm uppercase tracking-[0.16em] text-[#32624A]">
               Resumo por status
             </h3>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
@@ -520,7 +520,7 @@ export function ReportsPage() {
           </section>
 
           <section>
-            <h3 className="mb-4 text-sm uppercase tracking-[0.16em] text-zinc-300">
+            <h3 className="mb-4 text-sm uppercase tracking-[0.16em] text-[#32624A]">
               Resumo por origem
             </h3>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -538,37 +538,37 @@ export function ReportsPage() {
           </section>
         </div>
 
-        <Card className="rounded-[2rem] border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-zinc-950 shadow-[0_20px_60px_rgba(15,23,42,0.28)]">
+        <Card className="rounded-[2rem] border border-[#B4D7C4]/60 bg-gradient-to-br from-white via-[#F8FBF9] to-[#F2F2F2] shadow-[0_18px_50px_rgba(50,98,74,0.10)]">
           <CardHeader>
-            <CardTitle className="text-xl font-bold tracking-[-0.02em] text-white">
+            <CardTitle className="text-xl font-bold tracking-[-0.02em] text-[#2B2B2B]">
               Preview dos dados
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto rounded-[1.5rem] border border-zinc-800 bg-zinc-900/80">
+            <div className="overflow-x-auto rounded-[1.5rem] border border-[#B4D7C4]/60 bg-[#F8FBF9]/90">
               <table className="min-w-[900px] w-full text-sm">
                 <thead>
-                  <tr className="border-b border-zinc-800">
-                    <th className="text-left p-3 text-zinc-400">ID</th>
-                    <th className="text-left p-3 text-zinc-400">Solicitante</th>
-                    <th className="text-left p-3 text-zinc-400">Setor</th>
-                    <th className="text-left p-3 text-zinc-400">Categoria</th>
-                    <th className="text-left p-3 text-zinc-400">Status</th>
-                    <th className="text-left p-3 text-zinc-400">Origem</th>
-                    <th className="text-left p-3 text-zinc-400">Prioridade</th>
-                    <th className="text-left p-3 text-zinc-400">Criado em</th>
+                  <tr className="border-b border-[#B4D7C4]/60">
+                    <th className="text-left p-3 text-[#66736B]">ID</th>
+                    <th className="text-left p-3 text-[#66736B]">Solicitante</th>
+                    <th className="text-left p-3 text-[#66736B]">Setor</th>
+                    <th className="text-left p-3 text-[#66736B]">Categoria</th>
+                    <th className="text-left p-3 text-[#66736B]">Status</th>
+                    <th className="text-left p-3 text-[#66736B]">Origem</th>
+                    <th className="text-left p-3 text-[#66736B]">Prioridade</th>
+                    <th className="text-left p-3 text-[#66736B]">Criado em</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredTickets.slice(0, 20).map((ticket) => (
                     <tr
                       key={ticket.id}
-                      className="border-b border-zinc-800 transition hover:bg-zinc-800/50"
+                      className="border-b border-[#B4D7C4]/60 transition hover:bg-[#EAF6EE]/50"
                     >
-                      <td className="p-3 text-white">#{ticket.id}</td>
-                      <td className="p-3 text-white">{ticket.user}</td>
-                      <td className="p-3 text-white">{ticket.sector}</td>
-                      <td className="p-3 text-white">{ticket.category}</td>
+                      <td className="p-3 text-[#2B2B2B]">#{ticket.id}</td>
+                      <td className="p-3 text-[#2B2B2B]">{ticket.user}</td>
+                      <td className="p-3 text-[#2B2B2B]">{ticket.sector}</td>
+                      <td className="p-3 text-[#2B2B2B]">{ticket.category}</td>
                       <td className="p-3">
                         <span
                           className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${getStatusColor(ticket.status)}`}
@@ -576,9 +576,9 @@ export function ReportsPage() {
                           {ticket.status}
                         </span>
                       </td>
-                      <td className="p-3 text-white">{ticket.origin}</td>
-                      <td className="p-3 text-white">{ticket.priority}</td>
-                      <td className="p-3 text-white">{ticket.createdAt}</td>
+                      <td className="p-3 text-[#2B2B2B]">{ticket.origin}</td>
+                      <td className="p-3 text-[#2B2B2B]">{ticket.priority}</td>
+                      <td className="p-3 text-[#2B2B2B]">{ticket.createdAt}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -586,14 +586,14 @@ export function ReportsPage() {
             </div>
 
             {filteredTickets.length > 20 && (
-              <div className="p-3 text-center text-zinc-400">
+              <div className="p-3 text-center text-[#66736B]">
                 ... e mais {filteredTickets.length - 20} registros (visíveis
                 apenas no export)
               </div>
             )}
 
             {filteredTickets.length === 0 && (
-              <div className="p-8 text-center text-zinc-400">
+              <div className="p-8 text-center text-[#66736B]">
                 Nenhum chamado encontrado com os filtros aplicados.
               </div>
             )}
