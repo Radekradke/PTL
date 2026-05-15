@@ -35,46 +35,43 @@
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-xl: calc(var(--radius) * 1.35);
+  --radius-2xl: calc(var(--radius) * 1.75);
+  --radius-3xl: calc(var(--radius) * 2.1);
 }
 
 :root,
 .dark {
   color-scheme: light;
-  --background: #f5f8fc;
-  --foreground: #101828;
-  --card: #ffffff;
-  --card-foreground: #101828;
-  --popover: #ffffff;
-  --popover-foreground: #101828;
-  --primary: #2563eb;
-  --primary-foreground: #ffffff;
-  --secondary: #eaf2ff;
-  --secondary-foreground: #1e3a8a;
-  --muted: #eef4fb;
-  --muted-foreground: #64748b;
-  --accent: #e0f2fe;
-  --accent-foreground: #0f4f78;
-  --destructive: #dc2626;
-  --border: #dbe6f3;
-  --input: #dbe6f3;
-  --ring: #2563eb;
-  --radius: 0.95rem;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #101828;
-  --sidebar-accent: #eaf2ff;
-  --sidebar-accent-foreground: #1e3a8a;
-  --sidebar-border: #dbe6f3;
-  --sidebar-ring: #2563eb;
+  --background: #F6F8FB;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F172A;
+  --primary: #2563EB;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EFF6FF;
+  --secondary-foreground: #1E3A8A;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+  --accent: #EFF6FF;
+  --accent-foreground: #1D4ED8;
+  --destructive: #DC2626;
+  --border: #E5EAF1;
+  --input: #E5EAF1;
+  --ring: #2563EB;
+  --radius: 0.9rem;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #0F172A;
+  --sidebar-accent: #EFF6FF;
+  --sidebar-accent-foreground: #1D4ED8;
+  --sidebar-border: #E5EAF1;
+  --sidebar-ring: #2563EB;
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
+  * { @apply border-border outline-ring/50; }
 
   html {
     font-family: 'Geist Variable', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -86,126 +83,60 @@
   body {
     min-height: 100vh;
     background:
-      radial-gradient(circle at 5% 0%, rgba(37, 99, 235, 0.12), transparent 30%),
-      radial-gradient(circle at 95% 5%, rgba(14, 165, 233, 0.12), transparent 28%),
-      linear-gradient(180deg, #f8fbff 0%, #f3f7fc 46%, #eef4fb 100%);
-    color: #101828;
+      radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 32%),
+      radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.06), transparent 30%),
+      #F6F8FB;
+    color: #0F172A;
     letter-spacing: -0.01em;
   }
 
-  button,
-  input,
-  select,
-  textarea {
-    font: inherit;
-  }
+  button, input, select, textarea { font: inherit; }
 }
 
-.ls-page-shell {
-  background:
-    radial-gradient(circle at top left, rgba(37, 99, 235, 0.10), transparent 36%),
-    radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.08), transparent 32%),
-    #f5f8fc;
-}
+.ls-page-shell { @apply mx-auto w-full max-w-7xl space-y-6 py-4 sm:space-y-7 sm:py-6; }
 
-.ls-product-card {
-  border: 1px solid rgba(219, 230, 243, 0.95);
-  background: rgba(255, 255, 255, 0.86);
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.07);
-  backdrop-filter: blur(18px);
-}
+.ls-page-heading { @apply rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6; }
 
-.ls-hero-blue {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(125, 179, 255, 0.35);
-  background:
-    radial-gradient(circle at 10% 5%, rgba(14, 165, 233, 0.24), transparent 30%),
-    radial-gradient(circle at 86% 12%, rgba(59, 130, 246, 0.28), transparent 30%),
-    linear-gradient(135deg, #0b1220 0%, #12233c 46%, #1d4ed8 145%);
-  color: #ffffff;
-  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.28);
-}
+.ls-kicker { @apply text-xs font-bold uppercase tracking-[0.18em] text-blue-600; }
 
-.ls-hero-blue::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(120deg, rgba(255,255,255,0.12), transparent 42%, rgba(255,255,255,0.05));
-  opacity: 0.8;
-}
+.ls-title { @apply mt-1 text-3xl font-black tracking-[-0.05em] text-slate-950 sm:text-4xl; }
 
-.ls-hero-content {
-  position: relative;
-  z-index: 1;
-}
+.ls-description { @apply mt-2 max-w-2xl text-sm leading-6 text-slate-600; }
 
-.ls-label {
-  color: #bae6fd;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+.ls-card { @apply rounded-[1.75rem] border border-slate-200 bg-white shadow-sm; }
+
+.ls-input { @apply h-11 rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 shadow-sm outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10; }
+
+.ls-button-primary { @apply rounded-2xl bg-blue-600 text-white shadow-sm transition hover:bg-blue-700; }
+
+.ls-button-secondary { @apply rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700; }
+
+.ls-help {
+  display: inline-flex;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-left: 0.4rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid #D7E0EA;
+  background: #F8FAFC;
+  color: #2563EB;
+  font-size: 0.7rem;
+  font-weight: 900;
+  vertical-align: middle;
 }
 
 .ls-section-title {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
-  color: #101828;
+  gap: 0.25rem;
   font-weight: 900;
-  letter-spacing: -0.035em;
-}
-
-.ls-help {
-  display: inline-flex;
-  width: 1.15rem;
-  height: 1.15rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  border: 1px solid #cfe0f5;
-  background: #eff6ff;
-  color: #2563eb;
-  font-size: 0.72rem;
-  font-weight: 900;
-  vertical-align: middle;
-}
-
-.ls-input {
-  border-color: #dbe6f3 !important;
-  background: rgba(255,255,255,0.92) !important;
-  color: #101828 !important;
-}
-
-.ls-input:focus {
-  border-color: #2563eb !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-}
-
-.ls-primary-btn {
-  background: linear-gradient(135deg, #2563eb, #0891b2);
-  color: white;
-  box-shadow: 0 16px 32px rgba(37, 99, 235, 0.20);
-}
-
-.ls-primary-btn:hover {
-  filter: brightness(1.04);
-}
-
-.ls-secondary-btn {
-  border: 1px solid #cfe0f5;
-  background: white;
-  color: #1d4ed8;
-}
-
-.ls-secondary-btn:hover {
-  background: #eff6ff;
+  letter-spacing: -0.03em;
+  color: #0F172A;
 }
 
 @media (max-width: 640px) {
   .recharts-wrapper,
-  .recharts-surface {
-    max-width: 100% !important;
-  }
+  .recharts-surface { max-width: 100% !important; }
 }

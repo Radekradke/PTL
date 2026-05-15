@@ -1,9 +1,7 @@
 import { Bell, UserCircle2 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
-interface HeaderProps {
-  notificationCount?: number
-}
+interface HeaderProps { notificationCount?: number }
 
 export function Header({ notificationCount = 0 }: HeaderProps) {
   const navigate = useNavigate()
@@ -15,19 +13,17 @@ export function Header({ notificationCount = 0 }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/75 px-4 py-3 shadow-sm backdrop-blur-2xl sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur-xl sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
         <div className="min-w-0">
           <p className="text-xs font-black uppercase tracking-[0.18em] text-blue-600">Lifting Support</p>
-          <h2 className="truncate text-lg font-black tracking-[-0.04em] text-slate-950 sm:text-xl">
-            Painel técnico
-          </h2>
+          <h2 className="truncate text-lg font-black tracking-[-0.04em] text-slate-950 sm:text-xl">Painel técnico</h2>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={handleNotificationClick}
-            className={`relative rounded-2xl border border-slate-200 bg-white p-2.5 text-slate-600 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 ${notificationCount > 0 ? "cursor-pointer" : "cursor-default"}`}
+            className={`relative rounded-2xl border border-slate-200 bg-slate-50 p-2.5 text-slate-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 ${notificationCount > 0 ? "cursor-pointer" : "cursor-default"}`}
             aria-label="Notificações"
           >
             <Bell size={20} />
@@ -38,7 +34,7 @@ export function Header({ notificationCount = 0 }: HeaderProps) {
             )}
           </button>
 
-          <div className="hidden items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm sm:flex">
+          <div className="hidden items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 sm:flex">
             <UserCircle2 className="text-blue-600" size={22} />
             <div className="text-right leading-tight">
               <p className="text-sm font-bold text-slate-950">{parsedUser?.sector || "Usuário"}</p>
