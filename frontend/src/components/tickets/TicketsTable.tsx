@@ -34,9 +34,9 @@ interface TicketsTableProps {
 
 function FieldCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</p>
-      <p className="mt-1 break-words text-sm font-semibold text-slate-900">{value || "—"}</p>
+    <div className="rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 shadow-sm">
+      <p className="text-[11px] font-black uppercase tracking-[0.12em] text-[#64748B]">{label}</p>
+      <p className="mt-1 break-words text-sm font-bold text-[#102A43]">{value || "—"}</p>
     </div>
   )
 }
@@ -54,14 +54,14 @@ function DetailsSection({
   const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white">
+    <div className="overflow-hidden rounded-2xl border border-[#DDE7E2] bg-white shadow-sm">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
+        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-[#F7FAF8]"
       >
-        <span className="text-sm font-bold text-slate-900">{title}</span>
-        <span className="text-sm font-bold text-blue-700">
+        <span className="text-sm font-black text-[#073B2A]">{title}</span>
+        <span className="text-sm font-black text-[#00A859]">
           {open ? "−" : "+"}
         </span>
       </button>
@@ -239,22 +239,22 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
   function getStatusStyle(status: string) {
     if (status === "Aberto") {
-      return "bg-blue-50 text-blue-700 ring-1 ring-blue-200"
+      return "bg-[#EFF6FF] text-[#1D4ED8] ring-1 ring-[#BFDBFE]"
     }
 
     if (status === "Em andamento") {
-      return "bg-amber-50 text-amber-700 ring-1 ring-amber-200"
+      return "bg-[#FFFBEB] text-[#B45309] ring-1 ring-[#FDE68A]"
     }
 
     if (status === "Aguardando usuário") {
-      return "bg-orange-50 text-orange-700 ring-1 ring-orange-200"
+      return "bg-[#FFF7ED] text-[#C2410C] ring-1 ring-[#FED7AA]"
     }
 
     if (status === "Finalizado") {
-      return "bg-blue-50 text-blue-700 ring-1 ring-emerald-200"
+      return "bg-[#E9FFF3] text-[#073B2A] ring-1 ring-emerald-200"
     }
 
-    return "bg-slate-100 text-slate-600 ring-1 ring-slate-200"
+    return "bg-[#EAF0ED] text-[#516070] ring-1 ring-[#DDE7E2]"
   }
 
   function handleAddResponse() {
@@ -332,34 +332,34 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
     if (ticket.status === "Finalizado") {
       return {
         label: "Concluído",
-        className: "bg-blue-50 text-blue-700 ring-1 ring-emerald-200",
+        className: "bg-[#E9FFF3] text-[#073B2A] ring-1 ring-emerald-200",
       }
     }
 
     if (ticket.origin === "Offshore") {
       return {
         label: "Offshore",
-        className: "bg-rose-50 text-rose-700 ring-1 ring-rose-200",
+        className: "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]",
       }
     }
 
     if (ticket.priority === "Urgente") {
       return {
         label: "Urgente",
-        className: "bg-rose-50 text-rose-700 ring-1 ring-rose-200",
+        className: "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]",
       }
     }
 
     if (ticket.priority === "Alta") {
       return {
         label: "Alta",
-        className: "bg-orange-50 text-orange-700 ring-1 ring-orange-200",
+        className: "bg-[#FFF7ED] text-[#C2410C] ring-1 ring-[#FED7AA]",
       }
     }
 
     return {
       label: "No prazo",
-      className: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",
+      className: "bg-[#EAF0ED] text-[#334155] ring-1 ring-[#DDE7E2]",
     }
   }
 
@@ -380,34 +380,34 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
   return (
     <div className="space-y-5">
-      <div className="ls-product-card rounded-3xl p-4 sm:p-5">
+      <div className="rounded-3xl border border-[#DDE7E2] bg-white/90 p-4 shadow-[0_18px_48px_rgba(7,59,42,0.08)] backdrop-blur sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-600">Chamados</p>
-            <h2 className="mt-1 text-2xl font-bold tracking-[-0.03em] text-slate-950">Fila de atendimento</h2>
-            <p className="mt-1 text-sm text-slate-600">Filtre, abra e responda chamados em um só lugar.</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#00A859]">Chamados</p>
+            <h2 className="mt-1 text-2xl font-bold tracking-[-0.03em] text-[#073B2A]">Fila de atendimento</h2>
+            <p className="mt-1 text-sm text-[#64748B]">Filtre, abra e responda chamados em um só lugar.</p>
           </div>
 
           <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto lg:shrink-0">
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="h-11 w-full rounded-2xl bg-blue-600 px-5 text-white hover:bg-blue-700 sm:w-auto whitespace-nowrap">
+                <Button className="h-11 w-full rounded-2xl bg-[#00A859] px-5 text-white shadow-[0_12px_30px_rgba(0,168,89,0.20)] hover:bg-[#078C4D] sm:w-auto whitespace-nowrap">
                   Novo chamado
                 </Button>
               </DialogTrigger>
 
-              <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-200 bg-white p-5 text-slate-950 shadow-2xl sm:max-w-2xl">
+              <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl border border-[#DDE7E2] bg-white p-5 text-[#111827] shadow-2xl sm:max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>Novo chamado</DialogTitle>
                 </DialogHeader>
 
                 <div className="grid gap-4">
                   <div className="grid gap-2">
-                    <label className="text-sm font-medium text-slate-700">Solicitante</label>
+                    <label className="text-sm font-medium text-[#334155]">Solicitante</label>
                     <select
                       value={employeeId}
                       onChange={(e) => handleEmployeeChange(e.target.value)}
-                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none focus:border-blue-500"
+                      className="w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]"
                     >
                       <option value="">Selecione um funcionário</option>
                       {employees.map((emp) => (
@@ -420,19 +420,19 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="grid gap-2">
-                      <label className="text-sm font-medium text-slate-700">Setor vinculado</label>
-                      <div className="min-h-[48px] rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 shadow-sm">
+                      <label className="text-sm font-medium text-[#334155]">Setor vinculado</label>
+                      <div className="min-h-[48px] rounded-2xl border border-[#DDE7E2] bg-[#F4F8F6] px-4 py-3 text-[#102A43] shadow-sm">
                         {selectedEmployeeSector?.name || sectors.find((sect) => String(sect.id) === sectorId)?.name || "Selecione um funcionário"}
                       </div>
-                      <p className="text-xs text-slate-500">Preenchido pelo cadastro do funcionário.</p>
+                      <p className="text-xs text-[#64748B]">Preenchido pelo cadastro do funcionário.</p>
                     </div>
 
                     <div className="grid gap-2">
-                      <label className="text-sm font-medium text-slate-700">Categoria</label>
+                      <label className="text-sm font-medium text-[#334155]">Categoria</label>
                       <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
-                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none focus:border-blue-500"
+                        className="w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]"
                       >
                         {categories.map((categoryItem) => (
                           <option key={categoryItem}>{categoryItem}</option>
@@ -443,11 +443,11 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="grid gap-2">
-                      <label className="text-sm font-medium text-slate-700">Origem</label>
+                      <label className="text-sm font-medium text-[#334155]">Origem</label>
                       <select
                         value={origin}
                         onChange={(e) => setOrigin(e.target.value)}
-                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none focus:border-blue-500"
+                        className="w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]"
                       >
                         <option>Base</option>
                         <option>Offshore</option>
@@ -455,11 +455,11 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     </div>
 
                     <div className="grid gap-2">
-                      <label className="text-sm font-medium text-slate-700">Prioridade</label>
+                      <label className="text-sm font-medium text-[#334155]">Prioridade</label>
                       <select
                         value={priority}
                         onChange={(e) => setPriority(e.target.value)}
-                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none focus:border-blue-500"
+                        className="w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]"
                       >
                         <option>Baixa</option>
                         <option>Normal</option>
@@ -470,17 +470,17 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                   </div>
 
                   <div className="grid gap-2">
-                    <label className="text-sm font-medium text-slate-700">Descrição</label>
+                    <label className="text-sm font-medium text-[#334155]">Descrição</label>
                     <Textarea
                       placeholder="Descreva o problema com contexto objetivo..."
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      className="min-h-[140px] border-slate-200 bg-white text-slate-950"
+                      className="min-h-[140px] border-[#DDE7E2] bg-white text-[#111827]"
                     />
                   </div>
 
                   <Button
-                    className="h-11 w-full rounded-2xl bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
+                    className="h-11 w-full rounded-2xl bg-[#00A859] text-white hover:bg-[#078C4D] disabled:opacity-50"
                     onClick={handleCreateTicket}
                     disabled={isSubmitting}
                   >
@@ -492,7 +492,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
             <Button
               variant="outline"
-              className="h-11 w-full rounded-2xl border-blue-200 bg-white text-blue-700 hover:bg-blue-50 sm:w-auto whitespace-nowrap"
+              className="h-11 w-full rounded-2xl border-[#BFEFD7] bg-white text-[#073B2A] hover:bg-[#E9FFF3] sm:w-auto whitespace-nowrap"
               onClick={() => {
                 setSearch("")
                 setStatusFilter("Todos")
@@ -511,13 +511,13 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             placeholder="Buscar chamado..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-11 border-slate-200 bg-white text-slate-950 xl:col-span-1"
+            className="h-11 border-[#DDE7E2] bg-white text-[#111827] xl:col-span-1"
           />
 
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 shadow-sm outline-none focus:border-blue-500"
+            className="h-11 w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]"
           >
             <option value="Todos">Todos status</option>
             <option value="Aberto">Aberto</option>
@@ -529,7 +529,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           <select
             value={originFilter}
             onChange={(e) => setOriginFilter(e.target.value)}
-            className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 shadow-sm outline-none focus:border-blue-500"
+            className="h-11 w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]"
           >
             <option value="Todas">Todas origens</option>
             <option value="Offshore">Offshore</option>
@@ -539,7 +539,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 shadow-sm outline-none focus:border-blue-500"
+            className="h-11 w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]"
           >
             <option value="Todas">Todas prioridades</option>
             <option value="Baixa">Baixa</option>
@@ -551,7 +551,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           <select
             value={sectorFilter}
             onChange={(e) => setSectorFilter(e.target.value)}
-            className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-slate-900 shadow-sm outline-none focus:border-blue-500"
+            className="h-11 w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]"
           >
             <option value="Todos">Todos setores</option>
             {sectors.map((sectorItem) => (
@@ -564,15 +564,15 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       </div>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-slate-600">
-          <span className="font-semibold text-slate-950">{filteredTickets.length}</span> chamado(s) encontrado(s)
+        <p className="text-sm text-[#516070]">
+          <span className="font-semibold text-[#111827]">{filteredTickets.length}</span> chamado(s) encontrado(s)
         </p>
       </div>
 
-      <div className="ls-product-card rounded-3xl p-3 sm:p-4">
-        <div className="hidden overflow-x-auto rounded-2xl border border-slate-200 bg-white lg:block">
+      <div className="rounded-3xl border border-[#DDE7E2] bg-white/90 p-3 shadow-[0_18px_48px_rgba(7,59,42,0.08)] backdrop-blur sm:p-4">
+        <div className="hidden overflow-x-auto rounded-2xl border border-[#DDE7E2] bg-white lg:block">
           <table className="min-w-[980px] w-full text-left text-[13px]">
-            <thead className="bg-slate-50 text-[11px] uppercase tracking-[0.1em] text-slate-500">
+            <thead className="bg-[#F4F8F6] text-[11px] uppercase tracking-[0.1em] text-[#64748B]">
               <tr>
                 <th className="px-3 py-3 whitespace-nowrap">ID</th>
                 <th className="px-3 py-3 whitespace-nowrap">Solicitante</th>
@@ -587,13 +587,13 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             </thead>
             <tbody>
               {filteredTickets.map((ticket) => (
-                <tr key={ticket.id} className="border-t border-slate-100 transition-all hover:bg-blue-50/50">
-                  <td className="px-3 py-3 text-slate-950 whitespace-nowrap">#{ticket.id}</td>
-                  <td className="px-3 py-3 text-slate-800 whitespace-nowrap">{ticket.user}</td>
-                  <td className="px-3 py-3 text-slate-700 whitespace-nowrap">{ticket.sector}</td>
-                  <td className="px-3 py-3 text-slate-700 whitespace-nowrap">{ticket.category}</td>
+                <tr key={ticket.id} className="border-t border-slate-100 transition-all hover:bg-[#E9FFF3]/50">
+                  <td className="px-3 py-3 text-[#111827] whitespace-nowrap">#{ticket.id}</td>
+                  <td className="px-3 py-3 text-[#102A43] whitespace-nowrap">{ticket.user}</td>
+                  <td className="px-3 py-3 text-[#334155] whitespace-nowrap">{ticket.sector}</td>
+                  <td className="px-3 py-3 text-[#334155] whitespace-nowrap">{ticket.category}</td>
                   <td className="px-3 py-3 whitespace-nowrap">
-                    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${ticket.origin === "Offshore" ? "bg-rose-50 text-rose-700 ring-1 ring-rose-200" : "bg-slate-100 text-slate-700 ring-1 ring-slate-200"}`}>
+                    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${ticket.origin === "Offshore" ? "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]" : "bg-[#EAF0ED] text-[#334155] ring-1 ring-[#DDE7E2]"}`}>
                       {ticket.origin}
                     </span>
                   </td>
@@ -611,7 +611,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     <select
                       value={ticket.status}
                       onChange={(e) => handleChangeStatus(ticket.id, e.target.value)}
-                      className="w-full min-w-[138px] rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 outline-none focus:border-blue-500"
+                      className="w-full min-w-[138px] rounded-xl border border-[#DDE7E2] bg-white px-3 py-2 text-[#102A43] outline-none focus:border-[#00A859]"
                     >
                       <option>Aberto</option>
                       <option>Em andamento</option>
@@ -620,7 +620,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     </select>
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">
-                    <Button variant="outline" size="sm" className="rounded-xl border-slate-200 bg-white text-slate-700 hover:bg-blue-50" onClick={() => setSelectedTicket(ticket)}>
+                    <Button variant="outline" size="sm" className="rounded-xl border-[#DDE7E2] bg-white text-[#334155] hover:bg-[#E9FFF3]" onClick={() => setSelectedTicket(ticket)}>
                       Ver detalhes
                     </Button>
                   </td>
@@ -632,24 +632,24 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
         <div className="space-y-3 lg:hidden">
           {filteredTickets.map((ticket) => (
-            <div key={ticket.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div key={ticket.id} className="rounded-2xl border border-[#DDE7E2] bg-white p-4 shadow-sm">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-blue-600">#{ticket.id}</p>
-                  <h3 className="mt-1 truncate text-base font-bold text-slate-950">{ticket.category}</h3>
-                  <p className="mt-1 text-sm text-slate-600">{ticket.user} · {ticket.sector}</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#00A859]">#{ticket.id}</p>
+                  <h3 className="mt-1 truncate text-base font-bold text-[#111827]">{ticket.category}</h3>
+                  <p className="mt-1 text-sm text-[#516070]">{ticket.user} · {ticket.sector}</p>
                 </div>
                 <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${getStatusStyle(ticket.status)}`}>
                   {ticket.status}
                 </span>
               </div>
 
-              <p className="mt-3 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-slate-700">
+              <p className="mt-3 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-[#334155]">
                 {ticket.description || "Sem descrição."}
               </p>
 
               <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-                <span className={`rounded-full px-3 py-2 text-center font-semibold ${ticket.origin === "Offshore" ? "bg-rose-50 text-rose-700 ring-1 ring-rose-200" : "bg-slate-100 text-slate-700 ring-1 ring-slate-200"}`}>
+                <span className={`rounded-full px-3 py-2 text-center font-semibold ${ticket.origin === "Offshore" ? "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]" : "bg-[#EAF0ED] text-[#334155] ring-1 ring-[#DDE7E2]"}`}>
                   {ticket.origin}
                 </span>
                 <span className={`rounded-full px-3 py-2 text-center font-semibold ${getSlaStatus(ticket).className}`}>
@@ -661,14 +661,14 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 <select
                   value={ticket.status}
                   onChange={(e) => handleChangeStatus(ticket.id, e.target.value)}
-                  className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none focus:border-blue-500"
+                  className="h-11 w-full rounded-2xl border border-[#DDE7E2] bg-white px-3 text-sm text-[#102A43] outline-none focus:border-[#00A859]"
                 >
                   <option>Aberto</option>
                   <option>Em andamento</option>
                   <option>Aguardando usuário</option>
                   <option>Finalizado</option>
                 </select>
-                <Button variant="outline" className="h-11 rounded-2xl border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100" onClick={() => setSelectedTicket(ticket)}>
+                <Button variant="outline" className="h-11 rounded-2xl border-[#BFEFD7] bg-[#E9FFF3] text-[#073B2A] hover:bg-[#D8FBE8]" onClick={() => setSelectedTicket(ticket)}>
                   Ver detalhes
                 </Button>
               </div>
@@ -677,135 +677,135 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
         </div>
 
         {filteredTickets.length === 0 && (
-          <div className="p-8 text-center text-sm text-slate-500">Nenhum chamado encontrado.</div>
+          <div className="p-8 text-center text-sm text-[#64748B]">Nenhum chamado encontrado.</div>
         )}
       </div>
 
     <Dialog open={!!selectedTicket} onOpenChange={() => setSelectedTicket(null)}>
-  <DialogContent className="max-h-[92vh] w-[calc(100vw-1rem)] overflow-hidden rounded-3xl border border-slate-200 bg-[#F8FAF9] p-0 text-slate-950 shadow-2xl sm:max-w-4xl xl:max-w-[1100px]">
-    <DialogHeader className="border-b border-slate-200 bg-white px-5 py-4 sm:px-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-blue-600">
-            Chamado #{selectedTicket?.id}
-          </p>
-          <DialogTitle className="mt-1 text-xl font-bold tracking-[-0.02em] text-slate-950">
-            Atendimento técnico
-          </DialogTitle>
-          <p className="mt-1 text-sm text-slate-500">
-            Responda o usuário e consulte os detalhes quando precisar.
-          </p>
-        </div>
-
-        {selectedTicket && (
-          <span className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(selectedTicket.status)}`}>
-            {selectedTicket.status}
-          </span>
-        )}
-      </div>
-    </DialogHeader>
-
-    {selectedTicket && (
-      <div className="max-h-[calc(92vh-96px)] overflow-y-auto p-4 sm:p-5">
-        <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
-          <section className="space-y-4">
-            <div className="rounded-3xl border border-blue-100 bg-white p-4 shadow-sm">
-              <div className="mb-3">
-                <p className="text-sm font-bold text-slate-950">
-                  Responder ao usuário
+        <DialogContent className="max-h-[92vh] w-[calc(100vw-1rem)] overflow-hidden rounded-3xl border border-[#DDE7E2] bg-[#F7FAF8] p-0 text-[#111827] shadow-[0_30px_90px_rgba(7,59,42,0.18)] sm:max-w-4xl xl:max-w-[1080px]">
+          <DialogHeader className="border-b border-[#DDE7E2] bg-white px-5 py-4 sm:px-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">
+                  Chamado #{selectedTicket?.id}
                 </p>
-                <p className="mt-1 text-xs text-slate-500">
-                  Informe orientação, diagnóstico ou próximo passo.
+                <DialogTitle className="mt-1 text-xl font-black tracking-[-0.03em] text-[#073B2A]">
+                  Atendimento técnico
+                </DialogTitle>
+                <p className="mt-1 text-sm text-[#64748B]">
+                  Leia o problema, responda o usuário e consulte os detalhes se necessário.
                 </p>
               </div>
 
-              <Textarea
-                placeholder="Ex: Verificamos a solicitação e o próximo passo será..."
-                value={technicalResponse}
-                onChange={(e) => setTechnicalResponse(e.target.value)}
-                className="min-h-[150px] rounded-2xl border-slate-200 bg-white text-slate-950"
-              />
+              {selectedTicket && (
+                <span className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(selectedTicket.status)}`}>
+                  {selectedTicket.status}
+                </span>
+              )}
+            </div>
+          </DialogHeader>
 
-              <div className="mt-3 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-                <Button
-                  variant="outline"
-                  className="h-11 rounded-2xl border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                  onClick={handleFinishTicket}
-                >
-                  Finalizar chamado
-                </Button>
+          {selectedTicket && (
+            <div className="max-h-[calc(92vh-96px)] overflow-y-auto p-4 sm:p-5">
+              <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
+                <section className="space-y-4">
+                  <DetailsSection title="Descrição do problema">
+                    <div className="max-h-52 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-white p-4 text-sm leading-6 text-[#102A43] ring-1 ring-[#DDE7E2]">
+                      {selectedTicket.description || "Sem descrição."}
+                    </div>
+                  </DetailsSection>
 
-                <Button
-                  className="h-11 rounded-2xl bg-blue-600 px-6 text-white hover:bg-blue-700 disabled:opacity-50"
-                  onClick={handleAddResponse}
-                  disabled={!technicalResponse.trim()}
-                >
-                  Enviar resposta
-                </Button>
+                  <div className="rounded-3xl border border-[#BFEFD7] bg-white p-4 shadow-[0_18px_45px_rgba(7,59,42,0.08)]">
+                    <div className="mb-3">
+                      <p className="text-sm font-black text-[#073B2A]">
+                        Responder ao usuário
+                      </p>
+                      <p className="mt-1 text-xs text-[#64748B]">
+                        Informe orientação, diagnóstico ou próximo passo do atendimento.
+                      </p>
+                    </div>
+
+                    <Textarea
+                      placeholder="Ex: Verificamos a solicitação e o próximo passo será..."
+                      value={technicalResponse}
+                      onChange={(e) => setTechnicalResponse(e.target.value)}
+                      className="min-h-[150px] rounded-2xl border-[#DDE7E2] bg-[#F7FAF8] text-[#111827] focus-visible:ring-[#00A859]/30"
+                    />
+
+                    <div className="mt-3 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                      <Button
+                        variant="outline"
+                        className="h-11 rounded-2xl border-[#DDE7E2] bg-white text-[#102A43] hover:bg-[#EAF0ED]"
+                        onClick={handleFinishTicket}
+                      >
+                        Finalizar chamado
+                      </Button>
+
+                      <Button
+                        className="h-11 rounded-2xl bg-[#00A859] px-6 text-white shadow-[0_12px_30px_rgba(0,168,89,0.22)] hover:bg-[#078C4D] disabled:opacity-50"
+                        onClick={handleAddResponse}
+                        disabled={!technicalResponse.trim()}
+                      >
+                        Enviar resposta
+                      </Button>
+                    </div>
+                  </div>
+
+                  {selectedTicket.technicalResponse && (
+                    <DetailsSection title="Última resposta técnica">
+                      <div className="max-h-40 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-white p-4 text-sm leading-6 text-[#102A43] ring-1 ring-[#DDE7E2]">
+                        {selectedTicket.technicalResponse}
+                      </div>
+                    </DetailsSection>
+                  )}
+                </section>
+
+                <aside className="space-y-4">
+                  <DetailsSection title="Informações principais">
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                      <FieldCard label="Solicitante" value={selectedTicket.user} />
+                      <FieldCard label="Setor" value={selectedTicket.sector} />
+                      <FieldCard label="Categoria" value={selectedTicket.category} />
+                      <FieldCard label="Criado em" value={selectedTicket.createdAt} />
+                      <FieldCard label="Origem" value={selectedTicket.origin} />
+                      <FieldCard label="Prioridade" value={selectedTicket.priority} />
+                    </div>
+                  </DetailsSection>
+
+                  <DetailsSection title="Histórico do chamado">
+                    <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
+                      {selectedTicket.timeline?.length ? (
+                        selectedTicket.timeline.map(
+                          (
+                            event: { date: string; action: string },
+                            index: number
+                          ) => (
+                            <div
+                              key={index}
+                              className="rounded-2xl bg-white p-3 text-sm ring-1 ring-[#DDE7E2]"
+                            >
+                              <p className="break-words text-[#102A43]">
+                                {event.action}
+                              </p>
+                              <p className="mt-1 text-xs text-[#64748B]">
+                                {event.date}
+                              </p>
+                            </div>
+                          )
+                        )
+                      ) : (
+                        <p className="rounded-2xl border border-dashed border-[#DDE7E2] bg-white p-4 text-sm text-[#64748B]">
+                          Nenhum evento registrado.
+                        </p>
+                      )}
+                    </div>
+                  </DetailsSection>
+                </aside>
               </div>
             </div>
-
-            <DetailsSection title="Descrição do problema" defaultOpen>
-              <div className="max-h-44 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 ring-1 ring-slate-200">
-                {selectedTicket.description || "Sem descrição."}
-              </div>
-            </DetailsSection>
-
-            {selectedTicket.technicalResponse && (
-              <DetailsSection title="Última resposta técnica">
-                <div className="max-h-40 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 ring-1 ring-slate-200">
-                  {selectedTicket.technicalResponse}
-                </div>
-              </DetailsSection>
-            )}
-          </section>
-
-          <aside className="space-y-4">
-            <DetailsSection title="Informações principais" defaultOpen>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                <FieldCard label="Solicitante" value={selectedTicket.user} />
-                <FieldCard label="Setor" value={selectedTicket.sector} />
-                <FieldCard label="Categoria" value={selectedTicket.category} />
-                <FieldCard label="Criado em" value={selectedTicket.createdAt} />
-                <FieldCard label="Origem" value={selectedTicket.origin} />
-                <FieldCard label="Prioridade" value={selectedTicket.priority} />
-              </div>
-            </DetailsSection>
-
-            <DetailsSection title="Histórico do chamado">
-              <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
-                {selectedTicket.timeline?.length ? (
-                  selectedTicket.timeline.map(
-                    (
-                      event: { date: string; action: string },
-                      index: number
-                    ) => (
-                      <div
-                        key={index}
-                        className="rounded-2xl bg-slate-50 p-3 text-sm ring-1 ring-slate-200"
-                      >
-                        <p className="break-words text-slate-800">
-                          {event.action}
-                        </p>
-                        <p className="mt-1 text-xs text-slate-500">
-                          {event.date}
-                        </p>
-                      </div>
-                    )
-                  )
-                ) : (
-                  <p className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500">
-                    Nenhum evento registrado.
-                  </p>
-                )}
-              </div>
-            </DetailsSection>
-          </aside>
-        </div>
-      </div>
-    )}
-  </DialogContent>
-</Dialog>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
