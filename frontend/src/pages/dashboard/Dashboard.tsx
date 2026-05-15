@@ -67,33 +67,56 @@ export function Dashboard() {
   return (
     <AppLayout>
       <div className="ls-page-shell">
-        <section className="relative overflow-hidden rounded-[2rem] border border-blue-900/20 bg-gradient-to-br from-slate-950 via-blue-950 to-blue-700 p-6 text-white shadow-[0_24px_70px_rgba(37,99,235,0.20)] sm:p-8">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute -left-24 -top-16 h-72 w-72 rounded-full bg-cyan-400/15 blur-[80px]" />
-            <div className="absolute right-0 top-10 h-80 w-80 rounded-full bg-blue-400/15 blur-[90px]" />
-          </div>
-          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-200">Visão geral</p>
-              <h1 className="mt-2 text-4xl font-black tracking-[-0.06em] text-white sm:text-5xl">Dashboard</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-blue-100/85 sm:text-base">Indicadores principais, filtros e gráficos para leitura rápida da operação.</p>
-            </div>
-            <div className="grid grid-cols-3 gap-3 rounded-3xl border border-white/10 bg-white/10 p-2 backdrop-blur-md sm:min-w-[390px]">
-              <div className="rounded-2xl bg-white/95 p-3 text-center shadow-sm">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Filtrados</p>
-                <p className="mt-1 text-2xl font-black text-slate-950">{filteredTickets.length}</p>
-              </div>
-              <div className="rounded-2xl bg-white/95 p-3 text-center shadow-sm">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-600">Setores</p>
-                <p className="mt-1 text-2xl font-black text-blue-700">{uniqueSectors.length}</p>
-              </div>
-              <div className="rounded-2xl bg-white/95 p-3 text-center shadow-sm">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-600">Categorias</p>
-                <p className="mt-1 text-2xl font-black text-cyan-700">{uniqueCategories.length}</p>
-              </div>
-            </div>
-          </div>
-        </section>
+        <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+  <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+    <div>
+      <p className="text-xs font-black uppercase tracking-[0.22em] text-[#2563EB]">
+        Visão geral
+      </p>
+
+      <h1 className="mt-2 text-4xl font-black tracking-[-0.06em] text-[#0F172A] sm:text-5xl">
+        Dashboard
+      </h1>
+
+      <p className="mt-3 max-w-2xl text-sm leading-6 text-[#64748B] sm:text-base">
+        Indicadores principais, filtros e gráficos para leitura rápida da
+        operação.
+      </p>
+    </div>
+
+    <div className="grid grid-cols-3 gap-3 sm:min-w-[390px]">
+      <div className="rounded-3xl border border-slate-200 bg-[#F8FAFC] p-4 text-center shadow-sm transition hover:shadow-md">
+        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">
+          Filtrados
+        </p>
+
+        <p className="mt-1 text-2xl font-black text-slate-900">
+          {filteredTickets.length}
+        </p>
+      </div>
+
+      <div className="rounded-3xl border border-slate-200 bg-[#F8FAFC] p-4 text-center shadow-sm transition hover:shadow-md">
+        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#2563EB]">
+          Setores
+        </p>
+
+        <p className="mt-1 text-2xl font-black text-[#2563EB]">
+          {uniqueSectors.length}
+        </p>
+      </div>
+
+      <div className="rounded-3xl border border-slate-200 bg-[#F8FAFC] p-4 text-center shadow-sm transition hover:shadow-md">
+        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-600">
+          Categorias
+        </p>
+
+        <p className="mt-1 text-2xl font-black text-cyan-700">
+          {uniqueCategories.length}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
 
         <section className="ls-card p-4 sm:p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
