@@ -59,64 +59,37 @@ export function Dashboard() {
   const tooltipStyle = {
     backgroundColor: "#ffffff",
     borderRadius: 16,
-    border: "1px solid #E5EAF1",
-    color: "#0F172A",
-    boxShadow: "0 18px 45px rgba(15, 23, 42, 0.12)",
+    border: "1px solid #DDE8E2",
+    color: "#111827",
+    boxShadow: "0 18px 45px rgba(16, 42, 67, 0.12)",
   }
 
   return (
     <AppLayout>
       <div className="ls-page-shell">
-        <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-  <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-    <div>
-      <p className="text-xs font-black uppercase tracking-[0.22em] text-[#2563EB]">
-        Visão geral
-      </p>
-
-      <h1 className="mt-2 text-4xl font-black tracking-[-0.06em] text-[#0F172A] sm:text-5xl">
-        Dashboard
-      </h1>
-
-      <p className="mt-3 max-w-2xl text-sm leading-6 text-[#64748B] sm:text-base">
-        Indicadores principais, filtros e gráficos para leitura rápida da
-        operação.
-      </p>
-    </div>
-
-    <div className="grid grid-cols-3 gap-3 sm:min-w-[390px]">
-      <div className="rounded-3xl border border-slate-200 bg-[#F8FAFC] p-4 text-center shadow-sm transition hover:shadow-md">
-        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">
-          Filtrados
-        </p>
-
-        <p className="mt-1 text-2xl font-black text-slate-900">
-          {filteredTickets.length}
-        </p>
-      </div>
-
-      <div className="rounded-3xl border border-slate-200 bg-[#F8FAFC] p-4 text-center shadow-sm transition hover:shadow-md">
-        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#2563EB]">
-          Setores
-        </p>
-
-        <p className="mt-1 text-2xl font-black text-[#2563EB]">
-          {uniqueSectors.length}
-        </p>
-      </div>
-
-      <div className="rounded-3xl border border-slate-200 bg-[#F8FAFC] p-4 text-center shadow-sm transition hover:shadow-md">
-        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-cyan-600">
-          Categorias
-        </p>
-
-        <p className="mt-1 text-2xl font-black text-cyan-700">
-          {uniqueCategories.length}
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
+        <section className="ls-hero-clean p-6 sm:p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#00A859]">Visão geral</p>
+              <h1 className="mt-2 text-4xl font-black tracking-[-0.06em] text-[#111827] sm:text-5xl">Dashboard</h1>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#64748B] sm:text-base">Indicadores principais, filtros e gráficos para leitura rápida da operação.</p>
+            </div>
+            <div className="grid grid-cols-3 gap-3 sm:min-w-[390px]">
+              <div className="rounded-3xl border border-[#DDE8E2] bg-white p-4 text-center shadow-sm">
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Filtrados</p>
+                <p className="mt-1 text-2xl font-black text-[#111827]">{filteredTickets.length}</p>
+              </div>
+              <div className="rounded-3xl border border-[#DDE8E2] bg-white p-4 text-center shadow-sm">
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#00A859]">Setores</p>
+                <p className="mt-1 text-2xl font-black text-[#073B2A]">{uniqueSectors.length}</p>
+              </div>
+              <div className="rounded-3xl border border-[#DDE8E2] bg-white p-4 text-center shadow-sm">
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#102A43]">Categorias</p>
+                <p className="mt-1 text-2xl font-black text-[#102A43]">{uniqueCategories.length}</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <section className="ls-card p-4 sm:p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -154,10 +127,10 @@ export function Dashboard() {
         </section>
 
         <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-          <div className="ls-card p-4 sm:p-6"><h2 className="ls-section-title text-xl">Por setor</h2><p className="text-sm text-slate-500">Volume por área.</p><div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={ticketsBySector}><XAxis dataKey="name" stroke="#94A3B8" tick={{ fill: "#475569", fontSize: 12 }} /><YAxis stroke="#94A3B8" tick={{ fill: "#475569", fontSize: 12 }} /><Tooltip contentStyle={tooltipStyle} /><Bar dataKey="total" fill="#2563EB" radius={[12,12,4,4]} /></BarChart></ResponsiveContainer></div></div>
-          <div className="ls-card p-4 sm:p-6"><h2 className="ls-section-title text-xl">Por categoria</h2><p className="text-sm text-slate-500">Tipos de demanda.</p><div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={ticketsByCategory}><XAxis dataKey="name" stroke="#94A3B8" tick={{ fill: "#475569", fontSize: 12 }} /><YAxis stroke="#94A3B8" tick={{ fill: "#475569", fontSize: 12 }} /><Tooltip contentStyle={tooltipStyle} /><Bar dataKey="total" fill="#0EA5E9" radius={[12,12,4,4]} /></BarChart></ResponsiveContainer></div></div>
-          <div className="ls-card p-4 sm:p-6"><h2 className="ls-section-title text-xl">Por status</h2><p className="text-sm text-slate-500">Distribuição da fila.</p><div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={ticketsByStatus} dataKey="total" nameKey="name" outerRadius={105} innerRadius={58} paddingAngle={4} label><Cell fill="#3B82F6" /><Cell fill="#F59E0B" /><Cell fill="#F97316" /><Cell fill="#10B981" /></Pie><Tooltip contentStyle={tooltipStyle} /></PieChart></ResponsiveContainer></div></div>
-          <div className="ls-card p-4 sm:p-6"><h2 className="ls-section-title text-xl">Base x Offshore</h2><p className="text-sm text-slate-500">Origem dos chamados.</p><div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={ticketsByOrigin} dataKey="total" nameKey="name" outerRadius={105} innerRadius={58} paddingAngle={4} label><Cell fill="#0EA5E9" /><Cell fill="#E11D48" /></Pie><Tooltip contentStyle={tooltipStyle} /></PieChart></ResponsiveContainer></div></div>
+          <div className="ls-card p-4 sm:p-6"><h2 className="ls-section-title text-xl">Por setor</h2><p className="text-sm text-slate-500">Volume por área.</p><div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={ticketsBySector}><XAxis dataKey="name" stroke="#94A3B8" tick={{ fill: "#475569", fontSize: 12 }} /><YAxis stroke="#94A3B8" tick={{ fill: "#475569", fontSize: 12 }} /><Tooltip contentStyle={tooltipStyle} /><Bar dataKey="total" fill="#00A859" radius={[12,12,4,4]} /></BarChart></ResponsiveContainer></div></div>
+          <div className="ls-card p-4 sm:p-6"><h2 className="ls-section-title text-xl">Por categoria</h2><p className="text-sm text-slate-500">Tipos de demanda.</p><div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={ticketsByCategory}><XAxis dataKey="name" stroke="#94A3B8" tick={{ fill: "#475569", fontSize: 12 }} /><YAxis stroke="#94A3B8" tick={{ fill: "#475569", fontSize: 12 }} /><Tooltip contentStyle={tooltipStyle} /><Bar dataKey="total" fill="#102A43" radius={[12,12,4,4]} /></BarChart></ResponsiveContainer></div></div>
+          <div className="ls-card p-4 sm:p-6"><h2 className="ls-section-title text-xl">Por status</h2><p className="text-sm text-slate-500">Distribuição da fila.</p><div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={ticketsByStatus} dataKey="total" nameKey="name" outerRadius={105} innerRadius={58} paddingAngle={4} label><Cell fill="#4F93D2" /><Cell fill="#F59E0B" /><Cell fill="#F97316" /><Cell fill="#00A859" /></Pie><Tooltip contentStyle={tooltipStyle} /></PieChart></ResponsiveContainer></div></div>
+          <div className="ls-card p-4 sm:p-6"><h2 className="ls-section-title text-xl">Base x Offshore</h2><p className="text-sm text-slate-500">Origem dos chamados.</p><div className="mt-5 h-[320px]"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={ticketsByOrigin} dataKey="total" nameKey="name" outerRadius={105} innerRadius={58} paddingAngle={4} label><Cell fill="#102A43" /><Cell fill="#E11D48" /></Pie><Tooltip contentStyle={tooltipStyle} /></PieChart></ResponsiveContainer></div></div>
         </div>
       </div>
     </AppLayout>

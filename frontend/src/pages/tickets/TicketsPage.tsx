@@ -19,7 +19,6 @@ export function TicketsPage() {
     try {
       const response = await fetch(`${API_URL}/tickets`)
       const data = await response.json()
-
       const formattedTickets = data.map((ticket: any) => ({
         id: ticket.id,
         user: ticket.employee?.name || "Sem solicitante",
@@ -36,7 +35,6 @@ export function TicketsPage() {
           action: event.action,
         })) || [],
       }))
-
       setTickets(formattedTickets)
       setGlobalTickets(formattedTickets)
     } catch (error) {
@@ -44,37 +42,39 @@ export function TicketsPage() {
     }
   }
 
-  const totalTickets = tickets.length
   const openTickets = tickets.filter((ticket) => ticket.status === "Aberto").length
   const progressTickets = tickets.filter((ticket) => ticket.status === "Em andamento").length
   const waitingUserTickets = tickets.filter((ticket) => ticket.status === "Aguardando usuário").length
   const finishedTickets = tickets.filter((ticket) => ticket.status === "Finalizado").length
   const offshoreTickets = tickets.filter((ticket) => ticket.origin === "Offshore").length
   const baseTickets = tickets.filter((ticket) => ticket.origin === "Base").length
+  const totalTickets = tickets.length
 
   return (
     <AppLayout>
       <div className="ls-page-shell">
-        <section className="ls-page-heading">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+        <section className="ls-hero-clean p-6 sm:p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="ls-kicker">Operação técnica</p>
-              <h1 className="ls-title">Chamados</h1>
-              <p className="ls-description">Gerencie a fila, responda usuários e acompanhe o atendimento.</p>
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#00A859]">Operação técnica</p>
+              <h1 className="mt-2 text-4xl font-black tracking-[-0.06em] text-[#111827] sm:text-5xl">Chamados</h1>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#64748B] sm:text-base">
+                Gerencie a fila, responda usuários e acompanhe atendimentos.
+              </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-2 sm:min-w-[360px]">
-              <div className="rounded-2xl bg-white p-3 text-center shadow-sm">
+            <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[420px]">
+              <div className="rounded-3xl border border-[#DDE8E2] bg-white p-4 text-center shadow-sm">
                 <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Total</p>
-                <p className="mt-1 text-2xl font-black text-slate-950">{totalTickets}</p>
+                <p className="mt-1 text-2xl font-black text-[#111827]">{totalTickets}</p>
               </div>
-              <div className="rounded-2xl bg-white p-3 text-center shadow-sm">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-amber-600">Pendentes</p>
+              <div className="rounded-3xl border border-amber-200 bg-amber-50 p-4 text-center shadow-sm">
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-amber-700">Pendentes</p>
                 <p className="mt-1 text-2xl font-black text-amber-700">{openTickets + waitingUserTickets}</p>
               </div>
-              <div className="rounded-2xl bg-white p-3 text-center shadow-sm">
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-600">Em atendimento</p>
-                <p className="mt-1 text-2xl font-black text-blue-700">{progressTickets}</p>
+              <div className="rounded-3xl border border-[#DDE8E2] bg-[#ECFBF3] p-4 text-center shadow-sm">
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#073B2A]">Em atendimento</p>
+                <p className="mt-1 text-2xl font-black text-[#00A859]">{progressTickets}</p>
               </div>
             </div>
           </div>

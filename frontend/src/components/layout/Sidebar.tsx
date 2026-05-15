@@ -27,19 +27,21 @@ export function Sidebar() {
   ].filter((item) => item.allowed.includes(role))
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-72 shrink-0 border-r border-slate-200 bg-white px-4 py-5 text-slate-950 lg:block">
-      <div className="rounded-3xl border border-slate-200 bg-gradient-to-br from-blue-50 to-white p-4 shadow-sm">
+    <aside className="sticky top-0 hidden h-screen w-72 shrink-0 border-r border-[#DDE8E2] bg-white/88 px-4 py-5 text-[#111827] backdrop-blur-xl lg:block">
+      <div className="rounded-3xl border border-[#DDE8E2] bg-gradient-to-br from-white to-[#F2F8F5] p-4 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="grid h-11 w-11 place-items-center rounded-2xl bg-blue-600 text-lg font-black text-white shadow-sm">L</div>
+          <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#073B2A] text-lg font-black text-white shadow-[0_12px_30px_rgba(7,59,42,0.28)]">
+            L
+          </div>
           <div>
-            <h1 className="text-xl font-black tracking-[-0.05em] text-slate-950">Lifting</h1>
-            <p className="text-xs font-black uppercase tracking-[0.14em] text-blue-600">Support Panel</p>
+            <h1 className="text-xl font-black tracking-[-0.05em] text-[#111827]">Lifting</h1>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#00A859]">Support Panel</p>
           </div>
         </div>
 
-        <div className="mt-4 rounded-2xl border border-slate-200 bg-white px-3 py-2">
-          <p className="text-xs text-slate-500">Perfil</p>
-          <p className="text-sm font-black text-blue-700">{role || "Sem perfil"}</p>
+        <div className="mt-4 rounded-2xl border border-[#DDE8E2] bg-white px-3 py-2">
+          <p className="text-xs text-[#64748B]">Perfil</p>
+          <p className="text-sm font-black text-[#073B2A]">{role || "Sem perfil"}</p>
         </div>
       </div>
 
@@ -52,8 +54,10 @@ export function Sidebar() {
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
-              className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition ${
-                active ? "bg-blue-600 text-white shadow-sm" : "text-slate-600 hover:bg-blue-50 hover:text-blue-700"
+              className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-black transition ${
+                active
+                  ? "bg-[#ECFBF3] text-[#073B2A] shadow-sm ring-1 ring-[#00A859]/20"
+                  : "text-[#4B5B52] hover:bg-[#F4F9F6] hover:text-[#073B2A]"
               }`}
             >
               <Icon size={18} />
@@ -64,7 +68,7 @@ export function Sidebar() {
 
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-rose-600 transition hover:bg-rose-50"
+          className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-black text-[#B42318] transition hover:bg-[#FFF1F1]"
         >
           <LogOut size={18} />
           Sair

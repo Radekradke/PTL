@@ -6,7 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout"
 import { StatsCard } from "@/components/dashboard/StatsCard"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { FileText, Download, Calendar, Search, FileSpreadsheet, RotateCcw } from "lucide-react"
+import { FileSpreadsheet, Download, RotateCcw, Search, Calendar, FileText } from "lucide-react"
 import { API_URL } from "@/services/api"
 
 type Ticket = {
@@ -41,7 +41,7 @@ export function ReportsPage() {
       setLoading(true)
       const response = await fetch(`${API_URL}/tickets`)
       const data = await response.json()
-      const formattedTickets = data.map((ticket: any) => ({
+      setTickets(data.map((ticket: any) => ({
         id: ticket.id,
         user: ticket.employee?.name || "Sem solicitante",
         sector: ticket.sector?.name || "Sem setor",
@@ -52,8 +52,7 @@ export function ReportsPage() {
         description: ticket.description || "",
         technicalResponse: ticket.technicalResponse || "",
         createdAt: ticket.createdAt ? new Date(ticket.createdAt).toLocaleString("pt-BR") : new Date().toLocaleString("pt-BR"),
-      }))
-      setTickets(formattedTickets)
+      })))
     } catch (error) {
       console.error("Erro ao carregar tickets:", error)
     } finally {
@@ -91,44 +90,46 @@ export function ReportsPage() {
   const offshoreFilteredTickets = filteredTickets.filter((ticket) => ticket.origin === "Offshore").length
   const baseFilteredTickets = filteredTickets.filter((ticket) => ticket.origin === "Base").length
 
+  function getFiltersSummary() {
+    const filters = []
+    if (search) filters.push(`Busca: "${search}"`)
+    if (sectorFilter !== "Todos") filters.push(`Setor: ${sectorFilter}`)
+    if (categoryFilter !== "Todas") filters.push(`Categoria: ${categoryFilter}`)
+    if (originFilter !== "Todas") filters.push(`Origem: ${originFilter}`)
+    if (statusFilter !== "Todos") filters.push(`Status: ${statusFilter}`)
+    if (priorityFilter !== "Todas") filters.push(`Prioridade: ${priorityFilter}`)
+    if (startDate || endDate) filters.push(`Período: ${startDate || "início"} até ${endDate || "hoje"}`)
+    return filters.length > 0 ? filters.join(", ") : "Nenhum filtro aplicado"
+  }
+
+  function clearFilters() {
+    setSearch(""); setSectorFilter("Todos"); setCategoryFilter("Todas"); setOriginFilter("Todas"); setStatusFilter("Todos"); setPriorityFilter("Todas"); setStartDate(""); setEndDate("")
+  }
+
   function exportPDF() {
     const doc = new jsPDF()
     doc.setFontSize(18)
     doc.text("Relatório de Chamados - Lifting Support", 14, 20)
     doc.setFontSize(10)
     doc.text(`Gerado em: ${new Date().toLocaleString("pt-BR")}`, 14, 28)
-    doc.text(`Total de chamados: ${filteredTickets.length}`, 14, 34)
+    doc.text(`Filtros aplicados: ${getFiltersSummary()}`, 14, 34)
+    doc.text(`Total de chamados: ${filteredTickets.length}`, 14, 40)
     autoTable(doc, {
-      startY: 42,
+      startY: 48,
       head: [["ID", "Solicitante", "Setor", "Categoria", "Origem", "Status", "Prioridade", "Criado em"]],
       body: filteredTickets.map((ticket) => [`#${ticket.id}`, ticket.user, ticket.sector, ticket.category, ticket.origin, ticket.status, ticket.priority, ticket.createdAt]),
       styles: { fontSize: 8, cellPadding: 2 },
-      headStyles: { fillColor: [37, 99, 235], textColor: 255 },
+      headStyles: { fillColor: [7, 59, 42], textColor: 255 },
     })
     doc.save(`relatorio-chamados-lifting-${new Date().toISOString().split("T")[0]}.pdf`)
   }
 
   function exportExcel() {
-    const data = filteredTickets.map((ticket) => ({
-      ID: ticket.id,
-      Solicitante: ticket.user,
-      Setor: ticket.sector,
-      Categoria: ticket.category,
-      Origem: ticket.origin,
-      Status: ticket.status,
-      Prioridade: ticket.priority,
-      "Criado em": ticket.createdAt,
-      Descrição: ticket.description,
-      "Resposta técnica": ticket.technicalResponse,
-    }))
+    const data = filteredTickets.map((ticket) => ({ ID: ticket.id, Solicitante: ticket.user, Setor: ticket.sector, Categoria: ticket.category, Origem: ticket.origin, Status: ticket.status, Prioridade: ticket.priority, "Criado em": ticket.createdAt, Descrição: ticket.description, "Resposta técnica": ticket.technicalResponse }))
     const worksheet = XLSX.utils.json_to_sheet(data)
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, "Chamados")
     XLSX.writeFile(workbook, `relatorio-chamados-lifting-${new Date().toISOString().split("T")[0]}.xlsx`)
-  }
-
-  function clearFilters() {
-    setSearch(""); setSectorFilter("Todos"); setCategoryFilter("Todas"); setOriginFilter("Todas"); setStatusFilter("Todos"); setPriorityFilter("Todas"); setStartDate(""); setEndDate("")
   }
 
   function getStatusColor(status: string) {
@@ -142,64 +143,57 @@ export function ReportsPage() {
   }
 
   if (loading) {
-    return <AppLayout><div className="flex h-64 items-center justify-center"><div className="rounded-3xl border border-slate-200 bg-white px-6 py-4 text-sm font-bold text-slate-600 shadow-sm">Carregando relatórios...</div></div></AppLayout>
+    return <AppLayout><div className="flex h-64 items-center justify-center"><div className="ls-card px-6 py-4 text-sm font-bold text-slate-700">Carregando relatórios...</div></div></AppLayout>
   }
 
   return (
     <AppLayout>
-      <div className="ls-page-shell">
-        <section className="ls-page-heading">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+      <div className="ls-page-shell py-2">
+        <section className="ls-hero-clean p-6 sm:p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="ls-kicker">Central de relatórios</p>
-              <h1 className="ls-title">Relatórios</h1>
-              <p className="ls-description">Filtre chamados, visualize dados e exporte relatórios.</p>
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#00A859]">Central de relatórios</p>
+              <h1 className="mt-2 text-4xl font-black tracking-[-0.06em] text-[#111827] sm:text-5xl">Relatórios</h1>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#64748B] sm:text-base">Filtre, exporte e acompanhe os chamados com leitura rápida.</p>
             </div>
             <div className="grid w-full gap-3 sm:w-auto sm:grid-cols-2">
-              <Button onClick={exportPDF} className="h-12 rounded-2xl bg-rose-600 px-5 font-bold text-white shadow-sm transition hover:bg-rose-700 whitespace-nowrap"><Download size={16} className="mr-2" /> Gerar PDF</Button>
-              <Button onClick={exportExcel} className="h-12 rounded-2xl bg-emerald-600 px-5 font-bold text-white shadow-sm transition hover:bg-emerald-700 whitespace-nowrap"><FileSpreadsheet size={16} className="mr-2" /> Gerar Excel</Button>
+              <Button onClick={exportPDF} className="ls-button-primary h-12 px-5 font-black"><Download size={16} className="mr-2" /> Gerar PDF</Button>
+              <Button onClick={exportExcel} className="h-12 rounded-2xl border border-[#DDE8E2] bg-white px-5 font-black text-[#073B2A] shadow-sm hover:bg-[#ECFBF3]"><FileSpreadsheet size={16} className="mr-2" /> Gerar Excel</Button>
             </div>
           </div>
         </section>
 
-        <section className="ls-card p-4 sm:p-5">
-          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="ls-section-title text-xl"><span className="rounded-2xl bg-blue-50 p-2 text-blue-600"><FileText size={18} /></span>Filtros do relatório</h2>
-              <p className="mt-1 text-sm text-slate-500">Ajuste os dados antes de exportar.</p>
-            </div>
-            <Button onClick={clearFilters} variant="outline" className="ls-button-secondary h-11 px-5 font-bold"><RotateCcw size={16} className="mr-2" /> Limpar filtros</Button>
+        <section className="ls-card p-4 sm:p-6">
+          <div className="flex items-center gap-3">
+            <span className="rounded-2xl bg-[#ECFBF3] p-2 text-[#00A859]"><FileText size={20} /></span>
+            <h2 className="ls-section-title text-xl">Filtros do relatório</h2>
           </div>
-
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
-            <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-medium text-slate-600"><Search size={14} />Buscar</span><Input placeholder="Nome, descrição ou categoria" value={search} onChange={(e) => setSearch(e.target.value)} className="ls-input" /></label>
-            <label className="space-y-2"><span className="text-sm font-medium text-slate-600">Setor</span><select value={sectorFilter} onChange={(e) => setSectorFilter(e.target.value)} className="ls-input w-full"><option value="Todos">Todos</option>{sectors.map((sector) => <option key={sector} value={sector}>{sector}</option>)}</select></label>
-            <label className="space-y-2"><span className="text-sm font-medium text-slate-600">Categoria</span><select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="ls-input w-full"><option value="Todas">Todas</option>{categories.map((category) => <option key={category} value={category}>{category}</option>)}</select></label>
-            <label className="space-y-2"><span className="text-sm font-medium text-slate-600">Origem</span><select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="ls-input w-full"><option value="Todas">Todas</option><option value="Base">Base</option><option value="Offshore">Offshore</option></select></label>
-            <label className="space-y-2"><span className="text-sm font-medium text-slate-600">Status</span><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="ls-input w-full"><option value="Todos">Todos</option><option value="Aberto">Aberto</option><option value="Em andamento">Em andamento</option><option value="Aguardando usuário">Aguardando usuário</option><option value="Finalizado">Finalizado</option></select></label>
-            <label className="space-y-2"><span className="text-sm font-medium text-slate-600">Prioridade</span><select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)} className="ls-input w-full"><option value="Todas">Todas</option><option value="Baixa">Baixa</option><option value="Normal">Normal</option><option value="Alta">Alta</option><option value="Urgente">Urgente</option></select></label>
-            <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-medium text-slate-600"><Calendar size={14} />Data inicial</span><Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="ls-input" /></label>
-            <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-medium text-slate-600"><Calendar size={14} />Data final</span><Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="ls-input" /></label>
+          <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-4">
+            <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Search size={14}/>Buscar</span><Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Nome, descrição ou categoria" className="ls-input" /></label>
+            <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Setor</span><select value={sectorFilter} onChange={(e) => setSectorFilter(e.target.value)} className="ls-input"><option value="Todos">Todos</option>{sectors.map((sector) => <option key={sector}>{sector}</option>)}</select></label>
+            <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Categoria</span><select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="ls-input"><option value="Todas">Todas</option>{categories.map((category) => <option key={category}>{category}</option>)}</select></label>
+            <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Origem</span><select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="ls-input"><option value="Todas">Todas</option><option>Base</option><option>Offshore</option></select></label>
+            <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Status</span><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="ls-input"><option value="Todos">Todos</option><option>Aberto</option><option>Em andamento</option><option>Aguardando usuário</option><option>Finalizado</option></select></label>
+            <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Prioridade</span><select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)} className="ls-input"><option value="Todas">Todas</option><option>Baixa</option><option>Normal</option><option>Alta</option><option>Urgente</option></select></label>
+            <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Calendar size={14}/>Data Inicial</span><Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="ls-input" /></label>
+            <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Calendar size={14}/>Data Final</span><Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="ls-input" /></label>
           </div>
-
-          <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-            <strong className="text-slate-950">{filteredTickets.length}</strong> chamados encontrados
+          <div className="mt-5 flex flex-col gap-4 rounded-3xl border border-[#DDE8E2] bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0 text-sm text-slate-600"><strong className="text-[#111827]">{filteredTickets.length}</strong> chamados encontrados <div className="mt-1 text-xs text-slate-500">{getFiltersSummary()}</div></div>
+            <Button onClick={clearFilters} variant="outline" className="h-11 rounded-2xl border-[#DDE8E2] bg-white text-[#073B2A] hover:bg-[#ECFBF3]"><RotateCcw size={16} className="mr-2"/> Limpar filtros</Button>
           </div>
         </section>
 
-        <section className="space-y-4"><h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Status</h3><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5"><StatsCard title="Total filtrado" value={String(totalFilteredTickets)} tone="neutral" /><StatsCard title="Abertos" value={String(openFilteredTickets)} tone="warning" /><StatsCard title="Em andamento" value={String(progressFilteredTickets)} tone="info" /><StatsCard title="Aguardando usuário" value={String(waitingUserFilteredTickets)} tone="danger" /><StatsCard title="Finalizados" value={String(finishedFilteredTickets)} tone="success" /></div></section>
-        <section className="space-y-4"><h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Origem</h3><div className="grid gap-4 sm:grid-cols-2"><StatsCard title="Offshore" value={String(offshoreFilteredTickets)} tone="danger" /><StatsCard title="Base" value={String(baseFilteredTickets)} tone="base" /></div></section>
+        <section className="space-y-4"><h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Resumo por status</h3><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5"><StatsCard title="Total filtrado" value={String(totalFilteredTickets)} tone="neutral" /><StatsCard title="Abertos" value={String(openFilteredTickets)} tone="warning" /><StatsCard title="Em andamento" value={String(progressFilteredTickets)} tone="info" /><StatsCard title="Aguardando usuário" value={String(waitingUserFilteredTickets)} tone="danger" /><StatsCard title="Finalizados" value={String(finishedFilteredTickets)} tone="success" /></div></section>
+        <section className="space-y-4"><h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Resumo por origem</h3><div className="grid gap-4 sm:grid-cols-2"><StatsCard title="Offshore" value={String(offshoreFilteredTickets)} tone="danger" /><StatsCard title="Base" value={String(baseFilteredTickets)} tone="base" /></div></section>
 
-        <section className="ls-card p-4 sm:p-5">
-          <h2 className="text-xl font-black tracking-[-0.03em] text-slate-950">Preview dos dados</h2>
-          <div className="mt-4 overflow-x-auto rounded-2xl border border-slate-200 bg-white">
-            <table className="min-w-[900px] w-full text-sm">
-              <thead className="bg-slate-50"><tr>{["ID", "Solicitante", "Setor", "Categoria", "Status", "Origem", "Prioridade", "Criado em"].map((head) => <th key={head} className="p-3 text-left text-xs font-black uppercase tracking-[0.1em] text-slate-500">{head}</th>)}</tr></thead>
-              <tbody>{filteredTickets.slice(0, 20).map((ticket) => <tr key={ticket.id} className="border-t border-slate-100 transition hover:bg-blue-50/40"><td className="p-3 font-bold text-slate-950">#{ticket.id}</td><td className="p-3 text-slate-700">{ticket.user}</td><td className="p-3 text-slate-700">{ticket.sector}</td><td className="p-3 text-slate-700">{ticket.category}</td><td className="p-3"><span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${getStatusColor(ticket.status)}`}>{ticket.status}</span></td><td className="p-3 text-slate-700">{ticket.origin}</td><td className="p-3 text-slate-700">{ticket.priority}</td><td className="p-3 text-slate-700">{ticket.createdAt}</td></tr>)}</tbody>
-            </table>
+        <section className="ls-card p-4 sm:p-6">
+          <h2 className="ls-section-title text-xl">Preview dos dados</h2>
+          <div className="mt-5 overflow-x-auto rounded-3xl border border-[#DDE8E2] bg-white">
+            <table className="min-w-[900px] w-full text-sm"><thead className="bg-[#F8FCFA]"><tr className="border-b border-[#DDE8E2]"><th className="p-3 text-left text-slate-500">ID</th><th className="p-3 text-left text-slate-500">Solicitante</th><th className="p-3 text-left text-slate-500">Setor</th><th className="p-3 text-left text-slate-500">Categoria</th><th className="p-3 text-left text-slate-500">Status</th><th className="p-3 text-left text-slate-500">Origem</th><th className="p-3 text-left text-slate-500">Prioridade</th><th className="p-3 text-left text-slate-500">Criado em</th></tr></thead><tbody>{filteredTickets.slice(0,20).map((ticket) => <tr key={ticket.id} className="border-b border-[#DDE8E2] hover:bg-[#F8FCFA]"><td className="p-3 text-slate-900">#{ticket.id}</td><td className="p-3 text-slate-900">{ticket.user}</td><td className="p-3 text-slate-700">{ticket.sector}</td><td className="p-3 text-slate-700">{ticket.category}</td><td className="p-3"><span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${getStatusColor(ticket.status)}`}>{ticket.status}</span></td><td className="p-3 text-slate-700">{ticket.origin}</td><td className="p-3 text-slate-700">{ticket.priority}</td><td className="p-3 text-slate-700">{ticket.createdAt}</td></tr>)}</tbody></table>
           </div>
-          {filteredTickets.length > 20 && <div className="p-3 text-center text-sm text-slate-500">... e mais {filteredTickets.length - 20} registros no export</div>}
-          {filteredTickets.length === 0 && <div className="p-8 text-center text-sm text-slate-500">Nenhum chamado encontrado.</div>}
+          {filteredTickets.length > 20 && <div className="p-3 text-center text-slate-500">... e mais {filteredTickets.length - 20} registros no export</div>}
+          {filteredTickets.length === 0 && <div className="p-8 text-center text-slate-500">Nenhum chamado encontrado com os filtros aplicados.</div>}
         </section>
       </div>
     </AppLayout>
