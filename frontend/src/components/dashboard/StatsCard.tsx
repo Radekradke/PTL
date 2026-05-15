@@ -15,42 +15,42 @@ const toneStyles: Record<StatsCardTone, {
   glow: string
 }> = {
   neutral: {
-    card: "border-white/15 bg-[linear-gradient(135deg,#102E26_0%,#174A3A_48%,#2563EB_140%)]",
+    card: "border-white/15 bg-[linear-gradient(135deg,#061B16_0%,#0F3D2E_50%,#164A6B_145%)]",
     label: "text-emerald-50/80",
     value: "text-white",
     dot: "bg-emerald-300",
     glow: "shadow-emerald-950/25",
   },
   warning: {
-    card: "border-amber-300/25 bg-[linear-gradient(135deg,#3A2B12_0%,#174A3A_55%,#F59E0B_150%)]",
+    card: "border-amber-300/25 bg-[linear-gradient(135deg,#241708_0%,#0F3D2E_58%,#F59E0B_160%)]",
     label: "text-amber-50/85",
     value: "text-white",
     dot: "bg-amber-300",
     glow: "shadow-amber-950/20",
   },
   info: {
-    card: "border-sky-300/25 bg-[linear-gradient(135deg,#102E36_0%,#174A3A_55%,#2563EB_145%)]",
+    card: "border-sky-300/25 bg-[linear-gradient(135deg,#061C24_0%,#0F3D2E_58%,#2563EB_150%)]",
     label: "text-sky-50/85",
     value: "text-white",
     dot: "bg-sky-300",
     glow: "shadow-sky-950/20",
   },
   success: {
-    card: "border-emerald-300/25 bg-[linear-gradient(135deg,#123C2D_0%,#1C6B4C_55%,#2FA866_140%)]",
+    card: "border-emerald-300/25 bg-[linear-gradient(135deg,#08241B_0%,#0F5138_58%,#2FA866_150%)]",
     label: "text-emerald-50/85",
     value: "text-white",
     dot: "bg-emerald-200",
     glow: "shadow-emerald-950/20",
   },
   danger: {
-    card: "border-rose-300/25 bg-[linear-gradient(135deg,#3A171B_0%,#174A3A_55%,#EF4444_150%)]",
+    card: "border-rose-300/25 bg-[linear-gradient(135deg,#2C1115_0%,#0F3D2E_58%,#EF4444_160%)]",
     label: "text-rose-50/85",
     value: "text-white",
     dot: "bg-rose-300",
     glow: "shadow-rose-950/20",
   },
   base: {
-    card: "border-blue-300/25 bg-[linear-gradient(135deg,#102E36_0%,#174A3A_52%,#2563EB_140%)]",
+    card: "border-blue-300/25 bg-[linear-gradient(135deg,#061C24_0%,#0F3D2E_56%,#2563EB_150%)]",
     label: "text-blue-50/85",
     value: "text-white",
     dot: "bg-blue-300",
