@@ -10,36 +10,39 @@ export function Header({ notificationCount = 0 }: HeaderProps) {
   const user = localStorage.getItem("lifting-user")
   const parsedUser = user ? JSON.parse(user) : null
 
-  const handleNotificationClick = () => {
+  function handleNotificationClick() {
     if (notificationCount > 0) navigate("/tickets")
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/90 px-4 py-3 shadow-sm backdrop-blur sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-30 border-b border-[#DFE7E2] bg-white/90 px-4 py-3 backdrop-blur-xl sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
         <div className="min-w-0">
-          <h2 className="truncate text-base font-bold text-slate-950 sm:text-lg">Painel Técnico</h2>
-          <p className="hidden text-sm text-slate-500 sm:block">Operação de suporte interno</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#2FA866]">Lifting Support</p>
+          <h2 className="truncate text-lg font-bold tracking-[-0.03em] text-[#17221C] sm:text-xl">
+            Painel técnico
+          </h2>
         </div>
 
-        <div className="flex items-center gap-3 sm:gap-5">
+        <div className="flex items-center gap-3">
           <button
             onClick={handleNotificationClick}
-            className={`relative rounded-2xl border border-slate-200 bg-slate-50 p-2 text-slate-600 transition hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 ${notificationCount > 0 ? "cursor-pointer" : "cursor-default"}`}
+            className={`relative rounded-2xl border border-[#DFE7E2] bg-[#F7FAF8] p-2.5 text-[#42534A] transition hover:border-[#2FA866]/30 hover:text-[#174A3A] ${notificationCount > 0 ? "cursor-pointer" : "cursor-default"}`}
+            aria-label="Notificações"
           >
-            <Bell size={19} />
+            <Bell size={20} />
             {notificationCount > 0 && (
-              <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-rose-500 px-1 text-xs font-bold text-white">
+              <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[10px] font-bold text-white shadow-sm">
                 {notificationCount > 99 ? "99+" : notificationCount}
               </span>
             )}
           </button>
 
-          <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
-            <UserCircle2 className="text-emerald-700" size={20} />
-            <div className="hidden text-right sm:block">
-              <p className="text-sm font-semibold text-slate-900">{parsedUser?.sector || "Usuário"}</p>
-              <p className="text-xs text-slate-500">Sessão ativa</p>
+          <div className="hidden items-center gap-3 rounded-2xl border border-[#DFE7E2] bg-[#F7FAF8] px-3 py-2 sm:flex">
+            <UserCircle2 className="text-[#2FA866]" size={22} />
+            <div className="text-right leading-tight">
+              <p className="text-sm font-semibold text-[#17221C]">{parsedUser?.sector || "Usuário"}</p>
+              <p className="text-xs text-[#6D7A72]">Perfil ativo</p>
             </div>
           </div>
         </div>
