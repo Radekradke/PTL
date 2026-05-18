@@ -102,8 +102,6 @@ function formatTicket(ticket: any): PortalTicket {
     messages: ticket.messages || [],
   }
 }
-  }
-}
 
 function getStatusStyle(status: string) {
   if (status === "Aberto") {
