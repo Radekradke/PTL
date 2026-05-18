@@ -643,16 +643,7 @@ export function AdminPortal() {
             </div>
 
             <div className="flex flex-col gap-2 sm:flex-row">
-              <Button
-                variant="outline"
-                className={`h-10 ${styles.secondary}`}
-                onClick={() => loadMyTickets(loggedEmployee.id)}
-                disabled={isLoadingTickets}
-              >
-                <RefreshCw size={16} className="mr-2" />
-                Atualizar
-              </Button>
-              <Button
+            <Button
                 variant="outline"
                 className="h-10 rounded-2xl border border-[#DDE7E2] bg-white font-bold text-slate-700 transition hover:bg-red-50 hover:text-red-700"
                 onClick={handleExit}
