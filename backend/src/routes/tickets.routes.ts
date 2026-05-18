@@ -266,3 +266,23 @@ ticketsRoutes.patch("/:id/archive", async (req, res) => {
 
   res.json(ticket)
 })
+
+ticketsRoutes.patch("/:id/finish", async (req, res) => {
+  const { id } = req.params
+
+  const ticket = await prisma.ticket.update({
+    where: { id: Number(id) },
+    data: {
+      status: "Finalizado",
+      archived: true,
+      timeline: {
+        create: {
+          action: "Chamado finalizado e arquivado",
+        },
+      },
+    },
+    include: ticketInclude,
+  })
+
+  res.json(ticket)
+})

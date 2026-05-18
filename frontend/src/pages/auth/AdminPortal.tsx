@@ -188,14 +188,15 @@ export function AdminPortal() {
   const [description, setDescription] = useState("")
 
   const [activeTab, setActiveTab] = useState<"new" | "mine">("new")
-  const [viewArchived, setViewArchived] = useState(false)
+  const [showArchivedTickets, setShowArchivedTickets] = useState(false)
   const [myTickets, setMyTickets] = useState<PortalTicket[]>([])
+  const [archivedTickets, setArchivedTickets] = useState<PortalTicket[]>([])
   const [selectedTicket, setSelectedTicket] = useState<PortalTicket | null>(null)
   const [messages, setMessages] = useState<TicketMessage[]>([])
   const [employeeReply, setEmployeeReply] = useState("")
   const [isLoadingTickets, setIsLoadingTickets] = useState(false)
   const [isSendingReply, setIsSendingReply] = useState(false)
-  const [isArchiving, setIsArchiving] = useState(false)
+  const [isFinishingTicket, setIsFinishingTicket] = useState(false)
 
   const [successState, setSuccessState] = useState<SuccessState>({
     isVisible: false,
@@ -216,9 +217,12 @@ export function AdminPortal() {
 
   useEffect(() => {
     if (loggedEmployee?.id) {
-      loadMyTickets(loggedEmployee.id, viewArchived)
+      loadMyTickets(loggedEmployee.id)
+      if (activeTab === "mine") {
+        loadArchivedTickets(loggedEmployee.id)
+      }
     }
-  }, [loggedEmployee?.id, viewArchived])
+  }, [loggedEmployee?.id, activeTab])
 
   async function handlePortalLogin() {
     if (!username || !password) {
@@ -258,7 +262,7 @@ export function AdminPortal() {
     }
   }
 
-  async function loadMyTickets(targetEmployeeId?: number, isArchived = false) {
+  async function loadMyTickets(targetEmployeeId?: number) {
     const idToSearch = targetEmployeeId || loggedEmployee?.id
 
     if (!idToSearch) {
@@ -271,8 +275,7 @@ export function AdminPortal() {
     setIsLoadingTickets(true)
 
     try {
-      const archivedParam = isArchived ? "?archived=true" : "?archived=false"
-      const response = await fetch(`${API_URL}/tickets/employee/${idToSearch}${archivedParam}`)
+      const response = await fetch(`${API_URL}/tickets/employee/${idToSearch}?archived=false`)
 
       if (!response.ok) {
         setMyTickets([])
@@ -299,6 +302,31 @@ export function AdminPortal() {
       setMyTickets([])
     } finally {
       setIsLoadingTickets(false)
+    }
+  }
+
+  async function loadArchivedTickets(targetEmployeeId?: number) {
+    const idToSearch = targetEmployeeId || loggedEmployee?.id
+
+    if (!idToSearch) {
+      setArchivedTickets([])
+      return
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/tickets/employee/${idToSearch}?archived=true`)
+
+      if (!response.ok) {
+        setArchivedTickets([])
+        return
+      }
+
+      const data = await response.json()
+      const formattedTickets = data.map(formatTicket)
+      setArchivedTickets(formattedTickets)
+    } catch (error) {
+      console.error("Erro ao carregar chamados arquivados:", error)
+      setArchivedTickets([])
     }
   }
 
@@ -395,7 +423,7 @@ export function AdminPortal() {
       setMessages((currentMessages) => [...currentMessages, newMessage])
       setSelectedTicket({ ...selectedTicket, status: "Em andamento" })
       setEmployeeReply("")
-      loadMyTickets(loggedEmployee.id, viewArchived)
+      loadMyTickets(loggedEmployee.id)
     } catch (error) {
       console.error("Erro ao responder chamado:", error)
       alert("Erro ao enviar resposta.")
@@ -404,13 +432,13 @@ export function AdminPortal() {
     }
   }
 
-  async function handleArchiveTicket() {
+  async function handleFinishTicket() {
     if (!selectedTicket) return
 
-    setIsArchiving(true)
+    setIsFinishingTicket(true)
 
     try {
-      const response = await fetch(`${API_URL}/tickets/${selectedTicket.id}/archive`, {
+      const response = await fetch(`${API_URL}/tickets/${selectedTicket.id}/finish`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -418,18 +446,19 @@ export function AdminPortal() {
       })
 
       if (!response.ok) {
-        alert("Erro ao arquivar chamado.")
+        alert("Erro ao finalizar chamado.")
         return
       }
 
       setSelectedTicket(null)
       setMessages([])
-      loadMyTickets(loggedEmployee?.id, viewArchived)
+      loadMyTickets(loggedEmployee?.id)
+      loadArchivedTickets(loggedEmployee?.id)
     } catch (error) {
-      console.error("Erro ao arquivar chamado:", error)
-      alert("Erro ao arquivar chamado.")
+      console.error("Erro ao finalizar chamado:", error)
+      alert("Erro ao finalizar chamado.")
     } finally {
-      setIsArchiving(false)
+      setIsFinishingTicket(false)
     }
   }
 
@@ -453,18 +482,17 @@ export function AdminPortal() {
     setOrigin("Base")
     setDescription("")
     setActiveTab("new")
-    setViewArchived(false)
+    setShowArchivedTickets(false)
     setMyTickets([])
+    setArchivedTickets([])
     setSelectedTicket(null)
     setMessages([])
     setSuccessState({ isVisible: false })
   }
 
   const allTickets = myTickets
-  const unarchivedTickets = allTickets.filter((ticket) => !ticket.archived)
-  const activeTickets = unarchivedTickets.filter((ticket) => ticket.status !== "Finalizado").length
-  const finishedTickets = unarchivedTickets.filter((ticket) => ticket.status === "Finalizado").length
-  const archivedTickets = allTickets.filter((ticket) => ticket.archived).length
+  const activeTickets = allTickets.filter((ticket) => ticket.status !== "Finalizado").length
+  const finishedTickets = allTickets.filter((ticket) => ticket.status === "Finalizado").length
 
   if (!loggedEmployee) {
     return (
@@ -651,7 +679,7 @@ export function AdminPortal() {
             </div>
           </div>
 
-          <div className="mt-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between text-white">
+          <div className="mt-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="grid grid-cols-2 gap-2 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1 lg:w-fit">
               <button
                 onClick={() => setActiveTab("new")}
@@ -665,12 +693,9 @@ export function AdminPortal() {
                 Novo Chamado
               </button>
               <button
-                onClick={() => {
-                  setActiveTab("mine")
-                  setViewArchived(false)
-                }}
+                onClick={() => setActiveTab("mine")}
                 className={`inline-flex h-11 items-center justify-center rounded-xl px-4 text-sm font-bold transition ${
-                  activeTab === "mine" && !viewArchived
+                  activeTab === "mine"
                     ? "bg-[#00A859] text-white shadow-sm"
                     : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
                 }`}
@@ -679,31 +704,6 @@ export function AdminPortal() {
                 Meus chamados
               </button>
             </div>
-
-            {activeTab === "mine" && (
-              <div className="flex gap-2 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1">
-                <button
-                  onClick={() => setViewArchived(false)}
-                  className={`inline-flex h-10 items-center justify-center rounded-xl px-4 text-xs font-bold transition ${
-                    !viewArchived
-                      ? "bg-blue-500 text-white shadow-sm"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
-                  }`}
-                >
-                  Ativos
-                </button>
-                <button
-                  onClick={() => setViewArchived(true)}
-                  className={`inline-flex h-10 items-center justify-center rounded-xl px-4 text-xs font-bold transition ${
-                    viewArchived
-                      ? "bg-blue-500 text-white shadow-sm"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
-                  }`}
-                >
-                  Arquivados {archivedTickets > 0 && `(${archivedTickets})`}
-                </button>
-              </div>
-            )}
 
             <div className="flex flex-col gap-2 sm:flex-row">
             <Button
@@ -840,6 +840,48 @@ export function AdminPortal() {
                     Nenhum chamado encontrado.
                   </div>
                 )}
+
+                {archivedTickets.length > 0 && (
+                  <div className="mt-2 border-t border-[#DDE7E2] pt-3">
+                    <button
+                      onClick={() => setShowArchivedTickets(!showArchivedTickets)}
+                      className="flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+                    >
+                      <span>Arquivados ({archivedTickets.length})</span>
+                      <ChevronDown
+                        size={16}
+                        className={`transition ${showArchivedTickets ? "rotate-180" : ""}`}
+                      />
+                    </button>
+
+                    {showArchivedTickets && (
+                      <div className="mt-2 space-y-2">
+                        {archivedTickets.map((ticket) => (
+                          <button
+                            key={ticket.id}
+                            onClick={() => loadTicketMessages(ticket)}
+                            className={`w-full rounded-2xl border p-3 text-left text-sm transition hover:border-[#00A859]/35 hover:bg-white ${
+                              selectedTicket?.id === ticket.id
+                                ? "border-[#00A859]/40 bg-[#00A859]/10"
+                                : "border-[#DDE7E2] bg-white/70 opacity-70"
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="text-xs font-black uppercase tracking-[0.12em] text-[#00A859]">#{ticket.id}</p>
+                                <h3 className="mt-1 truncate text-xs font-bold text-[#111827]">{ticket.category}</h3>
+                              </div>
+                              <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[9px] font-bold ${getStatusStyle(ticket.status)}`}>
+                                {ticket.status}
+                              </span>
+                            </div>
+                            <p className="mt-1 line-clamp-1 text-xs leading-4 text-slate-500">{ticket.description}</p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </GlassCard>
 
@@ -899,17 +941,8 @@ export function AdminPortal() {
 
                   <div className="border-t border-[#DDE7E2] bg-white/70 p-4">
                     {selectedTicket.status === "Finalizado" ? (
-                      <div className="flex flex-col gap-3">
-                        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
-                          Este chamado está finalizado. Caso o problema volte, abra um novo chamado.
-                        </div>
-                        <Button
-                          className="h-11 w-full rounded-2xl bg-slate-600 font-bold text-white transition hover:bg-slate-700 disabled:opacity-50"
-                          onClick={handleArchiveTicket}
-                          disabled={isArchiving}
-                        >
-                          {isArchiving ? "Arquivando..." : "Arquivar chamado"}
-                        </Button>
+                      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
+                        Este chamado está finalizado e arquivado.
                       </div>
                     ) : (
                       <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
@@ -919,13 +952,22 @@ export function AdminPortal() {
                           placeholder="Responda o técnico ou envie mais detalhes..."
                           className="min-h-[92px] rounded-2xl border-[#DDE7E2] bg-white text-slate-950 focus:border-[#00A859]"
                         />
-                        <Button
-                          className={`px-6 ${styles.primary}`}
-                          onClick={handleEmployeeReply}
-                          disabled={isSendingReply || !employeeReply.trim()}
-                        >
-                          {isSendingReply ? "Enviando..." : "Responder"}
-                        </Button>
+                        <div className="flex flex-col gap-2">
+                          <Button
+                            className={`px-6 ${styles.primary}`}
+                            onClick={handleEmployeeReply}
+                            disabled={isSendingReply || !employeeReply.trim()}
+                          >
+                            {isSendingReply ? "Enviando..." : "Responder"}
+                          </Button>
+                          <Button
+                            className="px-6 h-11 rounded-2xl bg-slate-600 font-bold text-white transition hover:bg-slate-700 disabled:opacity-50"
+                            onClick={handleFinishTicket}
+                            disabled={isFinishingTicket}
+                          >
+                            {isFinishingTicket ? "Finalizando..." : "Finalizar"}
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </div>
