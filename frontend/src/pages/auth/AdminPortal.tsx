@@ -624,7 +624,7 @@ export function AdminPortal() {
 }`}
               >
                 <PlusCircle size={16} className="mr-2 text-white" />
-                Novo
+                Novo Chamado
               </button>
               <button
                 onClick={() => {
