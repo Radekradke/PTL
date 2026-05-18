@@ -22,8 +22,14 @@ function nextStatusFromSender(senderType: string) {
   return senderType === "employee" ? "Em andamento" : "Aguardando usuário"
 }
 
-ticketsRoutes.get("/", async (_req, res) => {
+ticketsRoutes.get("/", async (req, res) => {
+  const { archived } = req.query
+  const showArchived = archived === "true"
+
   const tickets = await prisma.ticket.findMany({
+    where: {
+      archived: showArchived,
+    },
     include: ticketInclude,
     orderBy: { createdAt: "desc" },
   })
@@ -33,10 +39,13 @@ ticketsRoutes.get("/", async (_req, res) => {
 
 ticketsRoutes.get("/employee/:employeeId", async (req, res) => {
   const { employeeId } = req.params
+  const { archived } = req.query
+  const showArchived = archived === "true"
 
   const tickets = await prisma.ticket.findMany({
     where: {
       employeeId: Number(employeeId),
+      archived: showArchived,
     },
     include: ticketInclude,
     orderBy: { createdAt: "desc" },
@@ -230,6 +239,25 @@ ticketsRoutes.patch("/:id", async (req, res) => {
       timeline: {
         create: {
           action: `Status alterado para ${status}`,
+        },
+      },
+    },
+    include: ticketInclude,
+  })
+
+  res.json(ticket)
+})
+
+ticketsRoutes.patch("/:id/archive", async (req, res) => {
+  const { id } = req.params
+
+  const ticket = await prisma.ticket.update({
+    where: { id: Number(id) },
+    data: {
+      archived: true,
+      timeline: {
+        create: {
+          action: "Chamado arquivado",
         },
       },
     },

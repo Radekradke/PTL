@@ -54,6 +54,7 @@ type PortalTicket = {
   description: string
   technicalResponse: string
   createdAt: string
+  archived: boolean
   messages: TicketMessage[]
 }
 
@@ -94,10 +95,13 @@ function formatTicket(ticket: any): PortalTicket {
     priority: ticket.priority || "Normal",
     description: ticket.description || "",
     technicalResponse: ticket.technicalResponse || "",
+    archived: ticket.archived || false,
     createdAt: ticket.createdAt
       ? new Date(ticket.createdAt).toLocaleString("pt-BR")
       : "Sem data",
     messages: ticket.messages || [],
+  }
+}
   }
 }
 
@@ -186,12 +190,14 @@ export function AdminPortal() {
   const [description, setDescription] = useState("")
 
   const [activeTab, setActiveTab] = useState<"new" | "mine">("new")
+  const [viewArchived, setViewArchived] = useState(false)
   const [myTickets, setMyTickets] = useState<PortalTicket[]>([])
   const [selectedTicket, setSelectedTicket] = useState<PortalTicket | null>(null)
   const [messages, setMessages] = useState<TicketMessage[]>([])
   const [employeeReply, setEmployeeReply] = useState("")
   const [isLoadingTickets, setIsLoadingTickets] = useState(false)
   const [isSendingReply, setIsSendingReply] = useState(false)
+  const [isArchiving, setIsArchiving] = useState(false)
 
   const [successState, setSuccessState] = useState<SuccessState>({
     isVisible: false,
@@ -212,9 +218,9 @@ export function AdminPortal() {
 
   useEffect(() => {
     if (loggedEmployee?.id) {
-      loadMyTickets(loggedEmployee.id)
+      loadMyTickets(loggedEmployee.id, viewArchived)
     }
-  }, [loggedEmployee?.id])
+  }, [loggedEmployee?.id, viewArchived])
 
   async function handlePortalLogin() {
     if (!username || !password) {
@@ -254,7 +260,7 @@ export function AdminPortal() {
     }
   }
 
-  async function loadMyTickets(targetEmployeeId?: number) {
+  async function loadMyTickets(targetEmployeeId?: number, isArchived = false) {
     const idToSearch = targetEmployeeId || loggedEmployee?.id
 
     if (!idToSearch) {
@@ -267,7 +273,8 @@ export function AdminPortal() {
     setIsLoadingTickets(true)
 
     try {
-      const response = await fetch(`${API_URL}/tickets/employee/${idToSearch}`)
+      const archivedParam = isArchived ? "?archived=true" : "?archived=false"
+      const response = await fetch(`${API_URL}/tickets/employee/${idToSearch}${archivedParam}`)
 
       if (!response.ok) {
         setMyTickets([])
@@ -390,12 +397,41 @@ export function AdminPortal() {
       setMessages((currentMessages) => [...currentMessages, newMessage])
       setSelectedTicket({ ...selectedTicket, status: "Em andamento" })
       setEmployeeReply("")
-      loadMyTickets(loggedEmployee.id)
+      loadMyTickets(loggedEmployee.id, viewArchived)
     } catch (error) {
       console.error("Erro ao responder chamado:", error)
       alert("Erro ao enviar resposta.")
     } finally {
       setIsSendingReply(false)
+    }
+  }
+
+  async function handleArchiveTicket() {
+    if (!selectedTicket) return
+
+    setIsArchiving(true)
+
+    try {
+      const response = await fetch(`${API_URL}/tickets/${selectedTicket.id}/archive`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (!response.ok) {
+        alert("Erro ao arquivar chamado.")
+        return
+      }
+
+      setSelectedTicket(null)
+      setMessages([])
+      loadMyTickets(loggedEmployee?.id, viewArchived)
+    } catch (error) {
+      console.error("Erro ao arquivar chamado:", error)
+      alert("Erro ao arquivar chamado.")
+    } finally {
+      setIsArchiving(false)
     }
   }
 
@@ -419,14 +455,18 @@ export function AdminPortal() {
     setOrigin("Base")
     setDescription("")
     setActiveTab("new")
+    setViewArchived(false)
     setMyTickets([])
     setSelectedTicket(null)
     setMessages([])
     setSuccessState({ isVisible: false })
   }
 
-  const activeTickets = myTickets.filter((ticket) => ticket.status !== "Finalizado").length
-  const finishedTickets = myTickets.filter((ticket) => ticket.status === "Finalizado").length
+  const allTickets = myTickets
+  const unarchivedTickets = allTickets.filter((ticket) => !ticket.archived)
+  const activeTickets = unarchivedTickets.filter((ticket) => ticket.status !== "Finalizado").length
+  const finishedTickets = unarchivedTickets.filter((ticket) => ticket.status === "Finalizado").length
+  const archivedTickets = allTickets.filter((ticket) => ticket.archived).length
 
   if (!loggedEmployee) {
     return (
@@ -614,33 +654,58 @@ export function AdminPortal() {
           </div>
 
           <div className="mt-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between text-white">
-            <div className="grid grid-cols-2 gap-2 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1 lg:w-[360px]">
+            <div className="grid grid-cols-2 gap-2 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1 lg:w-fit">
               <button
                 onClick={() => setActiveTab("new")}
                className={`inline-flex h-11 items-center justify-center rounded-xl px-4 text-sm font-bold transition ${
   activeTab === "new"
     ? "bg-[#00A859] text-white shadow-sm"
-    : "text-white hover:bg-slate-50 hover:text-[#073B2A]"
+    : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
 }`}
               >
-                <PlusCircle size={16} className="mr-2 text-white" />
+                <PlusCircle size={16} className="mr-2" />
                 Novo Chamado
               </button>
               <button
                 onClick={() => {
                   setActiveTab("mine")
-                  loadMyTickets(loggedEmployee.id)
+                  setViewArchived(false)
                 }}
-                className={`inline-flex h-11 items-center justify-center rounded-xl px-4 text-sm font-bold text-white transition ${
-                  activeTab === "mine"
+                className={`inline-flex h-11 items-center justify-center rounded-xl px-4 text-sm font-bold transition ${
+                  activeTab === "mine" && !viewArchived
                     ? "bg-[#00A859] text-white shadow-sm"
-                    : "text-slate-500 hover:bg-slate-50 hover:text-[#073B2A]"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
                 }`}
               >
                 <MessageSquareText size={16} className="mr-2" />
                 Meus chamados
               </button>
             </div>
+
+            {activeTab === "mine" && (
+              <div className="flex gap-2 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1">
+                <button
+                  onClick={() => setViewArchived(false)}
+                  className={`inline-flex h-10 items-center justify-center rounded-xl px-4 text-xs font-bold transition ${
+                    !viewArchived
+                      ? "bg-blue-500 text-white shadow-sm"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
+                  }`}
+                >
+                  Ativos
+                </button>
+                <button
+                  onClick={() => setViewArchived(true)}
+                  className={`inline-flex h-10 items-center justify-center rounded-xl px-4 text-xs font-bold transition ${
+                    viewArchived
+                      ? "bg-blue-500 text-white shadow-sm"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
+                  }`}
+                >
+                  Arquivados {archivedTickets > 0 && `(${archivedTickets})`}
+                </button>
+              </div>
+            )}
 
             <div className="flex flex-col gap-2 sm:flex-row">
             <Button
@@ -836,8 +901,17 @@ export function AdminPortal() {
 
                   <div className="border-t border-[#DDE7E2] bg-white/70 p-4">
                     {selectedTicket.status === "Finalizado" ? (
-                      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
-                        Este chamado está finalizado. Caso o problema volte, abra um novo chamado.
+                      <div className="flex flex-col gap-3">
+                        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
+                          Este chamado está finalizado. Caso o problema volte, abra um novo chamado.
+                        </div>
+                        <Button
+                          className="h-11 w-full rounded-2xl bg-slate-600 font-bold text-white transition hover:bg-slate-700 disabled:opacity-50"
+                          onClick={handleArchiveTicket}
+                          disabled={isArchiving}
+                        >
+                          {isArchiving ? "Arquivando..." : "Arquivar chamado"}
+                        </Button>
                       </div>
                     ) : (
                       <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
