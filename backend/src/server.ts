@@ -5,18 +5,25 @@ import dotenv from "dotenv"
 import { sectorsRoutes } from "./routes/sectors.routes"
 import { employeesRoutes } from "./routes/employees.routes"
 import { ticketsRoutes } from "./routes/tickets.routes"
+import { authRoutes } from "./routes/auth.routes"
 
 dotenv.config()
 
 const app = express()
 
-app.use(cors())
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || true,
+    credentials: true,
+  })
+)
 app.use(express.json())
 
 app.get("/", (_req, res) => {
   res.json({ message: "Lifting Support API online" })
 })
 
+app.use("/auth", authRoutes)
 app.use("/sectors", sectorsRoutes)
 app.use("/employees", employeesRoutes)
 app.use("/tickets", ticketsRoutes)

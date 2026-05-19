@@ -1,5 +1,6 @@
 import { FileText, LayoutDashboard, LogOut, Settings, Ticket } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
+import { AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY } from "@/services/api"
 
 const access = {
   dashboard: ["Admin", "TI", "Diretoria"],
@@ -11,11 +12,12 @@ const access = {
 export function Sidebar() {
   const navigate = useNavigate()
   const location = useLocation()
-  const user = JSON.parse(localStorage.getItem("lifting-user") || "{}")
+  const user = JSON.parse(localStorage.getItem(TECHNICAL_USER_KEY) || "{}")
   const role = user?.sector || ""
 
   function handleLogout() {
-    localStorage.removeItem("lifting-user")
+    localStorage.removeItem(TECHNICAL_USER_KEY)
+    window.dispatchEvent(new Event(AUTH_CHANGED_EVENT))
     navigate("/")
   }
 

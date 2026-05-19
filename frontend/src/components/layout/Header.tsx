@@ -1,5 +1,6 @@
 import { Bell, UserCircle2 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { TECHNICAL_USER_KEY } from "@/services/api"
 
 interface HeaderProps {
   notificationCount?: number
@@ -7,7 +8,7 @@ interface HeaderProps {
 
 export function Header({ notificationCount = 0 }: HeaderProps) {
   const navigate = useNavigate()
-  const user = localStorage.getItem("lifting-user")
+  const user = localStorage.getItem(TECHNICAL_USER_KEY)
   const parsedUser = user ? JSON.parse(user) : null
 
   function handleNotificationClick() {

@@ -1,11 +1,7 @@
-import { createHash } from "crypto"
 import { PrismaClient } from "@prisma/client"
+import { hashPassword } from "../src/lib/auth"
 
 const prisma = new PrismaClient()
-
-function hashPassword(password: string) {
-  return createHash("sha256").update(password).digest("hex")
-}
 
 async function createEmployeeIfNotExists(name: string, sectorId: number, username: string, password: string) {
   const employee = await prisma.employee.findFirst({
@@ -33,7 +29,9 @@ async function createEmployeeIfNotExists(name: string, sectorId: number, usernam
     },
     data: {
       username: employee.username || username,
-      passwordHash: employee.passwordHash || hashPassword(password),
+      passwordHash: employee.passwordHash?.startsWith("scrypt:")
+        ? employee.passwordHash
+        : hashPassword(password),
     },
   })
 }

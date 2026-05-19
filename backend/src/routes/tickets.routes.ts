@@ -1,5 +1,11 @@
 import { Router } from "express"
 import { prisma } from "../lib/prisma"
+import {
+  requireAuth,
+  requireEmployeeOwnerOrTechnical,
+  requireTechnical,
+  requireTicketParticipant,
+} from "../middlewares/auth.middleware"
 
 export const ticketsRoutes = Router()
 
@@ -22,14 +28,13 @@ function nextStatusFromSender(senderType: string) {
   return senderType === "employee" ? "Em andamento" : "Aguardando usuário"
 }
 
-ticketsRoutes.get("/", async (req, res) => {
-  const { archived } = req.query
+ticketsRoutes.get("/", requireTechnical(["Admin", "TI", "Diretoria"]), async (req, res) => {
+  const { archived, includeArchived } = req.query
   const showArchived = archived === "true"
+  const shouldIncludeArchived = includeArchived === "true" || archived === "all"
 
   const tickets = await prisma.ticket.findMany({
-    where: {
-      archived: showArchived,
-    },
+    where: shouldIncludeArchived ? undefined : { archived: showArchived },
     include: ticketInclude,
     orderBy: { createdAt: "desc" },
   })
@@ -37,28 +42,38 @@ ticketsRoutes.get("/", async (req, res) => {
   res.json(tickets)
 })
 
-ticketsRoutes.get("/employee/:employeeId", async (req, res) => {
-  const { employeeId } = req.params
-  const { archived } = req.query
-  const showArchived = archived === "true"
+ticketsRoutes.get(
+  "/employee/:employeeId",
+  requireEmployeeOwnerOrTechnical("employeeId", ["Admin", "TI", "Diretoria"]),
+  async (req, res) => {
+    const { employeeId } = req.params
+    const { archived, includeArchived } = req.query
+    const showArchived = archived === "true"
+    const shouldIncludeArchived = includeArchived === "true" || archived === "all"
 
-  const tickets = await prisma.ticket.findMany({
-    where: {
-      employeeId: Number(employeeId),
-      archived: showArchived,
-    },
-    include: ticketInclude,
-    orderBy: { createdAt: "desc" },
-  })
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        employeeId: Number(employeeId),
+        ...(shouldIncludeArchived ? {} : { archived: showArchived }),
+      },
+      include: ticketInclude,
+      orderBy: { createdAt: "desc" },
+    })
 
-  res.json(tickets)
-})
+    res.json(tickets)
+  }
+)
 
-ticketsRoutes.post("/", async (req, res) => {
+ticketsRoutes.post("/", requireAuth, async (req, res) => {
   const { employeeId, category, origin, description } = req.body
+  const auth = (req as any).auth
 
   if (!employeeId || !category || !origin || !description) {
     return res.status(400).json({ message: "Funcionário, categoria, origem e descrição são obrigatórios." })
+  }
+
+  if (auth.type === "employee" && auth.employeeId !== Number(employeeId)) {
+    return res.status(403).json({ message: "Funcionário sem permissão para abrir chamado em nome de outro usuário." })
   }
 
   const employee = await prisma.employee.findUnique({
@@ -99,7 +114,7 @@ ticketsRoutes.post("/", async (req, res) => {
   res.status(201).json(ticket)
 })
 
-ticketsRoutes.get("/:id/messages", async (req, res) => {
+ticketsRoutes.get("/:id/messages", requireTicketParticipant(["Admin", "TI", "Diretoria"]), async (req, res) => {
   const { id } = req.params
 
   const messages = await prisma.ticketMessage.findMany({
@@ -114,9 +129,10 @@ ticketsRoutes.get("/:id/messages", async (req, res) => {
   res.json(messages)
 })
 
-ticketsRoutes.post("/:id/messages", async (req, res) => {
+ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI"]), async (req, res) => {
   const { id } = req.params
   const { senderType, senderName, employeeId, message } = req.body
+  const auth = (req as any).auth
 
   if (!message || !String(message).trim()) {
     return res.status(400).json({ message: "A mensagem é obrigatória." })
@@ -135,6 +151,10 @@ ticketsRoutes.post("/:id/messages", async (req, res) => {
   let finalSenderName = senderName || (normalizedSenderType === "employee" ? "Funcionário" : "Técnico")
 
   if (normalizedSenderType === "employee") {
+    if (auth.type === "employee" && auth.employeeId !== ticket.employeeId) {
+      return res.status(403).json({ message: "Este funcionário não tem permissão para responder este chamado." })
+    }
+
     if (!employeeId || Number(employeeId) !== ticket.employeeId) {
       return res.status(403).json({ message: "Este funcionário não tem permissão para responder este chamado." })
     }
@@ -172,7 +192,7 @@ ticketsRoutes.post("/:id/messages", async (req, res) => {
   res.status(201).json(createdMessage)
 })
 
-ticketsRoutes.patch("/:id/status", async (req, res) => {
+ticketsRoutes.patch("/:id/status", requireTechnical(["Admin", "TI"]), async (req, res) => {
   const { id } = req.params
   const { status } = req.body
 
@@ -196,7 +216,7 @@ ticketsRoutes.patch("/:id/status", async (req, res) => {
   res.json(ticket)
 })
 
-ticketsRoutes.patch("/:id/response", async (req, res) => {
+ticketsRoutes.patch("/:id/response", requireTechnical(["Admin", "TI"]), async (req, res) => {
   const { id } = req.params
   const { technicalResponse } = req.body
 
@@ -228,7 +248,7 @@ ticketsRoutes.patch("/:id/response", async (req, res) => {
   res.json(ticket)
 })
 
-ticketsRoutes.patch("/:id", async (req, res) => {
+ticketsRoutes.patch("/:id", requireTechnical(["Admin", "TI"]), async (req, res) => {
   const { id } = req.params
   const { status } = req.body
 
@@ -248,7 +268,7 @@ ticketsRoutes.patch("/:id", async (req, res) => {
   res.json(ticket)
 })
 
-ticketsRoutes.patch("/:id/archive", async (req, res) => {
+ticketsRoutes.patch("/:id/archive", requireTechnical(["Admin", "TI"]), async (req, res) => {
   const { id } = req.params
 
   const ticket = await prisma.ticket.update({
@@ -267,7 +287,7 @@ ticketsRoutes.patch("/:id/archive", async (req, res) => {
   res.json(ticket)
 })
 
-ticketsRoutes.patch("/:id/finish", async (req, res) => {
+ticketsRoutes.patch("/:id/finish", requireTicketParticipant(["Admin", "TI"]), async (req, res) => {
   const { id } = req.params
 
   const ticket = await prisma.ticket.update({

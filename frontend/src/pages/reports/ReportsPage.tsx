@@ -7,7 +7,7 @@ import { StatsCard } from "@/components/dashboard/StatsCard"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { FileSpreadsheet, Download, RotateCcw, Search, Calendar, FileText } from "lucide-react"
-import { API_URL } from "@/services/api"
+import { apiFetch } from "@/services/api"
 
 type Ticket = {
   id: number
@@ -20,6 +20,7 @@ type Ticket = {
   createdAt: string
   description: string
   technicalResponse: string
+  archived: boolean
 }
 
 export function ReportsPage() {
@@ -39,7 +40,7 @@ export function ReportsPage() {
   async function loadTickets() {
     try {
       setLoading(true)
-      const response = await fetch(`${API_URL}/tickets`)
+      const response = await apiFetch("/tickets?includeArchived=true")
       const data = await response.json()
       setTickets(data.map((ticket: any) => ({
         id: ticket.id,
@@ -51,6 +52,7 @@ export function ReportsPage() {
         priority: ticket.priority || "Normal",
         description: ticket.description || "",
         technicalResponse: ticket.technicalResponse || "",
+        archived: ticket.archived || false,
         createdAt: ticket.createdAt ? new Date(ticket.createdAt).toLocaleString("pt-BR") : new Date().toLocaleString("pt-BR"),
       })))
     } catch (error) {
@@ -116,8 +118,8 @@ export function ReportsPage() {
     doc.text(`Total de chamados: ${filteredTickets.length}`, 14, 40)
     autoTable(doc, {
       startY: 48,
-      head: [["ID", "Solicitante", "Setor", "Categoria", "Origem", "Status", "Prioridade", "Criado em"]],
-      body: filteredTickets.map((ticket) => [`#${ticket.id}`, ticket.user, ticket.sector, ticket.category, ticket.origin, ticket.status, ticket.priority, ticket.createdAt]),
+      head: [["ID", "Solicitante", "Setor", "Categoria", "Origem", "Status", "Arquivado", "Prioridade", "Criado em"]],
+      body: filteredTickets.map((ticket) => [`#${ticket.id}`, ticket.user, ticket.sector, ticket.category, ticket.origin, ticket.status, ticket.archived ? "Sim" : "Não", ticket.priority, ticket.createdAt]),
       styles: { fontSize: 8, cellPadding: 2 },
       headStyles: { fillColor: [7, 59, 42], textColor: 255 },
     })
@@ -125,7 +127,7 @@ export function ReportsPage() {
   }
 
   function exportExcel() {
-    const data = filteredTickets.map((ticket) => ({ ID: ticket.id, Solicitante: ticket.user, Setor: ticket.sector, Categoria: ticket.category, Origem: ticket.origin, Status: ticket.status, Prioridade: ticket.priority, "Criado em": ticket.createdAt, Descrição: ticket.description, "Resposta técnica": ticket.technicalResponse }))
+    const data = filteredTickets.map((ticket) => ({ ID: ticket.id, Solicitante: ticket.user, Setor: ticket.sector, Categoria: ticket.category, Origem: ticket.origin, Status: ticket.status, Arquivado: ticket.archived ? "Sim" : "Não", Prioridade: ticket.priority, "Criado em": ticket.createdAt, Descrição: ticket.description, "Resposta técnica": ticket.technicalResponse }))
     const worksheet = XLSX.utils.json_to_sheet(data)
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, "Chamados")

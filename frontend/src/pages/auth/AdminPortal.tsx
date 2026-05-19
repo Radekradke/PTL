@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { categories } from "@/lib/categories"
-import { API_URL } from "@/services/api"
+import { API_URL, PORTAL_USER_KEY, apiFetch, getPortalToken } from "@/services/api"
 import {
   CheckCircle2,
   ChevronDown,
@@ -30,6 +30,7 @@ type Employee = {
   id: number
   name: string
   username?: string | null
+  token?: string
   sectorId: number
   sector: Sector
 }
@@ -63,8 +64,6 @@ type SuccessState = {
   ticketId?: number
   employeeName?: string
 }
-
-const PORTAL_USER_KEY = "lifting-portal-employee"
 
 const styles = {
   page:
@@ -208,7 +207,13 @@ export function AdminPortal() {
 
     if (savedEmployee) {
       try {
-        setLoggedEmployee(JSON.parse(savedEmployee))
+        const parsedEmployee = JSON.parse(savedEmployee)
+        if (!parsedEmployee?.token) {
+          localStorage.removeItem(PORTAL_USER_KEY)
+          return
+        }
+
+        setLoggedEmployee(parsedEmployee)
       } catch {
         localStorage.removeItem(PORTAL_USER_KEY)
       }
@@ -273,7 +278,7 @@ export function AdminPortal() {
     setIsLoadingTickets(true)
 
     try {
-      const response = await fetch(`${API_URL}/tickets/employee/${idToSearch}?archived=false`)
+      const response = await apiFetch(`/tickets/employee/${idToSearch}?archived=false`, {}, getPortalToken())
 
       if (!response.ok) {
         setMyTickets([])
@@ -312,7 +317,7 @@ export function AdminPortal() {
     }
 
     try {
-      const response = await fetch(`${API_URL}/tickets/employee/${idToSearch}?archived=true`)
+      const response = await apiFetch(`/tickets/employee/${idToSearch}?archived=true`, {}, getPortalToken())
 
       if (!response.ok) {
         setArchivedTickets([])
@@ -332,7 +337,7 @@ export function AdminPortal() {
     setSelectedTicket(ticket)
 
     try {
-      const response = await fetch(`${API_URL}/tickets/${ticket.id}/messages`)
+      const response = await apiFetch(`/tickets/${ticket.id}/messages`, {}, getPortalToken())
 
       if (!response.ok) {
         setMessages(ticket.messages || [])
@@ -356,7 +361,7 @@ export function AdminPortal() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch(`${API_URL}/tickets`, {
+      const response = await apiFetch("/tickets", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -367,7 +372,7 @@ export function AdminPortal() {
           origin,
           description,
         }),
-      })
+      }, getPortalToken())
 
       if (!response.ok) {
         alert("Erro ao abrir chamado.")
@@ -400,7 +405,7 @@ export function AdminPortal() {
     setIsSendingReply(true)
 
     try {
-      const response = await fetch(`${API_URL}/tickets/${selectedTicket.id}/messages`, {
+      const response = await apiFetch(`/tickets/${selectedTicket.id}/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -410,7 +415,7 @@ export function AdminPortal() {
           employeeId: loggedEmployee.id,
           message: employeeReply.trim(),
         }),
-      })
+      }, getPortalToken())
 
       if (!response.ok) {
         alert("Erro ao enviar resposta.")
@@ -436,12 +441,12 @@ export function AdminPortal() {
     setIsFinishingTicket(true)
 
     try {
-      const response = await fetch(`${API_URL}/tickets/${selectedTicket.id}/finish`, {
+      const response = await apiFetch(`/tickets/${selectedTicket.id}/finish`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-      })
+      }, getPortalToken())
 
       if (!response.ok) {
         alert("Erro ao finalizar chamado.")

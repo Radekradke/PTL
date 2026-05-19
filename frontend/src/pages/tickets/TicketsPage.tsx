@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { StatsCard } from "@/components/dashboard/StatsCard"
 import { TicketsTable } from "@/components/tickets/TicketsTable"
-import { API_URL } from "@/services/api"
+import { apiFetch } from "@/services/api"
 import { useNotifications } from "@/contexts/NotificationContext"
 
 export function TicketsPage() {
@@ -17,7 +17,7 @@ export function TicketsPage() {
 
   async function loadTickets() {
     try {
-      const response = await fetch(`${API_URL}/tickets`)
+      const response = await apiFetch("/tickets")
       const data = await response.json()
       const formattedTickets = data.map((ticket: any) => ({
         id: ticket.id,
@@ -29,6 +29,7 @@ export function TicketsPage() {
         priority: ticket.priority,
         description: ticket.description,
         technicalResponse: ticket.technicalResponse || "",
+        archived: ticket.archived || false,
         createdAt: new Date(ticket.createdAt).toLocaleString("pt-BR"),
         timeline: ticket.timeline?.map((event: any) => ({
           date: new Date(event.createdAt).toLocaleString("pt-BR"),

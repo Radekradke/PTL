@@ -1,18 +1,13 @@
 import { Router } from "express"
-import { createHash } from "crypto"
 import { prisma } from "../lib/prisma"
+import { hashPassword, signToken, verifyPassword } from "../lib/auth"
+import { requireTechnical } from "../middlewares/auth.middleware"
 
 export const employeesRoutes = Router()
 
 function normalizeUsername(username?: string) {
   const normalized = String(username || "").trim().toLowerCase()
   return normalized.length > 0 ? normalized : null
-}
-
-function hashPassword(password?: string) {
-  const value = String(password || "").trim()
-  if (!value) return null
-  return createHash("sha256").update(value).digest("hex")
 }
 
 function publicEmployee(employee: any) {
@@ -27,7 +22,7 @@ function publicEmployee(employee: any) {
   }
 }
 
-employeesRoutes.get("/", async (_req, res) => {
+employeesRoutes.get("/", requireTechnical(["Admin", "TI"]), async (_req, res) => {
   const employees = await prisma.employee.findMany({
     include: {
       sector: true,
@@ -43,9 +38,8 @@ employeesRoutes.get("/", async (_req, res) => {
 employeesRoutes.post("/login", async (req, res) => {
   const { username, password } = req.body
   const normalizedUsername = normalizeUsername(username)
-  const hashedPassword = hashPassword(password)
 
-  if (!normalizedUsername || !hashedPassword) {
+  if (!normalizedUsername || !String(password || "").trim()) {
     return res.status(400).json({ message: "Usuário e senha são obrigatórios." })
   }
 
@@ -58,14 +52,23 @@ employeesRoutes.post("/login", async (req, res) => {
     },
   })
 
-  if (!employee || employee.passwordHash !== hashedPassword) {
+  const passwordCheck = employee ? verifyPassword(String(password), employee.passwordHash) : { valid: false }
+
+  if (!employee || !passwordCheck.valid) {
     return res.status(401).json({ message: "Usuário ou senha inválidos." })
   }
 
-  res.json(publicEmployee(employee))
+  res.json({
+    ...publicEmployee(employee),
+    token: signToken({
+      type: "employee",
+      employeeId: employee.id,
+      name: employee.name,
+    }),
+  })
 })
 
-employeesRoutes.post("/", async (req, res) => {
+employeesRoutes.post("/", requireTechnical(["Admin"]), async (req, res) => {
   try {
     const { name, sectorId, username, password } = req.body
 
@@ -104,7 +107,7 @@ employeesRoutes.post("/", async (req, res) => {
   }
 })
 
-employeesRoutes.put("/:id", async (req, res) => {
+employeesRoutes.put("/:id", requireTechnical(["Admin"]), async (req, res) => {
   const { id } = req.params
   const { name, sectorId, username, password } = req.body
 
@@ -132,7 +135,7 @@ employeesRoutes.put("/:id", async (req, res) => {
   res.json(publicEmployee(employee))
 })
 
-employeesRoutes.delete("/:id", async (req, res) => {
+employeesRoutes.delete("/:id", requireTechnical(["Admin"]), async (req, res) => {
   const { id } = req.params
 
   await prisma.employee.delete({

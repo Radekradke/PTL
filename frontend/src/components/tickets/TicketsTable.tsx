@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { categories } from "@/lib/categories"
-import { API_URL } from "@/services/api"
+import { apiFetch } from "@/services/api"
 
 import {
   Dialog,
@@ -123,8 +123,8 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   async function loadEmployeesAndSectors() {
     try {
       const [employeesRes, sectorsRes] = await Promise.all([
-        fetch(`${API_URL}/employees`),
-        fetch(`${API_URL}/sectors`),
+        apiFetch("/employees"),
+        apiFetch("/sectors"),
       ])
 
       const employeesData = await employeesRes.json()
@@ -164,7 +164,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch(`${API_URL}/tickets`, {
+      const response = await apiFetch("/tickets", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -206,7 +206,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   }
 
   function handleChangeStatus(ticketId: number, newStatus: string) {
-    fetch(`${API_URL}/tickets/${ticketId}/status`, {
+    apiFetch(`/tickets/${ticketId}/status`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -260,7 +260,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   function handleAddResponse() {
     if (!selectedTicket || !technicalResponse.trim()) return
 
-    fetch(`${API_URL}/tickets/${selectedTicket.id}/response`, {
+    apiFetch(`/tickets/${selectedTicket.id}/response`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -299,7 +299,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   function handleFinishTicket() {
     if (!selectedTicket) return
 
-    fetch(`${API_URL}/tickets/${selectedTicket.id}`, {
+    apiFetch(`/tickets/${selectedTicket.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

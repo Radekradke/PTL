@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useRef } from "react"
 import type { ReactNode } from "react"
 import toast from "react-hot-toast"
-import { API_URL } from "@/services/api"
+import { AUTH_CHANGED_EVENT, apiFetch } from "@/services/api"
 
 interface NotificationContextType {
   tickets: any[]
@@ -15,11 +15,16 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const [tickets, setTickets] = useState<any[]>([])
   const previousTicketCount = useRef(0)
 
-  const notificationCount = tickets.filter(ticket => ticket.status === "Aberto").length
+  const notificationCount = tickets.filter(ticket => ticket.status === "Aberto" && !ticket.archived).length
 
   async function loadTickets() {
     try {
-      const response = await fetch(`${API_URL}/tickets`)
+      const response = await apiFetch("/tickets?includeArchived=true")
+      if (!response.ok) {
+        setTickets([])
+        return
+      }
+
       const data = await response.json()
 
       const formattedTickets = data.map((ticket: any) => ({
@@ -32,6 +37,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         priority: ticket.priority,
         description: ticket.description,
         technicalResponse: ticket.technicalResponse || "",
+        archived: ticket.archived || false,
         createdAt: new Date(ticket.createdAt).toLocaleString("pt-BR"),
       }))
 
@@ -44,12 +50,16 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     loadTickets()
     const interval = setInterval(loadTickets, 10000)
+    window.addEventListener(AUTH_CHANGED_EVENT, loadTickets)
 
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener(AUTH_CHANGED_EVENT, loadTickets)
+    }
   }, [])
 
   useEffect(() => {
-    const currentOpenCount = tickets.filter(ticket => ticket.status === "Aberto").length
+    const currentOpenCount = tickets.filter(ticket => ticket.status === "Aberto" && !ticket.archived).length
 
     // Se há mais tickets abertos que antes, mostrar notificação
     if (currentOpenCount > previousTicketCount.current && previousTicketCount.current > 0) {

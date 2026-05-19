@@ -8,13 +8,15 @@ import { ReportsPage } from "@/pages/reports/ReportsPage"
 import { SettingsPage } from "./pages/settings/SettingsPage"
 import { NotificationProvider } from "./contexts/NotificationContext"
 import { Toaster } from "react-hot-toast"
+import { TECHNICAL_USER_KEY } from "@/services/api"
 
 function getCurrentUser() {
-  const stored = localStorage.getItem("lifting-user")
+  const stored = localStorage.getItem(TECHNICAL_USER_KEY)
   if (!stored) return null
 
   try {
-    return JSON.parse(stored)
+    const user = JSON.parse(stored)
+    return user?.token ? user : null
   } catch {
     return null
   }

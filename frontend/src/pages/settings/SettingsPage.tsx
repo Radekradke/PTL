@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { API_URL } from "@/services/api"
+import { apiFetch } from "@/services/api"
 
 type Sector = { id: number; name: string; pin: string }
 
@@ -26,8 +26,8 @@ export function SettingsPage() {
   const [newEmployeeSectorId, setNewEmployeeSectorId] = useState("")
 
   async function loadData() {
-    const sectorsResponse = await fetch(`${API_URL}/sectors`)
-    const employeesResponse = await fetch(`${API_URL}/employees`)
+    const sectorsResponse = await apiFetch("/sectors")
+    const employeesResponse = await apiFetch("/employees")
     const sectorsData = await sectorsResponse.json()
     const employeesData = await employeesResponse.json()
     setSectors(sectorsData)
@@ -39,12 +39,12 @@ export function SettingsPage() {
 
   async function addSector() {
     if (!newSectorName || !newSectorPin) { alert("Preencha o nome do setor e o PIN."); return }
-    await fetch(`${API_URL}/sectors`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newSectorName, pin: newSectorPin }) })
+    await apiFetch("/sectors", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newSectorName, pin: newSectorPin }) })
     setNewSectorName(""); setNewSectorPin(""); loadData()
   }
 
   async function updateSector(sector: Sector) {
-    await fetch(`${API_URL}/sectors/${sector.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sector.name, pin: sector.pin }) })
+    await apiFetch(`/sectors/${sector.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sector.name, pin: sector.pin }) })
     loadData()
   }
 
@@ -52,7 +52,7 @@ export function SettingsPage() {
     const hasEmployees = employees.some((employee) => employee.sectorId === id)
     if (hasEmployees) { alert("Esse setor possui funcionários vinculados. Remaneje ou exclua os funcionários antes."); return }
     if (!window.confirm("Excluir este setor?")) return
-    await fetch(`${API_URL}/sectors/${id}`, { method: "DELETE" })
+    await apiFetch(`/sectors/${id}`, { method: "DELETE" })
     loadData()
   }
 
@@ -61,21 +61,21 @@ export function SettingsPage() {
       alert("Preencha nome, usuário, senha e setor do funcionário.")
       return
     }
-    const response = await fetch(`${API_URL}/employees`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newEmployeeName, username: newEmployeeUsername, password: newEmployeePassword, sectorId: Number(newEmployeeSectorId) }) })
+    const response = await apiFetch("/employees", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newEmployeeName, username: newEmployeeUsername, password: newEmployeePassword, sectorId: Number(newEmployeeSectorId) }) })
     if (!response.ok) { alert("Erro ao criar funcionário. Verifique se o usuário já existe."); return }
     setNewEmployeeName(""); setNewEmployeeUsername(""); setNewEmployeePassword(""); loadData()
   }
 
   async function updateEmployee(employee: Employee) {
     if (!employee.name || !employee.sectorId || !employee.username) { alert("Nome, usuário e setor são obrigatórios."); return }
-    const response = await fetch(`${API_URL}/employees/${employee.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: employee.name, username: employee.username, password: employee.password || undefined, sectorId: employee.sectorId }) })
+    const response = await apiFetch(`/employees/${employee.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: employee.name, username: employee.username, password: employee.password || undefined, sectorId: employee.sectorId }) })
     if (!response.ok) { alert("Erro ao salvar funcionário. Verifique se o usuário já existe."); return }
     loadData()
   }
 
   async function removeEmployee(id: number) {
     if (!window.confirm("Excluir este funcionário? Todos os chamados associados também serão deletados.")) return
-    const response = await fetch(`${API_URL}/employees/${id}`, { method: "DELETE" })
+    const response = await apiFetch(`/employees/${id}`, { method: "DELETE" })
     if (!response.ok) { alert("Erro ao excluir funcionário."); return }
     loadData()
   }

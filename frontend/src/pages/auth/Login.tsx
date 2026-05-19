@@ -4,7 +4,7 @@ import { LockKeyhole, ShieldCheck, UserRound, ArrowRight } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { sectorCredentials } from "@/lib/auth"
+import { API_URL, AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY } from "@/services/api"
 
 const technicalSectors = ["Admin", "TI", "Diretoria"]
 
@@ -13,24 +13,40 @@ export function Login() {
   const [sector, setSector] = useState("Admin")
   const [pin, setPin] = useState("")
 
-  function handleLogin() {
-    const correctPin =
-      sectorCredentials[sector as keyof typeof sectorCredentials]
-
-    if (pin !== correctPin) {
-      alert("PIN inválido")
-      return
-    }
-
-    localStorage.setItem(
-      "lifting-user",
-      JSON.stringify({
-        sector,
-        type: "technical",
+  async function handleLogin() {
+    try {
+      const response = await fetch(`${API_URL}/auth/technical`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sector,
+          pin,
+        }),
       })
-    )
 
-    navigate("/dashboard")
+      if (!response.ok) {
+        alert("PIN inválido")
+        return
+      }
+
+      const data = await response.json()
+
+      localStorage.setItem(
+        TECHNICAL_USER_KEY,
+        JSON.stringify({
+          ...data.user,
+          token: data.token,
+        })
+      )
+
+      window.dispatchEvent(new Event(AUTH_CHANGED_EVENT))
+      navigate("/dashboard")
+    } catch (error) {
+      console.error("Erro ao acessar painel:", error)
+      alert("Erro ao acessar painel.")
+    }
   }
 
   return (
