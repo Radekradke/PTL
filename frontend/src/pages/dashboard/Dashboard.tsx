@@ -1,8 +1,123 @@
+import type { CSSProperties } from "react"
 import { useEffect, useMemo, useState } from "react"
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { StatsCard } from "@/components/dashboard/StatsCard"
 import { useNotifications } from "@/contexts/NotificationContext"
+
+
+type ChartDatum = {
+  name: string
+  total: number
+}
+
+function hasChartData(data: ChartDatum[]) {
+  return data.some((item) => item.total > 0)
+}
+
+function EmptyChartState() {
+  return (
+    <div className="flex h-full min-h-[220px] items-center justify-center rounded-3xl border border-dashed border-[#DDE8E2] bg-[#F8FCFA] px-4 text-center">
+      <p className="text-sm font-semibold text-slate-500">Sem dados para exibir com os filtros atuais.</p>
+    </div>
+  )
+}
+
+function ChartLegend({ data, colors }: { data: ChartDatum[]; colors: string[] }) {
+  return (
+    <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+      {data.map((item, index) => (
+        <div key={item.name} className="flex items-center justify-between gap-3 rounded-2xl border border-[#DDE8E2] bg-white px-3 py-2">
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: colors[index % colors.length] }} />
+            <span className="truncate text-xs font-bold text-slate-600">{item.name}</span>
+          </div>
+          <span className="text-xs font-black text-[#073B2A]">{item.total}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function MobileBarChart({
+  data,
+  fill,
+  tooltipStyle,
+}: {
+  data: ChartDatum[]
+  fill: string
+  tooltipStyle: CSSProperties
+}) {
+  const chartWidth = Math.max(data.length * 110, 560)
+
+  if (!hasChartData(data)) return <EmptyChartState />
+
+  return (
+    <div className="mt-4 sm:mt-5 overflow-x-auto overflow-y-hidden pb-3 [-webkit-overflow-scrolling:touch]">
+      <div style={{ width: chartWidth }} className="h-[280px] sm:h-80 lg:h-[320px] lg:w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 10, right: 18, left: -16, bottom: 44 }}>
+            <XAxis
+              dataKey="name"
+              stroke="#94A3B8"
+              interval={0}
+              height={72}
+              tick={{ fill: "#475569", fontSize: 11 }}
+              angle={-24}
+              textAnchor="end"
+            />
+            <YAxis allowDecimals={false} stroke="#94A3B8" tick={{ fill: "#475569", fontSize: 11 }} />
+            <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "rgba(0,168,89,0.08)" }} />
+            <Bar dataKey="total" fill={fill} radius={[12, 12, 4, 4]} minPointSize={4} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  )
+}
+
+function MobilePieChart({
+  data,
+  colors,
+  tooltipStyle,
+}: {
+  data: ChartDatum[]
+  colors: string[]
+  tooltipStyle: CSSProperties
+}) {
+  if (!hasChartData(data)) return <EmptyChartState />
+
+  return (
+    <>
+      <div className="mt-4 sm:mt-5 h-[240px] w-full sm:h-80 lg:h-[320px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+            <Pie
+              data={data}
+              dataKey="total"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius="76%"
+              innerRadius="42%"
+              paddingAngle={4}
+              label={false}
+              isAnimationActive={false}
+            >
+              {data.map((item, index) => (
+                <Cell key={item.name} fill={colors[index % colors.length]} />
+              ))}
+            </Pie>
+            <Tooltip contentStyle={tooltipStyle} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+
+      <ChartLegend data={data} colors={colors} />
+    </>
+  )
+}
+
 
 export function Dashboard() {
   const { tickets } = useNotifications()
@@ -130,62 +245,22 @@ export function Dashboard() {
           <div className="ls-card p-3 sm:p-4 lg:p-6">
             <h2 className="ls-section-title text-lg sm:text-xl">Por setor</h2>
             <p className="text-xs sm:text-sm text-slate-500">Volume por área.</p>
-            <div className="mt-4 sm:mt-5 h-64 sm:h-80 lg:h-[320px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={ticketsBySector}>
-                  <XAxis dataKey="name" stroke="#94A3B8" tick={{ fill: "#475569", fontSize: 11 }} />
-                  <YAxis stroke="#94A3B8" tick={{ fill: "#475569", fontSize: 11 }} />
-                  <Tooltip contentStyle={tooltipStyle} />
-                  <Bar dataKey="total" fill="#00A859" radius={[12,12,4,4]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <MobileBarChart data={ticketsBySector} fill="#00A859" tooltipStyle={tooltipStyle} />
           </div>
           <div className="ls-card p-3 sm:p-4 lg:p-6">
             <h2 className="ls-section-title text-lg sm:text-xl">Por categoria</h2>
             <p className="text-xs sm:text-sm text-slate-500">Tipos de demanda.</p>
-            <div className="mt-4 sm:mt-5 h-64 sm:h-80 lg:h-[320px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={ticketsByCategory}>
-                  <XAxis dataKey="name" stroke="#94A3B8" tick={{ fill: "#475569", fontSize: 11 }} />
-                  <YAxis stroke="#94A3B8" tick={{ fill: "#475569", fontSize: 11 }} />
-                  <Tooltip contentStyle={tooltipStyle} />
-                  <Bar dataKey="total" fill="#102A43" radius={[12,12,4,4]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <MobileBarChart data={ticketsByCategory} fill="#102A43" tooltipStyle={tooltipStyle} />
           </div>
           <div className="ls-card p-3 sm:p-4 lg:p-6">
             <h2 className="ls-section-title text-lg sm:text-xl">Por status</h2>
             <p className="text-xs sm:text-sm text-slate-500">Distribuição da fila.</p>
-            <div className="mt-4 sm:mt-5 h-64 sm:h-80 lg:h-[320px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={ticketsByStatus} dataKey="total" nameKey="name" outerRadius={80} innerRadius={40} paddingAngle={4} label>
-                    <Cell fill="#4F93D2" />
-                    <Cell fill="#F59E0B" />
-                    <Cell fill="#F97316" />
-                    <Cell fill="#00A859" />
-                  </Pie>
-                  <Tooltip contentStyle={tooltipStyle} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+            <MobilePieChart data={ticketsByStatus} colors={["#4F93D2", "#F59E0B", "#F97316", "#00A859"]} tooltipStyle={tooltipStyle} />
           </div>
           <div className="ls-card p-3 sm:p-4 lg:p-6">
             <h2 className="ls-section-title text-lg sm:text-xl">Base x Offshore</h2>
             <p className="text-xs sm:text-sm text-slate-500">Origem dos chamados.</p>
-            <div className="mt-4 sm:mt-5 h-64 sm:h-80 lg:h-[320px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={ticketsByOrigin} dataKey="total" nameKey="name" outerRadius={80} innerRadius={40} paddingAngle={4} label>
-                    <Cell fill="#102A43" />
-                    <Cell fill="#E11D48" />
-                  </Pie>
-                  <Tooltip contentStyle={tooltipStyle} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+            <MobilePieChart data={ticketsByOrigin} colors={["#102A43", "#E11D48"]} tooltipStyle={tooltipStyle} />
           </div>
         </div>
       </div>
