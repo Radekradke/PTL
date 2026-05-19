@@ -17,7 +17,7 @@ export function TicketsPage() {
 
   async function loadTickets() {
     try {
-      const response = await apiFetch("/tickets")
+      const response = await apiFetch("/tickets?includeArchived=true")
       const data = await response.json()
       const formattedTickets = data.map((ticket: any) => ({
         id: ticket.id,
@@ -43,9 +43,11 @@ export function TicketsPage() {
     }
   }
 
-  const openTickets = tickets.filter((ticket) => ticket.status === "Aberto").length
-  const progressTickets = tickets.filter((ticket) => ticket.status === "Em andamento").length
-  const waitingUserTickets = tickets.filter((ticket) => ticket.status === "Aguardando usuário").length
+  const activeTickets = tickets.filter((ticket) => !ticket.archived)
+  const archivedTickets = tickets.filter((ticket) => ticket.archived).length
+  const openTickets = activeTickets.filter((ticket) => ticket.status === "Aberto").length
+  const progressTickets = activeTickets.filter((ticket) => ticket.status === "Em andamento").length
+  const waitingUserTickets = activeTickets.filter((ticket) => ticket.status === "Aguardando usuário").length
   const finishedTickets = tickets.filter((ticket) => ticket.status === "Finalizado").length
   const offshoreTickets = tickets.filter((ticket) => ticket.origin === "Offshore").length
   const baseTickets = tickets.filter((ticket) => ticket.origin === "Base").length
@@ -73,9 +75,9 @@ export function TicketsPage() {
                 <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-amber-700">Pendentes</p>
                 <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-amber-700">{openTickets + waitingUserTickets}</p>
               </div>
-              <div className="rounded-2xl sm:rounded-3xl border border-[#DDE8E2] bg-[#ECFBF3] p-3 sm:p-4 text-center shadow-sm">
-                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-[#073B2A]">Em atendimento</p>
-                <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-[#00A859]">{progressTickets}</p>
+              <div className="rounded-2xl sm:rounded-3xl border border-[#DDE8E2] bg-[#F8FAF9] p-3 sm:p-4 text-center shadow-sm">
+                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-[#073B2A]">Arquivados</p>
+                <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-[#073B2A]">{archivedTickets}</p>
               </div>
             </div>
           </div>
@@ -83,12 +85,13 @@ export function TicketsPage() {
 
         <section className="space-y-3 sm:space-y-4 lg:space-y-4">
           <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Status</h3>
-          <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2 sm:grid-cols-3 xl:grid-cols-6">
             <StatsCard title="Total" value={String(totalTickets)} tone="neutral" />
             <StatsCard title="Abertos" value={String(openTickets)} tone="warning" />
             <StatsCard title="Em andamento" value={String(progressTickets)} tone="info" />
             <StatsCard title="Aguardando usuário" value={String(waitingUserTickets)} tone="danger" />
             <StatsCard title="Finalizados" value={String(finishedTickets)} tone="success" />
+            <StatsCard title="Arquivados" value={String(archivedTickets)} tone="base" />
           </div>
         </section>
 

@@ -378,6 +378,8 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
     return matchesSearch && matchesStatus && matchesOrigin && matchesPriority && matchesSector
   })
 
+  const filteredArchivedTickets = filteredTickets.filter((ticket) => ticket.archived).length
+
   return (
     <div className="space-y-5">
       <div className="rounded-3xl border border-[#DDE7E2] bg-white/90 p-4 shadow-[0_18px_48px_rgba(7,59,42,0.08)] backdrop-blur sm:p-5">
@@ -566,6 +568,11 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-[#516070]">
           <span className="font-semibold text-[#111827]">{filteredTickets.length}</span> chamado(s) encontrado(s)
+          {filteredArchivedTickets > 0 && (
+            <span className="ml-2 rounded-full border border-[#DDE7E2] bg-white px-2.5 py-1 text-xs font-bold text-slate-500">
+              {filteredArchivedTickets} arquivado(s)
+            </span>
+          )}
         </p>
       </div>
 
@@ -587,7 +594,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             </thead>
             <tbody>
               {filteredTickets.map((ticket) => (
-                <tr key={ticket.id} className="border-t border-slate-100 transition-all hover:bg-[#E9FFF3]/50">
+                <tr key={ticket.id} className={`border-t border-slate-100 transition-all hover:bg-[#E9FFF3]/50 ${ticket.archived ? "bg-slate-50/70 opacity-75" : ""}`}>
                   <td className="px-3 py-3 text-[#111827] whitespace-nowrap">#{ticket.id}</td>
                   <td className="px-3 py-3 text-[#102A43] whitespace-nowrap">{ticket.user}</td>
                   <td className="px-3 py-3 text-[#334155] whitespace-nowrap">{ticket.sector}</td>
@@ -606,6 +613,11 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getStatusStyle(ticket.status)}`}>
                       {ticket.status}
                     </span>
+                    {ticket.archived && (
+                      <span className="ml-1.5 inline-flex rounded-full bg-slate-100 px-2 py-1 text-[10px] font-black uppercase tracking-[0.08em] text-slate-500 ring-1 ring-slate-200">
+                        Arquivado
+                      </span>
+                    )}
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">
                     <select
@@ -632,7 +644,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
         <div className="space-y-3 lg:hidden">
           {filteredTickets.map((ticket) => (
-            <div key={ticket.id} className="rounded-2xl border border-[#DDE7E2] bg-white p-4 shadow-sm">
+            <div key={ticket.id} className={`rounded-2xl border border-[#DDE7E2] bg-white p-4 shadow-sm ${ticket.archived ? "opacity-75" : ""}`}>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#00A859]">#{ticket.id}</p>
@@ -643,6 +655,11 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                   {ticket.status}
                 </span>
               </div>
+              {ticket.archived && (
+                <span className="mt-3 inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.08em] text-slate-500 ring-1 ring-slate-200">
+                  Arquivado
+                </span>
+              )}
 
               <p className="mt-3 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-[#334155]">
                 {ticket.description || "Sem descrição."}

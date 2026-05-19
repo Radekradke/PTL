@@ -30,13 +30,14 @@ export function StatsCard({ title, value, color, tone }: Props) {
   const styles = toneStyles[resolveTone(tone, color)]
 
   return (
-    <div className="group relative overflow-hidden rounded-[1.5rem] border border-[#DDE8E2] bg-white p-4 shadow-[0_16px_44px_rgba(16,42,67,0.07)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_20px_54px_rgba(16,42,67,0.12)] sm:p-5">
+    <div className="group relative overflow-hidden rounded-[1.5rem] border border-[#DDE8E2] bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FCFA_100%)] p-4 shadow-[0_16px_44px_rgba(16,42,67,0.07)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#BFEFD7] hover:shadow-[0_20px_54px_rgba(16,42,67,0.12)] sm:p-5">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#00A859]/45 to-transparent" />
       <div className={`absolute left-0 top-0 h-full w-1.5 ${styles.accent}`} />
       <div className="flex items-start justify-between gap-3 pl-1">
         <p className={`${styles.label} max-w-[12rem] text-[11px] font-black uppercase leading-5 tracking-[0.12em] sm:text-xs`}>
           {title}
         </p>
-        <span className={`${styles.glow} h-8 w-8 shrink-0 rounded-2xl ring-1 ring-black/5`} />
+        <span className={`${styles.glow} h-8 w-8 shrink-0 rounded-2xl ring-1 ring-black/5 transition-transform duration-200 group-hover:scale-110`} />
       </div>
       <h2 className={`${styles.value} mt-4 pl-1 text-3xl font-black leading-none tracking-[-0.055em] sm:text-4xl`}>
         {value}
