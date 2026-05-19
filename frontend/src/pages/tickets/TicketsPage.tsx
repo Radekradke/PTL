@@ -11,7 +11,7 @@ export function TicketsPage() {
 
   useEffect(() => {
     loadTickets()
-    const interval = setInterval(loadTickets, 5000)
+    const interval = setInterval(loadTickets, 15000)
     return () => clearInterval(interval)
   }, [])
 

@@ -20,6 +20,28 @@ const ticketInclude = {
   },
 }
 
+const ticketListInclude = {
+  employee: true,
+  sector: true,
+  timeline: {
+    orderBy: { createdAt: "asc" as const },
+  },
+}
+
+const ticketSummarySelect = {
+  id: true,
+  employee: true,
+  sector: true,
+  category: true,
+  status: true,
+  origin: true,
+  priority: true,
+  description: true,
+  technicalResponse: true,
+  archived: true,
+  createdAt: true,
+}
+
 function formatSenderType(senderType?: string) {
   return senderType === "employee" ? "employee" : "technician"
 }
@@ -29,15 +51,22 @@ function nextStatusFromSender(senderType: string) {
 }
 
 ticketsRoutes.get("/", requireTechnical(["Admin", "TI", "Diretoria"]), async (req, res) => {
-  const { archived, includeArchived } = req.query
+  const { archived, includeArchived, summary } = req.query
   const showArchived = archived === "true"
   const shouldIncludeArchived = includeArchived === "true" || archived === "all"
 
-  const tickets = await prisma.ticket.findMany({
+  const query: any = {
     where: shouldIncludeArchived ? undefined : { archived: showArchived },
-    include: ticketInclude,
     orderBy: { createdAt: "desc" },
-  })
+  }
+
+  if (summary === "true") {
+    query.select = ticketSummarySelect
+  } else {
+    query.include = ticketListInclude
+  }
+
+  const tickets = await prisma.ticket.findMany(query)
 
   res.json(tickets)
 })
@@ -47,18 +76,25 @@ ticketsRoutes.get(
   requireEmployeeOwnerOrTechnical("employeeId", ["Admin", "TI", "Diretoria"]),
   async (req, res) => {
     const { employeeId } = req.params
-    const { archived, includeArchived } = req.query
+    const { archived, includeArchived, summary } = req.query
     const showArchived = archived === "true"
     const shouldIncludeArchived = includeArchived === "true" || archived === "all"
 
-    const tickets = await prisma.ticket.findMany({
+    const query: any = {
       where: {
         employeeId: Number(employeeId),
         ...(shouldIncludeArchived ? {} : { archived: showArchived }),
       },
-      include: ticketInclude,
       orderBy: { createdAt: "desc" },
-    })
+    }
+
+    if (summary === "true") {
+      query.select = ticketSummarySelect
+    } else {
+      query.include = ticketListInclude
+    }
+
+    const tickets = await prisma.ticket.findMany(query)
 
     res.json(tickets)
   }

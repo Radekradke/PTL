@@ -117,6 +117,9 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
   useEffect(() => {
     loadEmployeesAndSectors()
+  }, [])
+
+  useEffect(() => {
     setTableTickets(tickets)
   }, [tickets])
 

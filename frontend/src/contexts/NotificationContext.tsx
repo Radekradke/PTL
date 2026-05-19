@@ -19,7 +19,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   async function loadTickets() {
     try {
-      const response = await apiFetch("/tickets?includeArchived=true")
+      const response = await apiFetch("/tickets?includeArchived=true&summary=true")
       if (!response.ok) {
         setTickets([])
         return
@@ -49,7 +49,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     loadTickets()
-    const interval = setInterval(loadTickets, 10000)
+    const interval = setInterval(loadTickets, 30000)
     window.addEventListener(AUTH_CHANGED_EVENT, loadTickets)
 
     return () => {
