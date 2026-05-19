@@ -57,17 +57,16 @@ export function Login() {
           <div className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-[#00A859]/20 blur-[100px]" />
 
           <div className="relative">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/12 text-2xl font-black text-white shadow-inner ring-1 ring-white/20">
-              L
-            </div>
+            <img
+  src="frontend/src/assets/logos.jpg"
+  alt="Lifting Electric"
+  className="h-20 w-auto object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.25)]"
+/>
 
-            <h1 className="mt-8 text-5xl font-black tracking-[-0.06em] text-white">
-              Lifting
-            </h1>
-
-            <p className="mt-3 max-w-sm text-sm leading-6 text-emerald-50/80">
-              Technical Support para acompanhamento, resposta e gestão de chamados internos.
-            </p>
+<p className="mt-4 text-sm leading-6 text-emerald-50/80">
+  Painel Técnico Lifting para acompanhamento,
+  resposta e gestão de chamados internos.
+</p>
           </div>
 
           <div className="relative space-y-3">
