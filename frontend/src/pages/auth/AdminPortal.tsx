@@ -218,11 +218,9 @@ export function AdminPortal() {
   useEffect(() => {
     if (loggedEmployee?.id) {
       loadMyTickets(loggedEmployee.id)
-      if (activeTab === "mine") {
-        loadArchivedTickets(loggedEmployee.id)
-      }
+      loadArchivedTickets(loggedEmployee.id)
     }
-  }, [loggedEmployee?.id, activeTab])
+  }, [loggedEmployee?.id])
 
   async function handlePortalLogin() {
     if (!username || !password) {
@@ -471,6 +469,7 @@ export function AdminPortal() {
     setSuccessState({ isVisible: false })
     setActiveTab("mine")
     loadMyTickets(loggedEmployee?.id)
+    loadArchivedTickets(loggedEmployee?.id)
   }
 
   function handleExit() {
@@ -490,8 +489,8 @@ export function AdminPortal() {
     setSuccessState({ isVisible: false })
   }
 
-  const allTickets = myTickets
-  const activeTickets = allTickets.filter((ticket) => ticket.status !== "Finalizado").length
+  const allTickets = [...myTickets, ...archivedTickets]
+  const activeTickets = myTickets.filter((ticket) => ticket.status !== "Finalizado").length
   const finishedTickets = allTickets.filter((ticket) => ticket.status === "Finalizado").length
 
   if (!loggedEmployee) {
@@ -675,7 +674,7 @@ export function AdminPortal() {
             <div className="grid gap-2 sm:grid-cols-3">
               <MiniMetric label="Ativos" value={activeTickets} />
               <MiniMetric label="Finalizados" value={finishedTickets} />
-              <MiniMetric label="Total" value={myTickets.length} />
+              <MiniMetric label="Total" value={allTickets.length} />
             </div>
           </div>
 
@@ -803,7 +802,10 @@ export function AdminPortal() {
                   size="sm"
                   variant="outline"
                   className="rounded-xl border-[#DDE7E2] bg-white text-slate-700"
-                  onClick={() => loadMyTickets(loggedEmployee.id)}
+                  onClick={() => {
+                    loadMyTickets(loggedEmployee.id)
+                    loadArchivedTickets(loggedEmployee.id)
+                  }}
                   disabled={isLoadingTickets}
                 >
                   <RefreshCw size={14} />
