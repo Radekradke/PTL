@@ -19,12 +19,12 @@ export function Header({ notificationCount = 0 }: HeaderProps) {
     <header className="sticky top-0 z-30 border-b border-[#DDE8E2] bg-white/85 px-3 py-2 sm:px-4 sm:py-3 lg:px-8 backdrop-blur-xl">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 sm:gap-4">
         <div className="min-w-0">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#00A859]">
-            Lifting Support
-          </p>
-          <h2 className="truncate text-base sm:text-lg lg:text-xl font-black tracking-[-0.035em] text-[#111827]">
-            Painel técnico
-          </h2>
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-[#00A859]">
+  PTL • Lifting Electric
+</p>
+<h2 className="truncate text-base sm:text-lg lg:text-xl font-black tracking-[-0.035em] text-[#111827]">
+  Painel Técnico Interno
+</h2>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">

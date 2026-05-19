@@ -29,17 +29,20 @@ export function Sidebar() {
   ].filter((item) => item.allowed.includes(role))
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-72 shrink-0 border-r border-[#DDE8E2] bg-white/88 px-4 py-5 text-[#111827] backdrop-blur-xl lg:block">
+    <aside className="sticky top-0 hidden h-screen w-72 shrink-0 border-r border-[#DDE8E2] bg-white/88 px-4 py-5 text-[#111827] backdrop-blur-xl lg:block">  <div className="rounded-3xl border border-[#DDE8E2] bg-gradient-to-br from-white to-[#F2F8F5] p-4 shadow-sm">
       <div className="rounded-3xl border border-[#DDE8E2] bg-gradient-to-br from-white to-[#F2F8F5] p-4 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#073B2A] text-lg font-black text-white shadow-[0_12px_30px_rgba(7,59,42,0.28)]">
-            L
-          </div>
-          <div>
-            <h1 className="text-xl font-black tracking-[-0.05em] text-[#111827]">Lifting</h1>
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#00A859]">Support Panel</p>
-          </div>
-        </div>
+  <div className="flex w-full flex-col items-center justify-center text-center">
+    <img
+      src="src/assets/logo-lifting-horizontal.png"
+      alt="Lifting Electric & Instrumentation"
+      className="mx-auto block h-25 w-full max-w-[190px] object-contain"
+    />
+
+    <p className="mt-2 w-full text-center text-[10px] font-black uppercase tracking-[0.16em] text-[#00A859]">
+      PTL • PAINEL TÉCNICO LIFTING
+    </p>
+  </div>
+</div>
 
         <div className="mt-4 rounded-2xl border border-[#DDE8E2] bg-white px-3 py-2">
           <p className="text-xs text-[#64748B]">Perfil</p>

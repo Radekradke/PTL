@@ -58,15 +58,16 @@ export function Login() {
 
           <div className="relative">
             <img
-  src="frontend/src/assets/logos.jpg"
-  alt="Lifting Electric"
-  className="h-20 w-auto object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.25)]"
-/>
+              src="/src/assets/logo-lifting-icon-dark-bg.png"
+              alt="Lifting Electric & Instrumentation"
+              className="h-20 w-auto object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.28)]"/>
+            <h1 className="mt-3 max-w-sm text-sm leading-6 text-emerald-50/80">
+             <br /> Lifting
+            </h1>
 
-<p className="mt-4 text-sm leading-6 text-emerald-50/80">
-  Painel Técnico Lifting para acompanhamento,
-  resposta e gestão de chamados internos.
-</p>
+            <p className="mt-3 max-w-sm text-sm leading-6 text-emerald-50/80">
+              <br />Technical Support para acompanhamento, resposta e gestão de chamados internos.
+            </p>
           </div>
 
           <div className="relative space-y-3">
@@ -74,7 +75,7 @@ export function Login() {
               <div className="flex items-center gap-3">
                 <ShieldCheck className="text-[#39D98A]" size={22} />
                 <div>
-                  <p className="text-sm font-bold text-white">
+                  <p className="text-sm font-bold !text-white">
                     Acesso restrito
                   </p>
                   <p className="text-xs text-emerald-50/65">
@@ -150,8 +151,7 @@ export function Login() {
       </div>
 
       <Button
-        className="mt-3 h-[52px] w-full rounded-full bg-gradient-to-r from-[#073B2A] via-[#00A859] to-[#073B2A] font-bold text-white shadow-[0_18px_45px_rgba(0,168,89,0.28)] transition hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0"
-        onClick={handleLogin}
+        className="mt-3 h-[52px] w-full rounded-full bg-gradient-to-r from-[#073B2A] via-[#00A859] to-[#073B2A] font-bold !text-white shadow-[0_18px_45px_rgba(0,168,89,0.28)] transition hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0"
       >
         Entrar no painel
         <ArrowRight
