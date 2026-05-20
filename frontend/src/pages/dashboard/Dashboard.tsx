@@ -17,8 +17,12 @@ function hasChartData(data: ChartDatum[]) {
 
 function EmptyChartState() {
   return (
-    <div className="flex h-full min-h-[220px] items-center justify-center rounded-3xl border border-dashed border-[#DDE8E2] bg-[#F8FCFA] px-4 text-center">
-      <p className="text-sm font-semibold text-slate-500">Sem dados para exibir com os filtros atuais.</p>
+    <div className="flex h-full min-h-[180px] items-center justify-center rounded-2xl border border-dashed border-[#CFE2D8] bg-[#F8FCFA] px-5 text-center sm:min-h-[220px] sm:rounded-3xl">
+      <div>
+        <div className="mx-auto mb-3 h-8 w-8 rounded-2xl bg-[#ECFBF3] ring-1 ring-[#BFEFD7]" />
+        <p className="text-sm font-black text-[#073B2A]">Sem dados para exibir</p>
+        <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">Ajuste os filtros ou aguarde novos chamados entrarem.</p>
+      </div>
     </div>
   )
 }
@@ -239,12 +243,12 @@ export function Dashboard() {
   return (
     <AppLayout>
       <div className="ls-page-shell">
-        <section className="ls-hero-clean p-4 sm:p-6 lg:p-8">
-          <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <section className="ls-hero-clean p-3 sm:p-6 lg:p-8">
+          <div className="flex flex-col gap-3 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#00A859]">Visão geral</p>
-              <h1 className="mt-2 text-3xl font-black tracking-[-0.06em] text-[#111827] sm:text-4xl lg:text-5xl">Dashboard</h1>
-              <p className="mt-2 sm:mt-3 max-w-2xl text-xs sm:text-sm leading-5 sm:leading-6 text-[#64748B]">Indicadores principais, filtros e gráficos para leitura rápida da operação.</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#00A859] sm:text-xs sm:tracking-[0.22em]">Visão geral</p>
+              <h1 className="mt-1 text-2xl font-black tracking-[-0.045em] text-[#111827] sm:mt-2 sm:text-4xl sm:tracking-[-0.06em] lg:text-5xl">Dashboard</h1>
+              <p className="mt-1 max-w-2xl text-xs leading-5 text-[#64748B] sm:mt-3 sm:text-sm sm:leading-6">Indicadores principais, filtros e gráficos para leitura rápida da operação.</p>
             </div>
             <div className="grid grid-cols-3 gap-2 sm:gap-3 shrink-0">
               <div className="rounded-2xl sm:rounded-3xl border border-[#DDE8E2] bg-white p-3 sm:p-4 text-center shadow-sm">
@@ -276,7 +280,7 @@ export function Dashboard() {
               <button onClick={() => { setSectorFilter("Todos"); setCategoryFilter("Todas"); setOriginFilter("Todas"); setStatusFilter("Todos") }} className="ls-button-secondary h-10 sm:h-11 px-4 sm:px-5 text-xs sm:text-sm font-bold whitespace-nowrap">Limpar</button>
             </div>
           </div>
-          <div className={`${filtersOpen ? "grid" : "hidden"} mt-3 gap-2 sm:mt-4 sm:grid sm:gap-3 sm:grid-cols-2 lg:mt-5 lg:grid-cols-5`}>
+          <div className={`${filtersOpen ? "grid animate-in fade-in-0 slide-in-from-top-1 duration-200" : "hidden"} mt-3 gap-2 sm:mt-4 sm:grid sm:gap-3 sm:grid-cols-2 lg:mt-5 lg:grid-cols-5`}>
             <select value={sectorFilter} onChange={(e) => setSectorFilter(e.target.value)} className="ls-input text-sm"><option value="Todos">Todos setores</option>{uniqueSectors.map((sector) => <option key={sector} value={sector}>{sector}</option>)}</select>
             <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="ls-input text-sm"><option value="Todas">Todas categorias</option>{uniqueCategories.map((category) => <option key={category} value={category}>{category}</option>)}</select>
             <select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="ls-input text-sm"><option value="Todas">Todas origens</option><option value="Base">Base</option><option value="Offshore">Offshore</option></select>

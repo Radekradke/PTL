@@ -55,12 +55,12 @@ export function TicketsPage() {
   return (
     <AppLayout>
       <div className="ls-page-shell">
-        <section className="ls-hero-clean p-4 sm:p-6 lg:p-8">
-          <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <section className="ls-hero-clean p-3 sm:p-6 lg:p-8">
+          <div className="flex flex-col gap-3 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
-              <p className="text-xs sm:text-sm font-black uppercase tracking-[0.22em] text-[#00A859]">Operação técnica</p>
-              <h1 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-black tracking-[-0.06em] text-[#111827]">Chamados</h1>
-              <p className="mt-2 sm:mt-3 max-w-2xl text-xs sm:text-sm leading-5 sm:leading-6 text-[#64748B]">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#00A859] sm:text-sm sm:tracking-[0.22em]">Operação técnica</p>
+              <h1 className="mt-1 text-2xl font-black tracking-[-0.045em] text-[#111827] sm:mt-2 sm:text-3xl sm:tracking-[-0.06em] lg:text-4xl">Chamados</h1>
+              <p className="mt-1 max-w-2xl text-xs leading-5 text-[#64748B] sm:mt-3 sm:text-sm sm:leading-6">
                 Gerencie a fila, responda usuários e acompanhe atendimentos.
               </p>
             </div>

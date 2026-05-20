@@ -367,6 +367,14 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
     }
   }
 
+  function getTicketAccentColor(ticket: any) {
+    if (ticket.status === "Finalizado") return "#00A859"
+    if (ticket.status === "Aguardando usuário") return "#F97316"
+    if (ticket.status === "Em andamento") return "#2563EB"
+    if (ticket.origin === "Offshore" || ticket.priority === "Urgente") return "#E11D48"
+    return "#F59E0B"
+  }
+
   const filteredTickets = tableTickets.filter((ticket) => {
     const matchesSearch =
       ticket.user.toLowerCase().includes(search.toLowerCase()) ||
@@ -520,7 +528,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           </div>
         </div>
 
-        <div className={`${filtersOpen ? "grid" : "hidden"} mt-4 gap-3 sm:mt-5 sm:grid sm:grid-cols-2 xl:grid-cols-5`}>
+        <div className={`${filtersOpen ? "grid animate-in fade-in-0 slide-in-from-top-1 duration-200" : "hidden"} mt-4 gap-3 sm:mt-5 sm:grid sm:grid-cols-2 xl:grid-cols-5`}>
           <Input
             placeholder="Buscar chamado..."
             value={search}
@@ -656,7 +664,11 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
         <div className="space-y-3 lg:hidden">
           {filteredTickets.map((ticket) => (
-            <div key={ticket.id} className={`rounded-2xl border border-[#DDE7E2] bg-white p-4 shadow-sm ${ticket.archived ? "opacity-75" : ""}`}>
+            <div
+              key={ticket.id}
+              className={`rounded-2xl border border-l-4 border-[#DDE7E2] bg-white p-4 shadow-sm ${ticket.archived ? "opacity-75" : ""}`}
+              style={{ borderLeftColor: getTicketAccentColor(ticket) }}
+            >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#00A859]">#{ticket.id}</p>
@@ -709,7 +721,11 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
         </div>
 
         {filteredTickets.length === 0 && (
-          <div className="p-8 text-center text-sm text-[#64748B]">Nenhum chamado encontrado.</div>
+          <div className="rounded-2xl border border-dashed border-[#CFE2D8] bg-[#F8FCFA] p-8 text-center">
+            <div className="mx-auto mb-3 h-9 w-9 rounded-2xl bg-white ring-1 ring-[#DDE7E2]" />
+            <p className="text-sm font-black text-[#073B2A]">Nenhum chamado encontrado</p>
+            <p className="mt-1 text-xs font-semibold leading-5 text-[#64748B]">Limpe os filtros ou tente outro termo de busca.</p>
+          </div>
         )}
       </div>
 

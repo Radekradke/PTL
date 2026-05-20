@@ -205,12 +205,15 @@
   border: 1px solid #DDE8E2;
   background: rgba(255,255,255,0.92);
   color: #073B2A;
-  transition: background-color 160ms ease, border-color 160ms ease;
+  box-shadow: 0 8px 22px rgba(16, 42, 67, 0.05);
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
 .ls-button-secondary:hover {
   background: #ECFBF3;
   border-color: rgba(0, 168, 89, 0.35);
+  box-shadow: 0 12px 28px rgba(16, 42, 67, 0.08);
+  transform: translateY(-1px);
 }
 
 .ls-hero-clean {

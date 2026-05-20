@@ -16,21 +16,21 @@ export function Header({ notificationCount = 0 }: HeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[#DDE8E2] bg-white/85 px-3 py-2 sm:px-4 sm:py-3 lg:px-8 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b border-[#DDE8E2] bg-white/88 px-3 py-1.5 backdrop-blur-xl sm:px-4 sm:py-3 lg:px-8">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 sm:gap-4">
         <div className="min-w-0">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-[#00A859]">
-  PTL • Lifting Electric
-</p>
-<h2 className="truncate text-base sm:text-lg lg:text-xl font-black tracking-[-0.035em] text-[#111827]">
-  Painel Técnico Interno
-</h2>
+          <p className="hidden text-xs font-black uppercase tracking-[0.18em] text-[#00A859] sm:block">
+            PTL • Lifting Electric
+          </p>
+          <h2 className="truncate text-sm font-black tracking-[-0.025em] text-[#111827] sm:text-lg sm:tracking-[-0.035em] lg:text-xl">
+            Painel Técnico Interno
+          </h2>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={handleNotificationClick}
-            className={`relative rounded-lg sm:rounded-2xl border border-[#DDE8E2] bg-white p-2 sm:p-2.5 text-[#102A43] shadow-sm transition hover:border-[#00A859]/40 hover:bg-[#ECFBF3] ${notificationCount > 0 ? "cursor-pointer" : "cursor-default"}`}
+            className={`relative rounded-xl border border-[#DDE8E2] bg-white p-2 text-[#102A43] shadow-sm transition hover:border-[#00A859]/40 hover:bg-[#ECFBF3] sm:rounded-2xl sm:p-2.5 ${notificationCount > 0 ? "cursor-pointer" : "cursor-default"}`}
             aria-label="Notificações"
           >
             <Bell size={18} className="sm:w-5 sm:h-5" />
