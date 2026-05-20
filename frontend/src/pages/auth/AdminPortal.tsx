@@ -508,7 +508,7 @@ export function AdminPortal() {
              <br /> Lifting
             </h1>
               <p className="mt-3 max-w-sm text-sm leading-6 text-emerald-50/80">
-                Portal do funcionário para abrir chamados, acompanhar respostas e conversar com a equipe técnica.
+               <br /> Portal do funcionário para abrir chamados, acompanhar respostas e conversar com a equipe técnica.
               </p>
             </div>
 
