@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-
+import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png";
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
