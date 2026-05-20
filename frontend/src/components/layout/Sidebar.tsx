@@ -1,6 +1,7 @@
 import { FileText, LayoutDashboard, LogOut, Settings, Ticket } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY } from "@/services/api"
+import logoHorizontal from "@/assets/logo-lifting-horizontal.png";
 
 const access = {
   dashboard: ["Admin", "TI", "Diretoria"],
@@ -33,9 +34,9 @@ export function Sidebar() {
       <div className="rounded-3xl border border-[#DDE8E2] bg-gradient-to-br from-white to-[#F2F8F5] p-4 shadow-sm">
   <div className="flex w-full flex-col items-center justify-center text-center">
     <img
-      src="src/assets/logo-lifting-horizontal.png"
-      alt="Lifting Electric & Instrumentation"
-      className="mx-auto block h-25 w-full max-w-[190px] object-contain"
+     src={logoHorizontal}
+  alt="Lifting Electric & Instrumentation"
+  className="mx-auto block h-25 w-full max-w-[190px] object-contain"
     />
 
     <p className="mt-2 w-full text-center text-[10px] font-black uppercase tracking-[0.16em] text-[#00A859]">
