@@ -504,7 +504,9 @@ export function AdminPortal() {
               src={logoLifting}
               alt="Lifting Electric"
               className="h-20 w-auto object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.28)]"/>
-
+            <h1 className="mt-3 max-w-sm text-sm leading-6 text-emerald-50/80">
+             <br /> Lifting
+            </h1>
               <p className="mt-3 max-w-sm text-sm leading-6 text-emerald-50/80">
                 Portal do funcionário para abrir chamados, acompanhar respostas e conversar com a equipe técnica.
               </p>
