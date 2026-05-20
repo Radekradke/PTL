@@ -122,6 +122,10 @@ select:focus,
     padding-inline: 0 !important;
   }
 
+  .ls-page-shell {
+    padding-bottom: 0.5rem;
+  }
+
   .rounded-\[2rem\] {
     border-radius: 1.35rem !important;
   }
@@ -151,11 +155,33 @@ select:focus,
 /* Dialogs no mobile: sem encostar na borda e sem estourar tela */
 [data-slot="dialog-content"] {
   max-width: min(94vw, 980px) !important;
+  border-color: var(--ls-border) !important;
+  background-clip: padding-box;
+}
+
+[data-slot="dialog-content"] > [data-slot="dialog-header"]:first-child {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+
+[data-slot="dialog-content"] > [data-slot="dialog-footer"]:last-child {
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
 }
 
 @media (max-width: 767px) {
   [data-slot="dialog-content"] {
-    width: calc(100vw - 1rem) !important;
-    max-height: 92vh !important;
+    width: calc(100vw - 1.5rem) !important;
+    max-height: calc(100vh - 1.5rem) !important;
+    border-radius: 1.35rem !important;
+    box-shadow: 0 24px 70px rgba(7, 59, 42, 0.18) !important;
+  }
+
+  [data-slot="dialog-header"] {
+    gap: 0.65rem;
+  }
+
+  [data-slot="dialog-title"] {
+    line-height: 1.2;
   }
 }

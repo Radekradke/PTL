@@ -18,7 +18,7 @@ export function AppLayout({ children }: Props) {
         <div className="flex min-w-0 flex-1 flex-col">
           <Header notificationCount={notificationCount} />
 
-          <main className="flex-1 overflow-y-auto px-3 pb-28 pt-4 sm:px-4 md:px-5 lg:px-6 lg:pb-8">
+          <main className="flex-1 overflow-y-auto px-3 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-4 sm:px-4 md:px-5 lg:px-6 lg:pb-8">
             <div className="mx-auto w-full max-w-6xl">{children}</div>
           </main>
         </div>

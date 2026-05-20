@@ -103,6 +103,7 @@
 
 .ls-card {
   position: relative;
+  overflow: hidden;
   border: 1px solid rgba(221, 232, 226, 0.95);
   background: rgba(255, 255, 255, 0.86);
   box-shadow: 0 18px 50px rgba(16, 42, 67, 0.08);
@@ -119,10 +120,13 @@
   background: linear-gradient(90deg, #00A859, #39D98A, #102A43);
   opacity: 0.9;
   pointer-events: none;
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
 }
 
 .ls-card-solid {
   position: relative;
+  overflow: hidden;
   border: 1px solid #DDE8E2;
   background: #FFFFFF;
   box-shadow: 0 16px 44px rgba(16, 42, 67, 0.07);
@@ -235,6 +239,18 @@
 }
 
 @media (max-width: 640px) {
+  .ls-page-shell {
+    gap: 1rem;
+    padding-inline: 0.875rem;
+  }
+
+  .ls-card,
+  .ls-card-solid,
+  .ls-hero-clean {
+    border-radius: 1.25rem;
+    box-shadow: 0 12px 34px rgba(16, 42, 67, 0.07);
+  }
+
   .recharts-wrapper,
   .recharts-surface {
     max-width: 100% !important;
@@ -243,10 +259,6 @@
   .ls-chart-scroll .recharts-wrapper,
   .ls-chart-scroll .recharts-surface {
     max-width: none !important;
-  }
-
-  .ls-page-shell {
-    gap: 0.875rem;
   }
 
   .ls-input {

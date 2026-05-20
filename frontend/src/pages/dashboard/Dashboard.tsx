@@ -181,6 +181,7 @@ export function Dashboard() {
   const [categoryFilter, setCategoryFilter] = useState("Todas")
   const [originFilter, setOriginFilter] = useState("Todas")
   const [statusFilter, setStatusFilter] = useState("Todos")
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   useEffect(() => {
     console.log("Dashboard: Tickets atualizados no contexto:", tickets.length)
@@ -268,9 +269,14 @@ export function Dashboard() {
               <h2 className="ls-section-title text-base sm:text-lg lg:text-xl">Filtros <span className="ls-help" title="Refina todos os cards e gráficos desta tela.">?</span></h2>
               <p className="text-xs sm:text-sm text-slate-500">Segmentação rápida dos indicadores.</p>
             </div>
-            <button onClick={() => { setSectorFilter("Todos"); setCategoryFilter("Todas"); setOriginFilter("Todas"); setStatusFilter("Todos") }} className="ls-button-secondary h-10 sm:h-11 px-4 sm:px-5 text-xs sm:text-sm font-bold whitespace-nowrap">Limpar filtros</button>
+            <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
+              <button onClick={() => setFiltersOpen((open) => !open)} className="ls-button-secondary h-10 px-4 text-xs font-bold sm:hidden">
+                {filtersOpen ? "Ocultar" : "Filtros"}
+              </button>
+              <button onClick={() => { setSectorFilter("Todos"); setCategoryFilter("Todas"); setOriginFilter("Todas"); setStatusFilter("Todos") }} className="ls-button-secondary h-10 sm:h-11 px-4 sm:px-5 text-xs sm:text-sm font-bold whitespace-nowrap">Limpar</button>
+            </div>
           </div>
-          <div className="mt-3 sm:mt-4 lg:mt-5 grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
+          <div className={`${filtersOpen ? "grid" : "hidden"} mt-3 gap-2 sm:mt-4 sm:grid sm:gap-3 sm:grid-cols-2 lg:mt-5 lg:grid-cols-5`}>
             <select value={sectorFilter} onChange={(e) => setSectorFilter(e.target.value)} className="ls-input text-sm"><option value="Todos">Todos setores</option>{uniqueSectors.map((sector) => <option key={sector} value={sector}>{sector}</option>)}</select>
             <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="ls-input text-sm"><option value="Todas">Todas categorias</option>{uniqueCategories.map((category) => <option key={category} value={category}>{category}</option>)}</select>
             <select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="ls-input text-sm"><option value="Todas">Todas origens</option><option value="Base">Base</option><option value="Offshore">Offshore</option></select>
@@ -281,7 +287,9 @@ export function Dashboard() {
         <section className="space-y-2 sm:space-y-3 lg:space-y-4">
           <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Status</h3>
           <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
-            <StatsCard title="Total" value={String(totalTickets)} tone="neutral" />
+            <div className="hidden sm:block">
+              <StatsCard title="Total" value={String(totalTickets)} tone="neutral" />
+            </div>
             <StatsCard title="Abertos" value={String(openTickets)} tone="warning" />
             <StatsCard title="Em andamento" value={String(progressTickets)} tone="info" />
             <StatsCard title="Aguardando usuário" value={String(waitingUserTickets)} tone="danger" />
@@ -291,7 +299,17 @@ export function Dashboard() {
 
         <section className="space-y-2 sm:space-y-3 lg:space-y-4">
           <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Origem</h3>
-          <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2 lg:grid-cols-2">
+          <div className="grid grid-cols-2 gap-2 sm:hidden">
+            <div className="rounded-2xl border border-[#DDE8E2] bg-white px-3 py-3 shadow-sm">
+              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Base</p>
+              <p className="mt-1 text-2xl font-black text-cyan-700">{baseTickets}</p>
+            </div>
+            <div className="rounded-2xl border border-rose-100 bg-[#FFF7F8] px-3 py-3 shadow-sm">
+              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-rose-600">Offshore</p>
+              <p className="mt-1 text-2xl font-black text-rose-700">{offshoreTickets}</p>
+            </div>
+          </div>
+          <div className="hidden gap-2 sm:grid sm:gap-3 lg:gap-4 sm:grid-cols-2 lg:grid-cols-2">
             <StatsCard title="Offshore" value={String(offshoreTickets)} tone="danger" />
             <StatsCard title="Base" value={String(baseTickets)} tone="base" />
           </div>

@@ -85,7 +85,9 @@ export function TicketsPage() {
         <section className="space-y-3 sm:space-y-4 lg:space-y-4">
           <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Status</h3>
           <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
-            <StatsCard title="Total" value={String(totalTickets)} tone="neutral" />
+            <div className="hidden sm:block">
+              <StatsCard title="Total" value={String(totalTickets)} tone="neutral" />
+            </div>
             <StatsCard title="Abertos" value={String(openTickets)} tone="warning" />
             <StatsCard title="Em andamento" value={String(progressTickets)} tone="info" />
             <StatsCard title="Aguardando usuário" value={String(waitingUserTickets)} tone="danger" />
@@ -95,7 +97,17 @@ export function TicketsPage() {
 
         <section className="space-y-3 sm:space-y-4 lg:space-y-4">
           <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Origem</h3>
-          <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2">
+          <div className="grid grid-cols-2 gap-2 sm:hidden">
+            <div className="rounded-2xl border border-[#DDE8E2] bg-white px-3 py-3 shadow-sm">
+              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Base</p>
+              <p className="mt-1 text-2xl font-black text-cyan-700">{baseTickets}</p>
+            </div>
+            <div className="rounded-2xl border border-rose-100 bg-[#FFF7F8] px-3 py-3 shadow-sm">
+              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-rose-600">Offshore</p>
+              <p className="mt-1 text-2xl font-black text-rose-700">{offshoreTickets}</p>
+            </div>
+          </div>
+          <div className="hidden gap-2 sm:grid sm:gap-3 lg:gap-4 sm:grid-cols-2">
             <StatsCard title="Offshore" value={String(offshoreTickets)} tone="danger" />
             <StatsCard title="Base" value={String(baseTickets)} tone="base" />
           </div>

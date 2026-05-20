@@ -94,6 +94,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   const [selectedTicket, setSelectedTicket] = useState<any>(null)
   const [technicalResponse, setTechnicalResponse] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const selectedEmployee = employees.find((employee) => String(employee.id) === employeeId)
   const selectedEmployeeSector = selectedEmployee?.sector
@@ -396,17 +397,17 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto lg:shrink-0">
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="h-11 w-full rounded-2xl bg-[#00A859] px-5 text-white shadow-[0_12px_30px_rgba(0,168,89,0.20)] hover:bg-[#078C4D] sm:w-auto whitespace-nowrap">
+                <Button className="h-12 w-full rounded-2xl bg-[linear-gradient(135deg,#00A859,#078C4D)] px-5 font-black text-white shadow-[0_16px_36px_rgba(0,168,89,0.26)] hover:bg-[#078C4D] sm:h-11 sm:w-auto whitespace-nowrap">
                   Novo chamado
                 </Button>
               </DialogTrigger>
 
-              <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl border border-[#DDE7E2] bg-white p-5 text-[#111827] shadow-2xl sm:max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>Novo chamado</DialogTitle>
+              <DialogContent className="max-h-[calc(100vh-1.5rem)] overflow-y-auto rounded-[1.35rem] border border-[#DDE7E2] bg-white p-4 pr-10 text-[#111827] shadow-[0_24px_70px_rgba(7,59,42,0.16)] sm:max-w-2xl sm:rounded-3xl sm:p-5">
+                <DialogHeader className="pr-2">
+                  <DialogTitle className="text-lg font-black tracking-[-0.02em] text-[#073B2A]">Novo chamado</DialogTitle>
                 </DialogHeader>
 
-                <div className="grid gap-4">
+                <div className="grid gap-3 sm:gap-4">
                   <div className="grid gap-2">
                     <label className="text-sm font-medium text-[#334155]">Solicitante</label>
                     <select
@@ -480,7 +481,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                       placeholder="Descreva o problema com contexto objetivo..."
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      className="min-h-[140px] border-[#DDE7E2] bg-white text-[#111827]"
+                      className="min-h-[120px] rounded-2xl border-[#DDE7E2] bg-white text-[#111827] sm:min-h-[140px]"
                     />
                   </div>
 
@@ -497,7 +498,15 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
             <Button
               variant="outline"
-              className="h-11 w-full rounded-2xl border-[#BFEFD7] bg-white text-[#073B2A] hover:bg-[#E9FFF3] sm:w-auto whitespace-nowrap"
+              className="h-11 w-full rounded-2xl border-[#BFEFD7] bg-white text-[#073B2A] hover:bg-[#E9FFF3] sm:hidden whitespace-nowrap"
+              onClick={() => setFiltersOpen((open) => !open)}
+            >
+              {filtersOpen ? "Ocultar filtros" : "Filtros"}
+            </Button>
+
+            <Button
+              variant="outline"
+              className="h-11 w-full rounded-2xl border-[#DDE7E2] bg-white text-[#073B2A] hover:bg-[#F4F8F6] sm:w-auto whitespace-nowrap"
               onClick={() => {
                 setSearch("")
                 setStatusFilter("Todos")
@@ -506,12 +515,12 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 setSectorFilter("Todos")
               }}
             >
-              Limpar filtros
+              Limpar
             </Button>
           </div>
         </div>
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <div className={`${filtersOpen ? "grid" : "hidden"} mt-4 gap-3 sm:mt-5 sm:grid sm:grid-cols-2 xl:grid-cols-5`}>
           <Input
             placeholder="Buscar chamado..."
             value={search}
@@ -668,16 +677,19 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 {ticket.description || "Sem descrição."}
               </p>
 
-              <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-                <span className={`rounded-full px-3 py-2 text-center font-semibold ${ticket.origin === "Offshore" ? "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]" : "bg-[#EAF0ED] text-[#334155] ring-1 ring-[#DDE7E2]"}`}>
-                  {ticket.origin}
-                </span>
-                <span className={`rounded-full px-3 py-2 text-center font-semibold ${getSlaStatus(ticket).className}`}>
+              <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+                <span className={`rounded-full px-3 py-1.5 font-semibold ${getSlaStatus(ticket).className}`}>
                   {getSlaStatus(ticket).label}
+                </span>
+                <span className="rounded-full bg-[#F4F8F6] px-3 py-1.5 font-semibold text-[#516070] ring-1 ring-[#DDE7E2]">
+                  {ticket.priority || "Normal"}
+                </span>
+                <span className="text-[11px] font-bold text-slate-400">
+                  {ticket.origin}
                 </span>
               </div>
 
-              <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
+              <div className="mt-4 grid gap-2 sm:grid-cols-[1fr_auto]">
                 <select
                   value={ticket.status}
                   onChange={(e) => handleChangeStatus(ticket.id, e.target.value)}
@@ -702,14 +714,14 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       </div>
 
     <Dialog open={!!selectedTicket} onOpenChange={() => setSelectedTicket(null)}>
-        <DialogContent className="max-h-[92vh] w-[calc(100vw-1rem)] overflow-hidden rounded-3xl border border-[#DDE7E2] bg-[#F7FAF8] p-0 text-[#111827] shadow-[0_30px_90px_rgba(7,59,42,0.18)] sm:max-w-4xl xl:max-w-[1080px]">
-          <DialogHeader className="border-b border-[#DDE7E2] bg-white px-5 py-4 sm:px-6">
+        <DialogContent className="max-h-[calc(100vh-1.5rem)] w-[calc(100vw-1.5rem)] overflow-hidden rounded-[1.35rem] border border-[#DDE7E2] bg-[#F7FAF8] p-0 text-[#111827] shadow-[0_30px_90px_rgba(7,59,42,0.18)] sm:max-w-4xl sm:rounded-3xl xl:max-w-[1080px]">
+          <DialogHeader className="border-b border-[#DDE7E2] bg-white px-4 py-4 pr-12 sm:px-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">
                   Chamado #{selectedTicket?.id}
                 </p>
-                <DialogTitle className="mt-1 text-xl font-black tracking-[-0.03em] text-[#073B2A]">
+                <DialogTitle className="mt-1 text-lg font-black tracking-[-0.03em] text-[#073B2A] sm:text-xl">
                   Atendimento técnico
                 </DialogTitle>
                 <p className="mt-1 text-sm text-[#64748B]">
@@ -726,16 +738,16 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           </DialogHeader>
 
           {selectedTicket && (
-            <div className="max-h-[calc(92vh-96px)] overflow-y-auto p-4 sm:p-5">
-              <div className="grid gap-4 lg:grid-cols-[1fr_340px]">
-                <section className="space-y-4">
+            <div className="max-h-[calc(100vh-7.5rem)] overflow-y-auto p-3 sm:p-5">
+              <div className="grid gap-3 sm:gap-4 lg:grid-cols-[1fr_340px]">
+                <section className="space-y-3 sm:space-y-4">
                   <DetailsSection title="Descrição do problema">
                     <div className="max-h-52 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-white p-4 text-sm leading-6 text-[#102A43] ring-1 ring-[#DDE7E2]">
                       {selectedTicket.description || "Sem descrição."}
                     </div>
                   </DetailsSection>
 
-                  <div className="rounded-3xl border border-[#BFEFD7] bg-white p-4 shadow-[0_18px_45px_rgba(7,59,42,0.08)]">
+                  <div className="rounded-2xl border border-[#BFEFD7] bg-white p-3 shadow-[0_14px_34px_rgba(7,59,42,0.08)] sm:rounded-3xl sm:p-4">
                     <div className="mb-3">
                       <p className="text-sm font-black text-[#073B2A]">
                         Responder ao usuário
@@ -749,7 +761,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                       placeholder="Ex: Verificamos a solicitação e o próximo passo será..."
                       value={technicalResponse}
                       onChange={(e) => setTechnicalResponse(e.target.value)}
-                      className="min-h-[150px] rounded-2xl border-[#DDE7E2] bg-[#F7FAF8] text-[#111827] focus-visible:ring-[#00A859]/30"
+                      className="min-h-[130px] rounded-2xl border-[#DDE7E2] bg-[#F7FAF8] text-[#111827] focus-visible:ring-[#00A859]/30 sm:min-h-[150px]"
                     />
 
                     <div className="mt-3 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

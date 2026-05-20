@@ -30,16 +30,16 @@ export function StatsCard({ title, value, color, tone }: Props) {
   const styles = toneStyles[resolveTone(tone, color)]
 
   return (
-    <div className="group relative overflow-hidden rounded-[1.5rem] border border-[#DDE8E2] bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FCFA_100%)] p-4 shadow-[0_16px_44px_rgba(16,42,67,0.07)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#BFEFD7] hover:shadow-[0_20px_54px_rgba(16,42,67,0.12)] sm:p-5">
+    <div className="group relative overflow-hidden rounded-[1.15rem] border border-[#DDE8E2] bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FCFA_100%)] p-3 shadow-[0_10px_28px_rgba(16,42,67,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#BFEFD7] hover:shadow-[0_20px_54px_rgba(16,42,67,0.12)] sm:rounded-[1.5rem] sm:p-5 sm:shadow-[0_16px_44px_rgba(16,42,67,0.07)]">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#00A859]/45 to-transparent" />
-      <div className={`absolute left-0 top-0 h-full w-1.5 ${styles.accent}`} />
-      <div className="flex items-start justify-between gap-3 pl-1">
-        <p className={`${styles.label} max-w-[12rem] text-[11px] font-black uppercase leading-5 tracking-[0.12em] sm:text-xs`}>
+      <div className={`absolute left-0 top-0 h-full w-1 sm:w-1.5 ${styles.accent}`} />
+      <div className="flex items-start justify-between gap-2 pl-1 sm:gap-3">
+        <p className={`${styles.label} max-w-[12rem] text-[10px] font-black uppercase leading-4 tracking-[0.1em] sm:text-xs sm:leading-5 sm:tracking-[0.12em]`}>
           {title}
         </p>
-        <span className={`${styles.glow} h-8 w-8 shrink-0 rounded-2xl ring-1 ring-black/5 transition-transform duration-200 group-hover:scale-110`} />
+        <span className={`${styles.glow} h-6 w-6 shrink-0 rounded-xl ring-1 ring-black/5 transition-transform duration-200 group-hover:scale-110 sm:h-8 sm:w-8 sm:rounded-2xl`} />
       </div>
-      <h2 className={`${styles.value} mt-4 pl-1 text-3xl font-black leading-none tracking-[-0.055em] sm:text-4xl`}>
+      <h2 className={`${styles.value} mt-3 pl-1 text-2xl font-black leading-none tracking-[-0.045em] sm:mt-4 sm:text-4xl sm:tracking-[-0.055em]`}>
         {value}
       </h2>
     </div>

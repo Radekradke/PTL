@@ -29,7 +29,7 @@ export function MobileBottomNav() {
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200/80 bg-white/90 px-2 py-2 shadow-[0_-18px_50px_rgba(15,23,42,0.10)] backdrop-blur-2xl lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200/80 bg-white/90 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-18px_50px_rgba(15,23,42,0.10)] backdrop-blur-2xl lg:hidden">
       <div className="mx-auto grid max-w-lg grid-cols-5 gap-0.5 rounded-2xl sm:rounded-3xl border border-slate-200 bg-white p-1 shadow-sm">
         {items.slice(0, 4).map((item) => {
           const Icon = item.icon
