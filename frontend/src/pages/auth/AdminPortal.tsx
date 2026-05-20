@@ -500,13 +500,10 @@ export function AdminPortal() {
         <div className="grid w-full max-w-5xl overflow-hidden rounded-[1.5rem] border border-white/80 bg-white shadow-[0_28px_90px_rgba(7,59,42,0.14)] sm:rounded-[2rem] lg:grid-cols-[1.05fr_0.95fr]">
           <section className="relative hidden min-h-[620px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.28),transparent_32%),linear-gradient(135deg,#073B2A,#102A43)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
             <div className="relative">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/12 text-2xl font-black text-white shadow-inner ring-1 ring-white/20">
-                L
-              </div>
-
-              <h1 className="mt-8 text-5xl font-black tracking-[-0.06em] text-white">
-                Lifting
-              </h1>
+           <img
+              src={logoLifting}
+              alt="Lifting Electric"
+              className="h-20 w-auto object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.28)]"/>
 
               <p className="mt-3 max-w-sm text-sm leading-6 text-emerald-50/80">
                 Portal do funcionário para abrir chamados, acompanhar respostas e conversar com a equipe técnica.
