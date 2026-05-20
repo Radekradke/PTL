@@ -39,6 +39,50 @@ function ChartLegend({ data, colors }: { data: ChartDatum[]; colors: string[] })
   )
 }
 
+function MobileDistributionSummary({ data, colors }: { data: ChartDatum[]; colors: string[] }) {
+  const total = data.reduce((sum, item) => sum + item.total, 0)
+
+  if (total <= 0) return <EmptyChartState />
+
+  return (
+    <div className="mt-4 sm:hidden">
+      <div className="flex h-4 overflow-hidden rounded-full border border-[#DDE8E2] bg-[#F1F5F9]">
+        {data.map((item, index) => {
+          const percent = (item.total / total) * 100
+
+          return (
+            <span
+              key={item.name}
+              className="h-full min-w-[6px]"
+              style={{ width: `${percent}%`, backgroundColor: colors[index % colors.length] }}
+              title={`${item.name}: ${item.total}`}
+            />
+          )
+        })}
+      </div>
+
+      <div className="mt-3 grid grid-cols-1 gap-2">
+        {data.map((item, index) => {
+          const percent = Math.round((item.total / total) * 100)
+
+          return (
+            <div key={item.name} className="flex items-center justify-between gap-3 rounded-2xl border border-[#DDE8E2] bg-white px-3 py-2">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: colors[index % colors.length] }} />
+                <span className="truncate text-xs font-bold text-slate-600">{item.name}</span>
+              </div>
+              <div className="shrink-0 text-right">
+                <span className="text-xs font-black text-[#073B2A]">{item.total}</span>
+                <span className="ml-1 text-[10px] font-bold text-slate-400">{percent}%</span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 function MobileBarChart({
   data,
   fill,
@@ -97,7 +141,9 @@ function MobilePieChart({
 
   return (
     <>
-      <div className="mt-4 sm:mt-5 h-[240px] w-full sm:h-80 lg:h-[320px]">
+      <MobileDistributionSummary data={data} colors={colors} />
+
+      <div className="mt-4 hidden h-[240px] w-full sm:mt-5 sm:block sm:h-80 lg:h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
             <Pie
@@ -121,7 +167,9 @@ function MobilePieChart({
         </ResponsiveContainer>
       </div>
 
-      <ChartLegend data={data} colors={colors} />
+      <div className="hidden sm:block">
+        <ChartLegend data={data} colors={colors} />
+      </div>
     </>
   )
 }
