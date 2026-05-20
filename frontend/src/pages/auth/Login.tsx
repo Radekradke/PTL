@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { LockKeyhole, ShieldCheck, UserRound, ArrowRight } from "lucide-react"
-
+import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png";
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { API_URL, AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY } from "@/services/api"
@@ -58,8 +58,8 @@ export function Login() {
 
           <div className="relative">
             <img
-              src="/src/assets/logo-lifting-icon-dark-bg.png"
-              alt="Lifting Electric & Instrumentation"
+              src={logoLifting}
+              alt="Lifting Electric"
               className="h-20 w-auto object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.28)]"/>
             <h1 className="mt-3 max-w-sm text-sm leading-6 text-emerald-50/80">
              <br /> Lifting
