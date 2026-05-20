@@ -501,20 +501,17 @@ export function AdminPortal() {
           <section className="relative hidden min-h-[620px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.28),transparent_32%),linear-gradient(135deg,#073B2A,#102A43)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
             <div className="relative">
            <img
-<<<<<<< HEAD
               src={logoLifting}
               alt="Lifting Electric"
               className="h-20 w-auto object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.28)]"/>
             <h1 className="mt-3 max-w-sm text-sm leading-6 text-emerald-50/80">
              <br /> Lifting
             </h1>
-=======
               src="/src/assets/logo-lifting-icon-dark-bg.png"
               alt="Lifting Electric & Instrumentation"
               className="h-20 w-auto object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.28)]"/>
             
 
->>>>>>> 3aa2527 (apply green clean institutional theme)
               <p className="mt-3 max-w-sm text-sm leading-6 text-emerald-50/80">
                <br /> Portal do funcionário para abrir chamados, acompanhar respostas e conversar com a equipe técnica.
               </p>
