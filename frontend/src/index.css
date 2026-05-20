@@ -240,6 +240,11 @@
     max-width: 100% !important;
   }
 
+  .ls-chart-scroll .recharts-wrapper,
+  .ls-chart-scroll .recharts-surface {
+    max-width: none !important;
+  }
+
   .ls-page-shell {
     gap: 0.875rem;
   }

@@ -53,7 +53,7 @@ function MobileBarChart({
   if (!hasChartData(data)) return <EmptyChartState />
 
   return (
-    <div className="mt-4 sm:mt-5 overflow-x-auto overflow-y-hidden pb-3 [-webkit-overflow-scrolling:touch]">
+    <div className="ls-chart-scroll mt-4 sm:mt-5 overflow-x-auto overflow-y-hidden pb-3 [-webkit-overflow-scrolling:touch]">
       <div style={{ width: chartWidth }} className="h-[280px] sm:h-80 lg:h-[320px] lg:w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 10, right: 18, left: -16, bottom: 44 }}>
@@ -71,6 +71,14 @@ function MobileBarChart({
             <Bar dataKey="total" fill={fill} radius={[12, 12, 4, 4]} minPointSize={4} />
           </BarChart>
         </ResponsiveContainer>
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:hidden">
+        {data.map((item) => (
+          <div key={item.name} className="flex min-w-0 items-center justify-between gap-2 rounded-2xl border border-[#DDE8E2] bg-white px-3 py-2">
+            <span className="truncate text-xs font-bold text-slate-600">{item.name}</span>
+            <span className="text-xs font-black text-[#073B2A]">{item.total}</span>
+          </div>
+        ))}
       </div>
     </div>
   )
