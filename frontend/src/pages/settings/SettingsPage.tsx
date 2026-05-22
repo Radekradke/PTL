@@ -38,12 +38,22 @@ export function SettingsPage() {
 
   async function addSector() {
     if (!newSectorName) { alert("Preencha o nome do setor."); return }
-    await apiFetch("/sectors", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newSectorName }) })
+    const response = await apiFetch("/sectors", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newSectorName }) })
+    if (!response.ok) {
+      const data = await response.json().catch(() => null)
+      alert(data?.message || "Erro ao criar setor.")
+      return
+    }
     setNewSectorName(""); loadData()
   }
 
   async function updateSector(sector: Sector) {
-    await apiFetch(`/sectors/${sector.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sector.name }) })
+    const response = await apiFetch(`/sectors/${sector.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sector.name }) })
+    if (!response.ok) {
+      const data = await response.json().catch(() => null)
+      alert(data?.message || "Erro ao salvar setor.")
+      return
+    }
     loadData()
   }
 
