@@ -17,20 +17,31 @@ sectorsRoutes.get("/", requireTechnical(["Admin", "TI", "Diretoria"]), async (_r
 })
 
 sectorsRoutes.post("/", requireTechnical(["Admin"]), async (req, res) => {
-  const { name } = req.body
-  const nameValidation = validateName(name, "Setor")
+  try {
+    const { name } = req.body
+    const nameValidation = validateName(name, "Setor")
 
-  if (!nameValidation.ok) {
-    return res.status(400).json({ message: nameValidation.message })
+    if (!nameValidation.ok) {
+      return res.status(400).json({ message: nameValidation.message })
+    }
+
+    const sector = await prisma.sector.create({
+      data: {
+        name: nameValidation.value,
+        pin: "",
+      },
+    })
+
+    res.status(201).json(sector)
+  } catch (error: any) {
+    console.error("Erro ao criar setor:", error)
+
+    if (error?.code === "P2002") {
+      return res.status(409).json({ message: "Já existe um setor com esse nome." })
+    }
+
+    res.status(500).json({ message: "Erro ao criar setor." })
   }
-
-  const sector = await prisma.sector.create({
-    data: {
-      name: nameValidation.value,
-    },
-  })
-
-  res.status(201).json(sector)
 })
 
 sectorsRoutes.put("/:id", requireTechnical(["Admin"]), async (req, res) => {

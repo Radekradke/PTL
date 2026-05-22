@@ -10,6 +10,7 @@ datasource db {
 model Sector {
   id        Int        @id @default(autoincrement())
   name      String     @unique
+  pin       String     @default("")
   active    Boolean    @default(true)
   employees Employee[]
   tickets   Ticket[]
