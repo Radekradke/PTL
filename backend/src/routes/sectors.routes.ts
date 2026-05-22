@@ -28,7 +28,6 @@ sectorsRoutes.post("/", requireTechnical(["Admin"]), async (req, res) => {
     const sector = await prisma.sector.create({
       data: {
         name: nameValidation.value,
-        pin: "",
       },
     })
 
