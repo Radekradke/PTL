@@ -178,6 +178,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           sectorId: Number(sectorId),
           category,
           origin,
+          priority,
           description,
         }),
       })

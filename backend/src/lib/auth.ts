@@ -12,7 +12,26 @@ export type AuthPayload = {
 
 const TOKEN_TTL_SECONDS = 60 * 60 * 12
 const PASSWORD_PREFIX = "scrypt"
-const secret = process.env.AUTH_SECRET || "lifting-support-dev-secret-change-me"
+const DEV_AUTH_SECRET = "lifting-support-dev-secret-change-me"
+const REQUIRED_TECHNICAL_SECTORS = ["Admin", "TI", "Diretoria"]
+
+function isProduction() {
+  return process.env.NODE_ENV === "production"
+}
+
+function getAuthSecret() {
+  const secret = String(process.env.AUTH_SECRET || "").trim()
+
+  if (secret.length >= 32) {
+    return secret
+  }
+
+  if (isProduction()) {
+    throw new Error("AUTH_SECRET deve ter pelo menos 32 caracteres em produção.")
+  }
+
+  return DEV_AUTH_SECRET
+}
 
 function base64UrlEncode(value: string | Buffer) {
   return Buffer.from(value)
@@ -69,6 +88,7 @@ export function verifyPassword(password: string, storedHash?: string | null) {
 }
 
 export function signToken(payload: Omit<AuthPayload, "exp">, ttlSeconds = TOKEN_TTL_SECONDS) {
+  const secret = getAuthSecret()
   const header = base64UrlEncode(JSON.stringify({ alg: "HS256", typ: "JWT" }))
   const body = base64UrlEncode(
     JSON.stringify({
@@ -84,6 +104,7 @@ export function signToken(payload: Omit<AuthPayload, "exp">, ttlSeconds = TOKEN_
 export function verifyToken(token?: string) {
   if (!token) return null
 
+  const secret = getAuthSecret()
   const [header, body, signature] = token.split(".")
   if (!header || !body || !signature) return null
 
@@ -103,10 +124,37 @@ export function verifyToken(token?: string) {
 export function getTechnicalCredentials() {
   if (process.env.TECHNICAL_CREDENTIALS) {
     try {
-      return JSON.parse(process.env.TECHNICAL_CREDENTIALS) as Record<string, string>
+      const credentials = JSON.parse(process.env.TECHNICAL_CREDENTIALS) as Record<string, string>
+      const hasAllCredentials = REQUIRED_TECHNICAL_SECTORS.every((sector) => String(credentials[sector] || "").trim())
+
+      if (!hasAllCredentials) {
+        throw new Error("TECHNICAL_CREDENTIALS deve conter Admin, TI e Diretoria.")
+      }
+
+      return credentials
     } catch {
-      console.warn("TECHNICAL_CREDENTIALS inválido. Usando credenciais padrão de desenvolvimento.")
+      if (isProduction()) {
+        throw new Error("TECHNICAL_CREDENTIALS inválido em produção.")
+      }
+
+      console.warn("TECHNICAL_CREDENTIALS inválido. Usando credenciais de desenvolvimento.")
     }
+  }
+
+  const envCredentials = {
+    Admin: process.env.ADMIN_PIN,
+    TI: process.env.TI_PIN,
+    Diretoria: process.env.DIRETORIA_PIN,
+  }
+
+  const hasAllEnvPins = REQUIRED_TECHNICAL_SECTORS.every((sector) => String(envCredentials[sector as keyof typeof envCredentials] || "").trim())
+
+  if (hasAllEnvPins) {
+    return envCredentials as Record<string, string>
+  }
+
+  if (isProduction()) {
+    throw new Error("Configure TECHNICAL_CREDENTIALS ou ADMIN_PIN, TI_PIN e DIRETORIA_PIN em produção.")
   }
 
   return {
@@ -114,4 +162,9 @@ export function getTechnicalCredentials() {
     TI: process.env.TI_PIN || "1564",
     Diretoria: process.env.DIRETORIA_PIN || "0000",
   }
+}
+
+export function assertAuthConfig() {
+  getAuthSecret()
+  getTechnicalCredentials()
 }

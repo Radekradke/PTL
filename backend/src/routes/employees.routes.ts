@@ -2,19 +2,16 @@ import { Router } from "express"
 import { prisma } from "../lib/prisma"
 import { hashPassword, signToken, verifyPassword } from "../lib/auth"
 import { requireTechnical } from "../middlewares/auth.middleware"
+import { validateId, validateName, validatePassword, validateUsername } from "../lib/validation"
 
 export const employeesRoutes = Router()
-
-function normalizeUsername(username?: string) {
-  const normalized = String(username || "").trim().toLowerCase()
-  return normalized.length > 0 ? normalized : null
-}
 
 function publicEmployee(employee: any) {
   return {
     id: employee.id,
     name: employee.name,
     username: employee.username,
+    active: employee.active,
     sectorId: employee.sectorId,
     sector: employee.sector,
     createdAt: employee.createdAt,
@@ -24,6 +21,9 @@ function publicEmployee(employee: any) {
 
 employeesRoutes.get("/", requireTechnical(["Admin", "TI"]), async (_req, res) => {
   const employees = await prisma.employee.findMany({
+    where: {
+      active: true,
+    },
     include: {
       sector: true,
     },
@@ -37,15 +37,15 @@ employeesRoutes.get("/", requireTechnical(["Admin", "TI"]), async (_req, res) =>
 
 employeesRoutes.post("/login", async (req, res) => {
   const { username, password } = req.body
-  const normalizedUsername = normalizeUsername(username)
+  const usernameValidation = validateUsername(username)
 
-  if (!normalizedUsername || !String(password || "").trim()) {
+  if (!usernameValidation.ok || !String(password || "").trim()) {
     return res.status(400).json({ message: "Usuário e senha são obrigatórios." })
   }
 
   const employee = await prisma.employee.findUnique({
     where: {
-      username: normalizedUsername,
+      username: usernameValidation.value,
     },
     include: {
       sector: true,
@@ -54,7 +54,7 @@ employeesRoutes.post("/login", async (req, res) => {
 
   const passwordCheck = employee ? verifyPassword(String(password), employee.passwordHash) : { valid: false }
 
-  if (!employee || !passwordCheck.valid) {
+  if (!employee || !employee.active || !employee.sector?.active || !passwordCheck.valid) {
     return res.status(401).json({ message: "Usuário ou senha inválidos." })
   }
 
@@ -72,19 +72,43 @@ employeesRoutes.post("/", requireTechnical(["Admin"]), async (req, res) => {
   try {
     const { name, sectorId, username, password } = req.body
 
-    if (!name || !sectorId) {
-      return res.status(400).json({ message: "Nome e setor são obrigatórios." })
+    const nameValidation = validateName(name)
+    if (!nameValidation.ok) {
+      return res.status(400).json({ message: nameValidation.message })
     }
 
-    const normalizedUsername = normalizeUsername(username)
-    const hashedPassword = hashPassword(password)
+    const sectorIdValidation = validateId(sectorId, "Setor")
+    if (!sectorIdValidation.ok) {
+      return res.status(400).json({ message: sectorIdValidation.message })
+    }
+
+    const usernameValidation = validateUsername(username)
+    if (!usernameValidation.ok) {
+      return res.status(400).json({ message: usernameValidation.message })
+    }
+
+    const passwordValidation = validatePassword(password)
+    if (!passwordValidation.ok) {
+      return res.status(400).json({ message: passwordValidation.message })
+    }
+
+    const sector = await prisma.sector.findFirst({
+      where: {
+        id: sectorIdValidation.value,
+        active: true,
+      },
+    })
+
+    if (!sector) {
+      return res.status(404).json({ message: "Setor ativo não encontrado." })
+    }
 
     const employee = await prisma.employee.create({
       data: {
-        name,
-        sectorId: Number(sectorId),
-        username: normalizedUsername || null,
-        passwordHash: hashedPassword || null,
+        name: nameValidation.value,
+        sectorId: sectorIdValidation.value,
+        username: usernameValidation.value,
+        passwordHash: hashPassword(passwordValidation.value || ""),
       },
       include: {
         sector: true,
@@ -111,20 +135,56 @@ employeesRoutes.put("/:id", requireTechnical(["Admin"]), async (req, res) => {
   const { id } = req.params
   const { name, sectorId, username, password } = req.body
 
-  const data: any = {
-    name,
-    sectorId: Number(sectorId),
-    username: normalizeUsername(username),
+  const idValidation = validateId(id, "Funcionário")
+  if (!idValidation.ok) {
+    return res.status(400).json({ message: idValidation.message })
   }
 
-  const passwordHash = hashPassword(password)
+  const nameValidation = validateName(name)
+  if (!nameValidation.ok) {
+    return res.status(400).json({ message: nameValidation.message })
+  }
+
+  const sectorIdValidation = validateId(sectorId, "Setor")
+  if (!sectorIdValidation.ok) {
+    return res.status(400).json({ message: sectorIdValidation.message })
+  }
+
+  const usernameValidation = validateUsername(username)
+  if (!usernameValidation.ok) {
+    return res.status(400).json({ message: usernameValidation.message })
+  }
+
+  const passwordValidation = validatePassword(password, false)
+  if (!passwordValidation.ok) {
+    return res.status(400).json({ message: passwordValidation.message })
+  }
+
+  const sector = await prisma.sector.findFirst({
+    where: {
+      id: sectorIdValidation.value,
+      active: true,
+    },
+  })
+
+  if (!sector) {
+    return res.status(404).json({ message: "Setor ativo não encontrado." })
+  }
+
+  const data: any = {
+    name: nameValidation.value,
+    sectorId: sectorIdValidation.value,
+    username: usernameValidation.value,
+  }
+
+  const passwordHash = hashPassword(passwordValidation.value || "")
   if (passwordHash) {
     data.passwordHash = passwordHash
   }
 
   const employee = await prisma.employee.update({
     where: {
-      id: Number(id),
+      id: idValidation.value,
     },
     data,
     include: {
@@ -137,10 +197,18 @@ employeesRoutes.put("/:id", requireTechnical(["Admin"]), async (req, res) => {
 
 employeesRoutes.delete("/:id", requireTechnical(["Admin"]), async (req, res) => {
   const { id } = req.params
+  const idValidation = validateId(id, "Funcionário")
 
-  await prisma.employee.delete({
+  if (!idValidation.ok) {
+    return res.status(400).json({ message: idValidation.message })
+  }
+
+  await prisma.employee.update({
     where: {
-      id: Number(id),
+      id: idValidation.value,
+    },
+    data: {
+      active: false,
     },
   })
 

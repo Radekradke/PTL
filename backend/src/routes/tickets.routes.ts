@@ -6,6 +6,14 @@ import {
   requireTechnical,
   requireTicketParticipant,
 } from "../middlewares/auth.middleware"
+import {
+  validateId,
+  validateLongText,
+  validateTicketCategory,
+  validateTicketOrigin,
+  validateTicketPriority,
+  validateTicketStatus,
+} from "../lib/validation"
 
 export const ticketsRoutes = Router()
 
@@ -101,36 +109,59 @@ ticketsRoutes.get(
 )
 
 ticketsRoutes.post("/", requireAuth, async (req, res) => {
-  const { employeeId, category, origin, description } = req.body
+  const { employeeId, category, origin, description, priority } = req.body
   const auth = (req as any).auth
 
-  if (!employeeId || !category || !origin || !description) {
-    return res.status(400).json({ message: "Funcionário, categoria, origem e descrição são obrigatórios." })
+  const employeeIdValidation = validateId(employeeId, "Funcionário")
+  if (!employeeIdValidation.ok) {
+    return res.status(400).json({ message: employeeIdValidation.message })
   }
 
-  if (auth.type === "employee" && auth.employeeId !== Number(employeeId)) {
+  const categoryValidation = validateTicketCategory(category)
+  if (!categoryValidation.ok) {
+    return res.status(400).json({ message: categoryValidation.message })
+  }
+
+  const originValidation = validateTicketOrigin(origin)
+  if (!originValidation.ok) {
+    return res.status(400).json({ message: originValidation.message })
+  }
+
+  const defaultPriority = originValidation.value === "Offshore" ? "Alta" : "Normal"
+  const priorityValidation = validateTicketPriority(priority, defaultPriority)
+  if (!priorityValidation.ok) {
+    return res.status(400).json({ message: priorityValidation.message })
+  }
+
+  const descriptionValidation = validateLongText(description, "Descrição", 5, 2000)
+  if (!descriptionValidation.ok) {
+    return res.status(400).json({ message: descriptionValidation.message })
+  }
+
+  if (auth.type === "employee" && auth.employeeId !== employeeIdValidation.value) {
     return res.status(403).json({ message: "Funcionário sem permissão para abrir chamado em nome de outro usuário." })
   }
 
-  const employee = await prisma.employee.findUnique({
-    where: { id: Number(employeeId) },
+  const employee = await prisma.employee.findFirst({
+    where: {
+      id: employeeIdValidation.value,
+      active: true,
+    },
     include: { sector: true },
   })
 
-  if (!employee) {
-    return res.status(404).json({ message: "Funcionário não encontrado." })
+  if (!employee || !employee.sector.active) {
+    return res.status(404).json({ message: "Funcionário ativo não encontrado." })
   }
-
-  const priority = origin === "Offshore" ? "Alta" : "Normal"
 
   const ticket = await prisma.ticket.create({
     data: {
       employeeId: employee.id,
       sectorId: employee.sectorId,
-      category,
-      origin,
-      description,
-      priority,
+      category: categoryValidation.value,
+      origin: originValidation.value,
+      description: descriptionValidation.value,
+      priority: priorityValidation.value,
       timeline: {
         create: {
           action: "Chamado criado",
@@ -140,7 +171,7 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
         create: {
           senderType: "employee",
           senderName: employee.name,
-          message: description,
+          message: descriptionValidation.value,
         },
       },
     },
@@ -152,10 +183,15 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
 
 ticketsRoutes.get("/:id/messages", requireTicketParticipant(["Admin", "TI", "Diretoria"]), async (req, res) => {
   const { id } = req.params
+  const idValidation = validateId(id, "Chamado")
+
+  if (!idValidation.ok) {
+    return res.status(400).json({ message: idValidation.message })
+  }
 
   const messages = await prisma.ticketMessage.findMany({
     where: {
-      ticketId: Number(id),
+      ticketId: idValidation.value,
     },
     orderBy: {
       createdAt: "asc",
@@ -169,13 +205,19 @@ ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI"]), a
   const { id } = req.params
   const { senderType, senderName, employeeId, message } = req.body
   const auth = (req as any).auth
+  const idValidation = validateId(id, "Chamado")
 
-  if (!message || !String(message).trim()) {
-    return res.status(400).json({ message: "A mensagem é obrigatória." })
+  if (!idValidation.ok) {
+    return res.status(400).json({ message: idValidation.message })
+  }
+
+  const messageValidation = validateLongText(message, "Mensagem", 1, 2000)
+  if (!messageValidation.ok) {
+    return res.status(400).json({ message: messageValidation.message })
   }
 
   const ticket = await prisma.ticket.findUnique({
-    where: { id: Number(id) },
+    where: { id: idValidation.value },
     include: { employee: true },
   })
 
@@ -191,7 +233,8 @@ ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI"]), a
       return res.status(403).json({ message: "Este funcionário não tem permissão para responder este chamado." })
     }
 
-    if (!employeeId || Number(employeeId) !== ticket.employeeId) {
+    const employeeIdValidation = validateId(employeeId, "Funcionário")
+    if (!employeeIdValidation.ok || employeeIdValidation.value !== ticket.employeeId) {
       return res.status(403).json({ message: "Este funcionário não tem permissão para responder este chamado." })
     }
 
@@ -202,18 +245,18 @@ ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI"]), a
 
   const createdMessage = await prisma.ticketMessage.create({
     data: {
-      ticketId: Number(id),
+      ticketId: idValidation.value,
       senderType: normalizedSenderType,
       senderName: finalSenderName,
-      message: String(message).trim(),
+      message: messageValidation.value,
     },
   })
 
   await prisma.ticket.update({
-    where: { id: Number(id) },
+    where: { id: idValidation.value },
     data: {
       status: nextStatus,
-      technicalResponse: normalizedSenderType === "technician" ? String(message).trim() : undefined,
+      technicalResponse: normalizedSenderType === "technician" ? messageValidation.value : undefined,
       timeline: {
         create: {
           action:
@@ -231,18 +274,25 @@ ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI"]), a
 ticketsRoutes.patch("/:id/status", requireTechnical(["Admin", "TI"]), async (req, res) => {
   const { id } = req.params
   const { status } = req.body
+  const idValidation = validateId(id, "Chamado")
+  const statusValidation = validateTicketStatus(status)
 
-  if (!status) {
-    return res.status(400).json({ message: "Status é obrigatório." })
+  if (!idValidation.ok) {
+    return res.status(400).json({ message: idValidation.message })
+  }
+
+  if (!statusValidation.ok) {
+    return res.status(400).json({ message: statusValidation.message })
   }
 
   const ticket = await prisma.ticket.update({
-    where: { id: Number(id) },
+    where: { id: idValidation.value },
     data: {
-      status,
+      status: statusValidation.value,
+      archived: statusValidation.value === "Finalizado" ? true : undefined,
       timeline: {
         create: {
-          action: `Status alterado para ${status}`,
+          action: `Status alterado para ${statusValidation.value}`,
         },
       },
     },
@@ -255,15 +305,21 @@ ticketsRoutes.patch("/:id/status", requireTechnical(["Admin", "TI"]), async (req
 ticketsRoutes.patch("/:id/response", requireTechnical(["Admin", "TI"]), async (req, res) => {
   const { id } = req.params
   const { technicalResponse } = req.body
+  const idValidation = validateId(id, "Chamado")
 
-  if (!technicalResponse || !String(technicalResponse).trim()) {
-    return res.status(400).json({ message: "A resposta técnica é obrigatória." })
+  if (!idValidation.ok) {
+    return res.status(400).json({ message: idValidation.message })
+  }
+
+  const responseValidation = validateLongText(technicalResponse, "Resposta técnica", 1, 2000)
+  if (!responseValidation.ok) {
+    return res.status(400).json({ message: responseValidation.message })
   }
 
   const ticket = await prisma.ticket.update({
-    where: { id: Number(id) },
+    where: { id: idValidation.value },
     data: {
-      technicalResponse: String(technicalResponse).trim(),
+      technicalResponse: responseValidation.value,
       status: "Aguardando usuário",
       timeline: {
         create: {
@@ -274,7 +330,7 @@ ticketsRoutes.patch("/:id/response", requireTechnical(["Admin", "TI"]), async (r
         create: {
           senderType: "technician",
           senderName: "Técnico",
-          message: String(technicalResponse).trim(),
+          message: responseValidation.value,
         },
       },
     },
@@ -287,14 +343,25 @@ ticketsRoutes.patch("/:id/response", requireTechnical(["Admin", "TI"]), async (r
 ticketsRoutes.patch("/:id", requireTechnical(["Admin", "TI"]), async (req, res) => {
   const { id } = req.params
   const { status } = req.body
+  const idValidation = validateId(id, "Chamado")
+  const statusValidation = validateTicketStatus(status)
+
+  if (!idValidation.ok) {
+    return res.status(400).json({ message: idValidation.message })
+  }
+
+  if (!statusValidation.ok) {
+    return res.status(400).json({ message: statusValidation.message })
+  }
 
   const ticket = await prisma.ticket.update({
-    where: { id: Number(id) },
+    where: { id: idValidation.value },
     data: {
-      status,
+      status: statusValidation.value,
+      archived: statusValidation.value === "Finalizado" ? true : undefined,
       timeline: {
         create: {
-          action: `Status alterado para ${status}`,
+          action: `Status alterado para ${statusValidation.value}`,
         },
       },
     },
@@ -306,9 +373,14 @@ ticketsRoutes.patch("/:id", requireTechnical(["Admin", "TI"]), async (req, res) 
 
 ticketsRoutes.patch("/:id/archive", requireTechnical(["Admin", "TI"]), async (req, res) => {
   const { id } = req.params
+  const idValidation = validateId(id, "Chamado")
+
+  if (!idValidation.ok) {
+    return res.status(400).json({ message: idValidation.message })
+  }
 
   const ticket = await prisma.ticket.update({
-    where: { id: Number(id) },
+    where: { id: idValidation.value },
     data: {
       archived: true,
       timeline: {
@@ -325,9 +397,14 @@ ticketsRoutes.patch("/:id/archive", requireTechnical(["Admin", "TI"]), async (re
 
 ticketsRoutes.patch("/:id/finish", requireTicketParticipant(["Admin", "TI"]), async (req, res) => {
   const { id } = req.params
+  const idValidation = validateId(id, "Chamado")
+
+  if (!idValidation.ok) {
+    return res.status(400).json({ message: idValidation.message })
+  }
 
   const ticket = await prisma.ticket.update({
-    where: { id: Number(id) },
+    where: { id: idValidation.value },
     data: {
       status: "Finalizado",
       archived: true,

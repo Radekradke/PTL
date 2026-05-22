@@ -11,9 +11,11 @@ model Sector {
   id        Int        @id @default(autoincrement())
   name      String     @unique
   pin       String
+  active    Boolean    @default(true)
   employees Employee[]
   tickets   Ticket[]
   createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now()) @updatedAt
 }
 
 model Employee {
@@ -21,11 +23,12 @@ model Employee {
   name         String
   username     String?  @unique
   passwordHash String?
+  active       Boolean  @default(true)
   sectorId     Int
-  sector       Sector   @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  sector       Sector   @relation(fields: [sectorId], references: [id], onDelete: Restrict)
   tickets      Ticket[]
   createdAt    DateTime @default(now())
-   updatedAt DateTime @default(now()) @updatedAt
+  updatedAt    DateTime @default(now()) @updatedAt
 }
 
 model Ticket {
@@ -42,8 +45,8 @@ model Ticket {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  employee Employee        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  sector   Sector          @relation(fields: [sectorId], references: [id], onDelete: Cascade)
+  employee Employee        @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  sector   Sector          @relation(fields: [sectorId], references: [id], onDelete: Restrict)
   timeline Timeline[]
   messages TicketMessage[]
 }
