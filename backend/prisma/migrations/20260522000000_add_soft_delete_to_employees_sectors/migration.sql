@@ -1,6 +1,7 @@
 -- Preserve support history by deactivating employees/sectors instead of deleting them.
 ALTER TABLE "Sector" ADD COLUMN "active" BOOLEAN NOT NULL DEFAULT true;
 ALTER TABLE "Sector" ADD COLUMN "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE "Sector" DROP COLUMN "pin";
 ALTER TABLE "Employee" ADD COLUMN "active" BOOLEAN NOT NULL DEFAULT true;
 
 ALTER TABLE "Employee" DROP CONSTRAINT IF EXISTS "Employee_sectorId_fkey";

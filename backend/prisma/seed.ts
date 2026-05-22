@@ -38,12 +38,12 @@ async function createEmployeeIfNotExists(name: string, sectorId: number, usernam
 
 async function main() {
   const sectors = [
-    { name: "Financeiro", pin: "1234" },
-    { name: "RH", pin: "4321" },
-    { name: "Operações", pin: "9999" },
-    { name: "Compras", pin: "5678" },
-    { name: "Diretoria", pin: "0000" },
-    { name: "TI", pin: "7777" },
+    { name: "Financeiro" },
+    { name: "RH" },
+    { name: "Operações" },
+    { name: "Compras" },
+    { name: "Diretoria" },
+    { name: "TI" },
   ]
 
   for (const sector of sectors) {
@@ -51,9 +51,7 @@ async function main() {
       where: {
         name: sector.name,
       },
-      update: {
-        pin: sector.pin,
-      },
+      update: {},
       create: sector,
     })
   }

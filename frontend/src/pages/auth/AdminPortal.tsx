@@ -25,7 +25,6 @@ import {
 type Sector = {
   id: number
   name: string
-  pin: string
 }
 
 type Employee = {
@@ -53,7 +52,6 @@ type PortalTicket = {
   category: string
   status: string
   origin: string
-  priority: string
   description: string
   technicalResponse: string
   createdAt: string
@@ -93,7 +91,6 @@ function formatTicket(ticket: any): PortalTicket {
     category: ticket.category || "Sem categoria",
     status: ticket.status || "Aberto",
     origin: ticket.origin || "Base",
-    priority: ticket.priority || "Normal",
     description: ticket.description || "",
     technicalResponse: ticket.technicalResponse || "",
     archived: ticket.archived || false,

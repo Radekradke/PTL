@@ -16,7 +16,6 @@ type Ticket = {
   category: string
   status: string
   origin: string
-  priority: string
   createdAt: string
   description: string
   technicalResponse: string
@@ -31,7 +30,6 @@ export function ReportsPage() {
   const [categoryFilter, setCategoryFilter] = useState("Todas")
   const [originFilter, setOriginFilter] = useState("Todas")
   const [statusFilter, setStatusFilter] = useState("Todos")
-  const [priorityFilter, setPriorityFilter] = useState("Todas")
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
 
@@ -49,7 +47,6 @@ export function ReportsPage() {
         category: ticket.category || "Sem categoria",
         status: ticket.status || "Aberto",
         origin: ticket.origin || "Base",
-        priority: ticket.priority || "Normal",
         description: ticket.description || "",
         technicalResponse: ticket.technicalResponse || "",
         archived: ticket.archived || false,
@@ -78,11 +75,10 @@ export function ReportsPage() {
     const matchesCategory = categoryFilter === "Todas" || ticket.category === categoryFilter
     const matchesOrigin = originFilter === "Todas" || ticket.origin === originFilter
     const matchesStatus = statusFilter === "Todos" || ticket.status === statusFilter
-    const matchesPriority = priorityFilter === "Todas" || ticket.priority === priorityFilter
     const matchesStartDate = !startDate || ticketDate >= new Date(startDate)
     const matchesEndDate = !endDate || ticketDate <= new Date(endDate)
-    return matchesSearch && matchesSector && matchesCategory && matchesOrigin && matchesStatus && matchesPriority && matchesStartDate && matchesEndDate
-  }), [tickets, search, sectorFilter, categoryFilter, originFilter, statusFilter, priorityFilter, startDate, endDate])
+    return matchesSearch && matchesSector && matchesCategory && matchesOrigin && matchesStatus && matchesStartDate && matchesEndDate
+  }), [tickets, search, sectorFilter, categoryFilter, originFilter, statusFilter, startDate, endDate])
 
   const totalFilteredTickets = filteredTickets.length
   const openFilteredTickets = filteredTickets.filter((ticket) => ticket.status === "Aberto").length
@@ -99,13 +95,12 @@ export function ReportsPage() {
     if (categoryFilter !== "Todas") filters.push(`Categoria: ${categoryFilter}`)
     if (originFilter !== "Todas") filters.push(`Origem: ${originFilter}`)
     if (statusFilter !== "Todos") filters.push(`Status: ${statusFilter}`)
-    if (priorityFilter !== "Todas") filters.push(`Prioridade: ${priorityFilter}`)
     if (startDate || endDate) filters.push(`Período: ${startDate || "início"} até ${endDate || "hoje"}`)
     return filters.length > 0 ? filters.join(", ") : "Nenhum filtro aplicado"
   }
 
   function clearFilters() {
-    setSearch(""); setSectorFilter("Todos"); setCategoryFilter("Todas"); setOriginFilter("Todas"); setStatusFilter("Todos"); setPriorityFilter("Todas"); setStartDate(""); setEndDate("")
+    setSearch(""); setSectorFilter("Todos"); setCategoryFilter("Todas"); setOriginFilter("Todas"); setStatusFilter("Todos"); setStartDate(""); setEndDate("")
   }
 
   function exportPDF() {
@@ -118,8 +113,8 @@ export function ReportsPage() {
     doc.text(`Total de chamados: ${filteredTickets.length}`, 14, 40)
     autoTable(doc, {
       startY: 48,
-      head: [["ID", "Solicitante", "Setor", "Categoria", "Origem", "Status", "Arquivado", "Prioridade", "Criado em"]],
-      body: filteredTickets.map((ticket) => [`#${ticket.id}`, ticket.user, ticket.sector, ticket.category, ticket.origin, ticket.status, ticket.archived ? "Sim" : "Não", ticket.priority, ticket.createdAt]),
+      head: [["ID", "Solicitante", "Setor", "Categoria", "Origem", "Status", "Arquivado", "Criado em"]],
+      body: filteredTickets.map((ticket) => [`#${ticket.id}`, ticket.user, ticket.sector, ticket.category, ticket.origin, ticket.status, ticket.archived ? "Sim" : "Não", ticket.createdAt]),
       styles: { fontSize: 8, cellPadding: 2 },
       headStyles: { fillColor: [7, 59, 42], textColor: 255 },
     })
@@ -127,7 +122,7 @@ export function ReportsPage() {
   }
 
   function exportExcel() {
-    const data = filteredTickets.map((ticket) => ({ ID: ticket.id, Solicitante: ticket.user, Setor: ticket.sector, Categoria: ticket.category, Origem: ticket.origin, Status: ticket.status, Arquivado: ticket.archived ? "Sim" : "Não", Prioridade: ticket.priority, "Criado em": ticket.createdAt, Descrição: ticket.description, "Resposta técnica": ticket.technicalResponse }))
+    const data = filteredTickets.map((ticket) => ({ ID: ticket.id, Solicitante: ticket.user, Setor: ticket.sector, Categoria: ticket.category, Origem: ticket.origin, Status: ticket.status, Arquivado: ticket.archived ? "Sim" : "Não", "Criado em": ticket.createdAt, Descrição: ticket.description, "Resposta técnica": ticket.technicalResponse }))
     const worksheet = XLSX.utils.json_to_sheet(data)
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, "Chamados")
@@ -176,7 +171,6 @@ export function ReportsPage() {
             <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Categoria</span><select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="ls-input"><option value="Todas">Todas</option>{categories.map((category) => <option key={category}>{category}</option>)}</select></label>
             <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Origem</span><select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="ls-input"><option value="Todas">Todas</option><option>Base</option><option>Offshore</option></select></label>
             <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Status</span><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="ls-input"><option value="Todos">Todos</option><option>Aberto</option><option>Em andamento</option><option>Aguardando usuário</option><option>Finalizado</option></select></label>
-            <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Prioridade</span><select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value)} className="ls-input"><option value="Todas">Todas</option><option>Baixa</option><option>Normal</option><option>Alta</option><option>Urgente</option></select></label>
             <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Calendar size={14}/>Data Inicial</span><Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="ls-input" /></label>
             <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Calendar size={14}/>Data Final</span><Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="ls-input" /></label>
           </div>
@@ -192,7 +186,7 @@ export function ReportsPage() {
         <section className="ls-card p-4 sm:p-6">
           <h2 className="ls-section-title text-xl">Preview dos dados</h2>
           <div className="mt-5 overflow-x-auto rounded-3xl border border-[#DDE8E2] bg-white">
-            <table className="min-w-[900px] w-full text-sm"><thead className="bg-[#F8FCFA]"><tr className="border-b border-[#DDE8E2]"><th className="p-3 text-left text-slate-500">ID</th><th className="p-3 text-left text-slate-500">Solicitante</th><th className="p-3 text-left text-slate-500">Setor</th><th className="p-3 text-left text-slate-500">Categoria</th><th className="p-3 text-left text-slate-500">Status</th><th className="p-3 text-left text-slate-500">Origem</th><th className="p-3 text-left text-slate-500">Prioridade</th><th className="p-3 text-left text-slate-500">Criado em</th></tr></thead><tbody>{filteredTickets.slice(0,20).map((ticket) => <tr key={ticket.id} className="border-b border-[#DDE8E2] hover:bg-[#F8FCFA]"><td className="p-3 text-slate-900">#{ticket.id}</td><td className="p-3 text-slate-900">{ticket.user}</td><td className="p-3 text-slate-700">{ticket.sector}</td><td className="p-3 text-slate-700">{ticket.category}</td><td className="p-3"><span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${getStatusColor(ticket.status)}`}>{ticket.status}</span></td><td className="p-3 text-slate-700">{ticket.origin}</td><td className="p-3 text-slate-700">{ticket.priority}</td><td className="p-3 text-slate-700">{ticket.createdAt}</td></tr>)}</tbody></table>
+            <table className="min-w-[820px] w-full text-sm"><thead className="bg-[#F8FCFA]"><tr className="border-b border-[#DDE8E2]"><th className="p-3 text-left text-slate-500">ID</th><th className="p-3 text-left text-slate-500">Solicitante</th><th className="p-3 text-left text-slate-500">Setor</th><th className="p-3 text-left text-slate-500">Categoria</th><th className="p-3 text-left text-slate-500">Status</th><th className="p-3 text-left text-slate-500">Origem</th><th className="p-3 text-left text-slate-500">Criado em</th></tr></thead><tbody>{filteredTickets.slice(0,20).map((ticket) => <tr key={ticket.id} className="border-b border-[#DDE8E2] hover:bg-[#F8FCFA]"><td className="p-3 text-slate-900">#{ticket.id}</td><td className="p-3 text-slate-900">{ticket.user}</td><td className="p-3 text-slate-700">{ticket.sector}</td><td className="p-3 text-slate-700">{ticket.category}</td><td className="p-3"><span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${getStatusColor(ticket.status)}`}>{ticket.status}</span></td><td className="p-3 text-slate-700">{ticket.origin}</td><td className="p-3 text-slate-700">{ticket.createdAt}</td></tr>)}</tbody></table>
           </div>
           {filteredTickets.length > 20 && <div className="p-3 text-center text-slate-500">... e mais {filteredTickets.length - 20} registros no export</div>}
           {filteredTickets.length === 0 && <div className="p-8 text-center text-slate-500">Nenhum chamado encontrado com os filtros aplicados.</div>}

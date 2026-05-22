@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { apiFetch } from "@/services/api"
 
-type Sector = { id: number; name: string; pin: string }
+type Sector = { id: number; name: string }
 
 type Employee = {
   id: number
@@ -12,14 +12,13 @@ type Employee = {
   username?: string | null
   password?: string
   sectorId: number
-  sector: { id: number; name: string; pin: string }
+  sector: { id: number; name: string }
 }
 
 export function SettingsPage() {
   const [sectors, setSectors] = useState<Sector[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
   const [newSectorName, setNewSectorName] = useState("")
-  const [newSectorPin, setNewSectorPin] = useState("")
   const [newEmployeeName, setNewEmployeeName] = useState("")
   const [newEmployeeUsername, setNewEmployeeUsername] = useState("")
   const [newEmployeePassword, setNewEmployeePassword] = useState("")
@@ -38,19 +37,19 @@ export function SettingsPage() {
   useEffect(() => { loadData() }, [])
 
   async function addSector() {
-    if (!newSectorName || !newSectorPin) { alert("Preencha o nome do setor e o PIN."); return }
-    await apiFetch("/sectors", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newSectorName, pin: newSectorPin }) })
-    setNewSectorName(""); setNewSectorPin(""); loadData()
+    if (!newSectorName) { alert("Preencha o nome do setor."); return }
+    await apiFetch("/sectors", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newSectorName }) })
+    setNewSectorName(""); loadData()
   }
 
   async function updateSector(sector: Sector) {
-    await apiFetch(`/sectors/${sector.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sector.name, pin: sector.pin }) })
+    await apiFetch(`/sectors/${sector.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sector.name }) })
     loadData()
   }
 
   async function removeSector(id: number) {
     const hasEmployees = employees.some((employee) => employee.sectorId === id)
-    if (hasEmployees) { alert("Esse setor possui funcionários vinculados. Remaneje ou exclua os funcionários antes."); return }
+    if (hasEmployees) { alert("Esse setor possui funcionários vinculados. Remaneje ou desative os funcionários antes."); return }
     if (!window.confirm("Excluir este setor?")) return
     await apiFetch(`/sectors/${id}`, { method: "DELETE" })
     loadData()
@@ -74,14 +73,14 @@ export function SettingsPage() {
   }
 
   async function removeEmployee(id: number) {
-    if (!window.confirm("Excluir este funcionário? Todos os chamados associados também serão deletados.")) return
+    if (!window.confirm("Desativar este funcionário? Os chamados associados serão preservados.")) return
     const response = await apiFetch(`/employees/${id}`, { method: "DELETE" })
     if (!response.ok) { alert("Erro ao excluir funcionário."); return }
     loadData()
   }
 
-  function updateSectorState(id: number, field: "name" | "pin", value: string) {
-    setSectors(sectors.map((sector) => sector.id === id ? { ...sector, [field]: value } : sector))
+  function updateSectorState(id: number, value: string) {
+    setSectors(sectors.map((sector) => sector.id === id ? { ...sector, name: value } : sector))
   }
 
   function updateEmployeeState(id: number, field: "name" | "sectorId" | "username" | "password", value: string) {
@@ -110,8 +109,8 @@ export function SettingsPage() {
         <div className="grid gap-6 xl:grid-cols-2">
           <section className="ls-card p-5 sm:p-6">
             <div className="mb-5"><h2 className="ls-section-title text-2xl">Setores</h2><p className="mt-1 text-sm text-slate-500">Controle os setores usados no painel e portal.</p></div>
-            <div className="grid gap-3 sm:grid-cols-3"><Input placeholder="Nome do setor" value={newSectorName} onChange={(e) => setNewSectorName(e.target.value)} className="ls-input" /><Input placeholder="PIN" value={newSectorPin} onChange={(e) => setNewSectorPin(e.target.value)} className="ls-input" /><Button className="ls-button-primary h-11 font-black" onClick={addSector}>Adicionar</Button></div>
-            <div className="mt-6 space-y-4">{sectors.map((sector) => <div key={sector.id} className="rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm"><div className="grid gap-3 lg:grid-cols-[1.5fr_1fr]"><Input value={sector.name} onChange={(e) => updateSectorState(sector.id, "name", e.target.value)} className="ls-input" /><Input value={sector.pin} onChange={(e) => updateSectorState(sector.id, "pin", e.target.value)} className="ls-input" /></div><div className="mt-4 flex flex-wrap justify-end gap-3"><Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateSector(sector)}>Salvar</Button><Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeSector(sector.id)}>Excluir</Button></div></div>)}</div>
+            <div className="grid gap-3 sm:grid-cols-[1fr_auto]"><Input placeholder="Nome do setor" value={newSectorName} onChange={(e) => setNewSectorName(e.target.value)} className="ls-input" /><Button className="ls-button-primary h-11 font-black" onClick={addSector}>Adicionar</Button></div>
+            <div className="mt-6 space-y-4">{sectors.map((sector) => <div key={sector.id} className="rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm"><Input value={sector.name} onChange={(e) => updateSectorState(sector.id, e.target.value)} className="ls-input" /><div className="mt-4 flex flex-wrap justify-end gap-3"><Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateSector(sector)}>Salvar</Button><Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeSector(sector.id)}>Excluir</Button></div></div>)}</div>
           </section>
 
           <section className="ls-card p-5 sm:p-6">

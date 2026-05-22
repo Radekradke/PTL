@@ -11,7 +11,6 @@ import {
   validateLongText,
   validateTicketCategory,
   validateTicketOrigin,
-  validateTicketPriority,
   validateTicketStatus,
 } from "../lib/validation"
 
@@ -43,7 +42,6 @@ const ticketSummarySelect = {
   category: true,
   status: true,
   origin: true,
-  priority: true,
   description: true,
   technicalResponse: true,
   archived: true,
@@ -109,7 +107,7 @@ ticketsRoutes.get(
 )
 
 ticketsRoutes.post("/", requireAuth, async (req, res) => {
-  const { employeeId, category, origin, description, priority } = req.body
+  const { employeeId, category, origin, description } = req.body
   const auth = (req as any).auth
 
   const employeeIdValidation = validateId(employeeId, "Funcionário")
@@ -125,12 +123,6 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
   const originValidation = validateTicketOrigin(origin)
   if (!originValidation.ok) {
     return res.status(400).json({ message: originValidation.message })
-  }
-
-  const defaultPriority = originValidation.value === "Offshore" ? "Alta" : "Normal"
-  const priorityValidation = validateTicketPriority(priority, defaultPriority)
-  if (!priorityValidation.ok) {
-    return res.status(400).json({ message: priorityValidation.message })
   }
 
   const descriptionValidation = validateLongText(description, "Descrição", 5, 2000)
@@ -161,7 +153,6 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
       category: categoryValidation.value,
       origin: originValidation.value,
       description: descriptionValidation.value,
-      priority: priorityValidation.value,
       timeline: {
         create: {
           action: "Chamado criado",

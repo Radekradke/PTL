@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { prisma } from "../lib/prisma"
 import { requireTechnical } from "../middlewares/auth.middleware"
-import { validateId, validateName, validatePin } from "../lib/validation"
+import { validateId, validateName } from "../lib/validation"
 
 export const sectorsRoutes = Router()
 
@@ -17,22 +17,16 @@ sectorsRoutes.get("/", requireTechnical(["Admin", "TI", "Diretoria"]), async (_r
 })
 
 sectorsRoutes.post("/", requireTechnical(["Admin"]), async (req, res) => {
-  const { name, pin } = req.body
+  const { name } = req.body
   const nameValidation = validateName(name, "Setor")
-  const pinValidation = validatePin(pin)
 
   if (!nameValidation.ok) {
     return res.status(400).json({ message: nameValidation.message })
   }
 
-  if (!pinValidation.ok) {
-    return res.status(400).json({ message: pinValidation.message })
-  }
-
   const sector = await prisma.sector.create({
     data: {
       name: nameValidation.value,
-      pin: pinValidation.value,
     },
   })
 
@@ -41,10 +35,9 @@ sectorsRoutes.post("/", requireTechnical(["Admin"]), async (req, res) => {
 
 sectorsRoutes.put("/:id", requireTechnical(["Admin"]), async (req, res) => {
   const { id } = req.params
-  const { name, pin } = req.body
+  const { name } = req.body
   const idValidation = validateId(id, "Setor")
   const nameValidation = validateName(name, "Setor")
-  const pinValidation = validatePin(pin)
 
   if (!idValidation.ok) {
     return res.status(400).json({ message: idValidation.message })
@@ -54,15 +47,10 @@ sectorsRoutes.put("/:id", requireTechnical(["Admin"]), async (req, res) => {
     return res.status(400).json({ message: nameValidation.message })
   }
 
-  if (!pinValidation.ok) {
-    return res.status(400).json({ message: pinValidation.message })
-  }
-
   const sector = await prisma.sector.update({
     where: { id: idValidation.value },
     data: {
       name: nameValidation.value,
-      pin: pinValidation.value,
     },
   })
 

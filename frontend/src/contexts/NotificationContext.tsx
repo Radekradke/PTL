@@ -34,7 +34,6 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         category: ticket.category,
         status: ticket.status,
         origin: ticket.origin,
-        priority: ticket.priority,
         description: ticket.description,
         technicalResponse: ticket.technicalResponse || "",
         archived: ticket.archived || false,

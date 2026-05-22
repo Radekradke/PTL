@@ -17,7 +17,6 @@ import {
 interface Sector {
   id: number
   name: string
-  pin: string
 }
 
 interface Employee {
@@ -84,12 +83,10 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   const [category, setCategory] = useState("PC")
   const [sectorId, setSectorId] = useState("")
   const [origin, setOrigin] = useState("Base")
-  const [priority, setPriority] = useState("Normal")
   const [description, setDescription] = useState("")
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState("Todos")
   const [originFilter, setOriginFilter] = useState("Todas")
-  const [priorityFilter, setPriorityFilter] = useState("Todas")
   const [sectorFilter, setSectorFilter] = useState("Todos")
   const [selectedTicket, setSelectedTicket] = useState<any>(null)
   const [technicalResponse, setTechnicalResponse] = useState("")
@@ -178,7 +175,6 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           sectorId: Number(sectorId),
           category,
           origin,
-          priority,
           description,
         }),
       })
@@ -200,7 +196,6 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       setCategory("PC")
       setOrigin("Base")
       setDescription("")
-      setPriority("Normal")
       onTicketsChange()
     } catch (error) {
       console.error("Erro ao criar chamado:", error)
@@ -348,20 +343,6 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       }
     }
 
-    if (ticket.priority === "Urgente") {
-      return {
-        label: "Urgente",
-        className: "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]",
-      }
-    }
-
-    if (ticket.priority === "Alta") {
-      return {
-        label: "Alta",
-        className: "bg-[#FFF7ED] text-[#C2410C] ring-1 ring-[#FED7AA]",
-      }
-    }
-
     return {
       label: "No prazo",
       className: "bg-[#EAF0ED] text-[#334155] ring-1 ring-[#DDE7E2]",
@@ -372,7 +353,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
     if (ticket.status === "Finalizado") return "#00A859"
     if (ticket.status === "Aguardando usuário") return "#F97316"
     if (ticket.status === "Em andamento") return "#2563EB"
-    if (ticket.origin === "Offshore" || ticket.priority === "Urgente") return "#E11D48"
+    if (ticket.origin === "Offshore") return "#E11D48"
     return "#F59E0B"
   }
 
@@ -385,10 +366,9 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
     const matchesStatus = statusFilter === "Todos" || ticket.status === statusFilter
     const matchesOrigin = originFilter === "Todas" || ticket.origin === originFilter
-    const matchesPriority = priorityFilter === "Todas" || ticket.priority === priorityFilter
     const matchesSector = sectorFilter === "Todos" || ticket.sector === sectorFilter
 
-    return matchesSearch && matchesStatus && matchesOrigin && matchesPriority && matchesSector
+    return matchesSearch && matchesStatus && matchesOrigin && matchesSector
   })
 
   const filteredArchivedTickets = filteredTickets.filter((ticket) => ticket.archived).length
@@ -456,32 +436,16 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     </div>
                   </div>
 
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="grid gap-2">
-                      <label className="text-sm font-medium text-[#334155]">Origem</label>
-                      <select
-                        value={origin}
-                        onChange={(e) => setOrigin(e.target.value)}
-                        className="w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]"
-                      >
-                        <option>Base</option>
-                        <option>Offshore</option>
-                      </select>
-                    </div>
-
-                    <div className="grid gap-2">
-                      <label className="text-sm font-medium text-[#334155]">Prioridade</label>
-                      <select
-                        value={priority}
-                        onChange={(e) => setPriority(e.target.value)}
-                        className="w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]"
-                      >
-                        <option>Baixa</option>
-                        <option>Normal</option>
-                        <option>Alta</option>
-                        <option>Urgente</option>
-                      </select>
-                    </div>
+                  <div className="grid gap-2">
+                    <label className="text-sm font-medium text-[#334155]">Origem</label>
+                    <select
+                      value={origin}
+                      onChange={(e) => setOrigin(e.target.value)}
+                      className="w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]"
+                    >
+                      <option>Base</option>
+                      <option>Offshore</option>
+                    </select>
                   </div>
 
                   <div className="grid gap-2">
@@ -520,7 +484,6 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 setSearch("")
                 setStatusFilter("Todos")
                 setOriginFilter("Todas")
-                setPriorityFilter("Todas")
                 setSectorFilter("Todos")
               }}
             >
@@ -529,7 +492,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           </div>
         </div>
 
-        <div className={`${filtersOpen ? "grid animate-in fade-in-0 slide-in-from-top-1 duration-200" : "hidden"} mt-4 gap-3 sm:mt-5 sm:grid sm:grid-cols-2 xl:grid-cols-5`}>
+        <div className={`${filtersOpen ? "grid animate-in fade-in-0 slide-in-from-top-1 duration-200" : "hidden"} mt-4 gap-3 sm:mt-5 sm:grid sm:grid-cols-2 xl:grid-cols-4`}>
           <Input
             placeholder="Buscar chamado..."
             value={search}
@@ -557,18 +520,6 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             <option value="Todas">Todas origens</option>
             <option value="Offshore">Offshore</option>
             <option value="Base">Base</option>
-          </select>
-
-          <select
-            value={priorityFilter}
-            onChange={(e) => setPriorityFilter(e.target.value)}
-            className="h-11 w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]"
-          >
-            <option value="Todas">Todas prioridades</option>
-            <option value="Baixa">Baixa</option>
-            <option value="Normal">Normal</option>
-            <option value="Alta">Alta</option>
-            <option value="Urgente">Urgente</option>
           </select>
 
           <select
@@ -694,9 +645,6 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 <span className={`rounded-full px-3 py-1.5 font-semibold ${getSlaStatus(ticket).className}`}>
                   {getSlaStatus(ticket).label}
                 </span>
-                <span className="rounded-full bg-[#F4F8F6] px-3 py-1.5 font-semibold text-[#516070] ring-1 ring-[#DDE7E2]">
-                  {ticket.priority || "Normal"}
-                </span>
                 <span className="text-[11px] font-bold text-slate-400">
                   {ticket.origin}
                 </span>
@@ -817,7 +765,6 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                       <FieldCard label="Categoria" value={selectedTicket.category} />
                       <FieldCard label="Criado em" value={selectedTicket.createdAt} />
                       <FieldCard label="Origem" value={selectedTicket.origin} />
-                      <FieldCard label="Prioridade" value={selectedTicket.priority} />
                     </div>
                   </DetailsSection>
 

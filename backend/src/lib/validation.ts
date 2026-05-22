@@ -1,6 +1,5 @@
 export const TICKET_STATUSES = ["Aberto", "Em andamento", "Aguardando usuário", "Finalizado"] as const
 export const TICKET_ORIGINS = ["Base", "Offshore"] as const
-export const TICKET_PRIORITIES = ["Baixa", "Normal", "Alta", "Urgente"] as const
 export const TICKET_CATEGORIES = ["PC", "Impressora", "Rede", "Sistema", "E-mail", "Câmera", "Outro"] as const
 
 type ValidationResult<T> =
@@ -87,16 +86,6 @@ export function validateTicketOrigin(value: unknown): ValidationResult<string> {
 
   if (!isOneOf(text, TICKET_ORIGINS)) {
     return { ok: false, message: "Origem inválida." }
-  }
-
-  return { ok: true, value: text }
-}
-
-export function validateTicketPriority(value: unknown, fallback = "Normal"): ValidationResult<string> {
-  const text = cleanText(value) || fallback
-
-  if (!isOneOf(text, TICKET_PRIORITIES)) {
-    return { ok: false, message: "Prioridade inválida." }
   }
 
   return { ok: true, value: text }
