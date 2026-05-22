@@ -41,7 +41,8 @@ export function SettingsPage() {
     const response = await apiFetch("/sectors", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newSectorName }) })
     if (!response.ok) {
       const data = await response.json().catch(() => null)
-      alert(data?.message || "Erro ao criar setor.")
+      console.error("Erro ao criar setor:", response.status, data)
+      alert(data?.message || `Erro ao criar setor. Código ${response.status}.`)
       return
     }
     setNewSectorName(""); loadData()
