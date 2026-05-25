@@ -241,6 +241,66 @@
     linear-gradient(135deg, #073B2A 0%, #0B4B37 42%, #102A43 100%);
 }
 
+.login-credit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(57, 217, 138, 0.24), transparent 32%),
+    linear-gradient(135deg, #073B2A 0%, #0B4B37 48%, #102A43 100%);
+  animation: login-credit-screen 1.9s ease forwards;
+}
+
+.login-credit-text {
+  color: #FFFFFF;
+  font-size: clamp(1.55rem, 5vw, 3.75rem);
+  font-weight: 900;
+  line-height: 1.05;
+  text-align: center;
+  letter-spacing: 0;
+  text-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+  animation: login-credit-text 1.9s ease forwards;
+}
+
+@keyframes login-credit-screen {
+  0% {
+    opacity: 1;
+  }
+
+  74% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes login-credit-text {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+
+  18% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  64% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.98);
+  }
+}
+
 @media (max-width: 640px) {
   .ls-page-shell {
     gap: 1rem;
