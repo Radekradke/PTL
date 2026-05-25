@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { apiFetch } from "@/services/api"
 
-type Sector = { id: number; name: string }
+type Sector = { id: number; name: string; pin?: string }
 
 type Employee = {
   id: number
@@ -19,6 +19,7 @@ export function SettingsPage() {
   const [sectors, setSectors] = useState<Sector[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
   const [newSectorName, setNewSectorName] = useState("")
+  const [newSectorPin, setNewSectorPin] = useState("")
   const [newEmployeeName, setNewEmployeeName] = useState("")
   const [newEmployeeUsername, setNewEmployeeUsername] = useState("")
   const [newEmployeePassword, setNewEmployeePassword] = useState("")
@@ -39,13 +40,15 @@ export function SettingsPage() {
 
   async function addSector() {
     const sectorName = newSectorName.trim()
+    const sectorPin = newSectorPin.trim()
 
     if (!sectorName) { alert("Preencha o nome do setor."); return }
+    if (!/^\d{4,8}$/.test(sectorPin)) { alert("PIN deve conter de 4 a 8 números."); return }
 
     setIsAddingSector(true)
 
     try {
-      const response = await apiFetch("/sectors", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sectorName }) })
+      const response = await apiFetch("/sectors", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sectorName, pin: sectorPin }) })
       if (!response.ok) {
         const data = await response.json().catch(() => null)
         console.error("Erro ao criar setor:", response.status, data)
@@ -54,6 +57,7 @@ export function SettingsPage() {
       }
 
       setNewSectorName("")
+      setNewSectorPin("")
       await loadData()
     } finally {
       setIsAddingSector(false)
@@ -61,7 +65,12 @@ export function SettingsPage() {
   }
 
   async function updateSector(sector: Sector) {
-    const response = await apiFetch(`/sectors/${sector.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sector.name }) })
+    const sectorName = sector.name.trim()
+    const sectorPin = String(sector.pin || "").trim()
+
+    if (!/^\d{4,8}$/.test(sectorPin)) { alert("PIN deve conter de 4 a 8 números."); return }
+
+    const response = await apiFetch(`/sectors/${sector.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sectorName, pin: sectorPin }) })
     if (!response.ok) {
       const data = await response.json().catch(() => null)
       alert(data?.message || "Erro ao salvar setor.")
@@ -102,8 +111,8 @@ export function SettingsPage() {
     loadData()
   }
 
-  function updateSectorState(id: number, value: string) {
-    setSectors(sectors.map((sector) => sector.id === id ? { ...sector, name: value } : sector))
+  function updateSectorState(id: number, field: "name" | "pin", value: string) {
+    setSectors(sectors.map((sector) => sector.id === id ? { ...sector, [field]: value } : sector))
   }
 
   function updateEmployeeState(id: number, field: "name" | "sectorId" | "username" | "password", value: string) {
@@ -132,8 +141,8 @@ export function SettingsPage() {
         <div className="grid gap-6 xl:grid-cols-2">
           <section className="ls-card p-5 sm:p-6">
             <div className="mb-5"><h2 className="ls-section-title text-2xl">Setores</h2><p className="mt-1 text-sm text-slate-500">Controle os setores usados no painel e portal.</p></div>
-            <div className="grid gap-3 sm:grid-cols-[1fr_auto]"><Input placeholder="Nome do setor" value={newSectorName} onChange={(e) => setNewSectorName(e.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addSector() }} className="ls-input" /><Button className="ls-button-primary h-11 font-black" onClick={addSector} disabled={isAddingSector}>{isAddingSector ? "Adicionando..." : "Adicionar"}</Button></div>
-            <div className="mt-6 space-y-4">{sectors.map((sector) => <div key={sector.id} className="rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm"><Input value={sector.name} onChange={(e) => updateSectorState(sector.id, e.target.value)} className="ls-input" /><div className="mt-4 flex flex-wrap justify-end gap-3"><Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateSector(sector)}>Salvar</Button><Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeSector(sector.id)}>Excluir</Button></div></div>)}</div>
+            <div className="grid gap-3 sm:grid-cols-[1fr_10rem_auto]"><Input placeholder="Nome do setor" value={newSectorName} onChange={(e) => setNewSectorName(e.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addSector() }} className="ls-input" /><Input inputMode="numeric" placeholder="PIN" value={newSectorPin} onChange={(e) => setNewSectorPin(e.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addSector() }} className="ls-input" /><Button className="ls-button-primary h-11 font-black" onClick={addSector} disabled={isAddingSector}>{isAddingSector ? "Adicionando..." : "Adicionar"}</Button></div>
+            <div className="mt-6 space-y-4">{sectors.map((sector) => <div key={sector.id} className="rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm"><div className="grid gap-3 sm:grid-cols-[1fr_10rem]"><Input value={sector.name} onChange={(e) => updateSectorState(sector.id, "name", e.target.value)} className="ls-input" /><Input inputMode="numeric" placeholder="PIN" value={sector.pin || ""} onChange={(e) => updateSectorState(sector.id, "pin", e.target.value)} className="ls-input" /></div><div className="mt-4 flex flex-wrap justify-end gap-3"><Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateSector(sector)}>Salvar</Button><Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeSector(sector.id)}>Excluir</Button></div></div>)}</div>
           </section>
 
           <section className="ls-card p-5 sm:p-6">
