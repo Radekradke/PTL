@@ -5,6 +5,15 @@ import { validateId, validateName, validatePin } from "../lib/validation"
 
 export const sectorsRoutes = Router()
 
+type SectorRow = {
+  id: number
+  name: string
+  active: boolean
+  pin?: string | null
+  createdAt: Date
+  updatedAt: Date
+}
+
 async function sectorPinColumnExists() {
   const result = await prisma.$queryRaw<{ exists: boolean }[]>`
     SELECT EXISTS (
@@ -18,29 +27,49 @@ async function sectorPinColumnExists() {
   return Boolean(result[0]?.exists)
 }
 
-function sectorSelect(includePin: boolean) {
+function publicSector(sector: SectorRow) {
   return {
-    id: true,
-    name: true,
-    active: true,
-    createdAt: true,
-    updatedAt: true,
-    ...(includePin ? { pin: true } : {}),
+    ...sector,
+    pin: sector.pin || "",
   }
+}
+
+async function findSectorByName(name: string, includePin: boolean) {
+  const sectors = includePin
+    ? await prisma.$queryRaw<SectorRow[]>`
+        SELECT "id", "name", "active", "pin", "createdAt", "updatedAt"
+        FROM "Sector"
+        WHERE "name" = ${name}
+        LIMIT 1
+      `
+    : await prisma.$queryRaw<SectorRow[]>`
+        SELECT "id", "name", "active", "createdAt", "updatedAt"
+        FROM "Sector"
+        WHERE "name" = ${name}
+        LIMIT 1
+      `
+
+  return sectors[0] || null
 }
 
 sectorsRoutes.get("/", requireTechnical(["Admin", "TI", "Diretoria"]), async (_req, res) => {
   try {
     const hasPin = await sectorPinColumnExists()
-    const sectors = await prisma.sector.findMany({
-      where: {
-        active: true,
-      },
-      orderBy: { name: "asc" },
-      select: sectorSelect(hasPin),
-    })
+    const sectors = hasPin
+      ? await prisma.$queryRaw<SectorRow[]>`
+          SELECT "id", "name", "active", "pin", "createdAt", "updatedAt"
+          FROM "Sector"
+          WHERE "active" = true
+          ORDER BY "name" ASC
+        `
+      : await prisma.$queryRaw<SectorRow[]>`
+          SELECT "id", "name", "active", "createdAt", "updatedAt"
+          FROM "Sector"
+          WHERE "active" = true
+          ORDER BY "name" ASC
+        `
 
-    res.json(sectors.map((sector) => ({ ...sector, pin: "pin" in sector ? sector.pin : "" })))
+    res.json(sectors.map(publicSector))
   } catch (error) {
     console.error("Erro ao listar setores:", error)
     res.status(500).json({ message: "Erro ao listar setores." })
@@ -63,45 +92,47 @@ sectorsRoutes.post("/", requireTechnical(["Admin"]), async (req, res) => {
     }
 
     const hasPin = await sectorPinColumnExists()
-    const existingSector = await prisma.sector.findUnique({
-      where: {
-        name: nameValidation.value,
-      },
-      select: sectorSelect(hasPin),
-    })
+    const existingSector = await findSectorByName(nameValidation.value, hasPin)
 
     if (existingSector?.active) {
       return res.status(409).json({ message: "Já existe um setor com esse nome." })
     }
 
     if (existingSector) {
-      const sector = await prisma.sector.update({
-        where: {
-          id: existingSector.id,
-        },
-        data: {
-          active: true,
-          ...(hasPin ? { pin: pinValidation.value } : {}),
-        },
-        select: sectorSelect(hasPin),
-      })
+      const sectors = hasPin
+        ? await prisma.$queryRaw<SectorRow[]>`
+            UPDATE "Sector"
+            SET "active" = true, "pin" = ${pinValidation.value}, "updatedAt" = CURRENT_TIMESTAMP
+            WHERE "id" = ${existingSector.id}
+            RETURNING "id", "name", "active", "pin", "createdAt", "updatedAt"
+          `
+        : await prisma.$queryRaw<SectorRow[]>`
+            UPDATE "Sector"
+            SET "active" = true, "updatedAt" = CURRENT_TIMESTAMP
+            WHERE "id" = ${existingSector.id}
+            RETURNING "id", "name", "active", "createdAt", "updatedAt"
+          `
 
-      return res.status(200).json(sector)
+      return res.status(200).json(publicSector(sectors[0]))
     }
 
-    const sector = await prisma.sector.create({
-      data: {
-        name: nameValidation.value,
-        ...(hasPin ? { pin: pinValidation.value } : {}),
-      },
-      select: sectorSelect(hasPin),
-    })
+    const sectors = hasPin
+      ? await prisma.$queryRaw<SectorRow[]>`
+          INSERT INTO "Sector" ("name", "pin")
+          VALUES (${nameValidation.value}, ${pinValidation.value})
+          RETURNING "id", "name", "active", "pin", "createdAt", "updatedAt"
+        `
+      : await prisma.$queryRaw<SectorRow[]>`
+          INSERT INTO "Sector" ("name")
+          VALUES (${nameValidation.value})
+          RETURNING "id", "name", "active", "createdAt", "updatedAt"
+        `
 
-    res.status(201).json(sector)
+    res.status(201).json(publicSector(sectors[0]))
   } catch (error: any) {
     console.error("Erro ao criar setor:", error)
 
-    if (error?.code === "P2002") {
+    if (error?.code === "P2002" || error?.meta?.code === "23505") {
       return res.status(409).json({ message: "Já existe um setor com esse nome." })
     }
 
@@ -130,20 +161,29 @@ sectorsRoutes.put("/:id", requireTechnical(["Admin"]), async (req, res) => {
 
   try {
     const hasPin = await sectorPinColumnExists()
-    const sector = await prisma.sector.update({
-      where: { id: idValidation.value },
-      data: {
-        name: nameValidation.value,
-        ...(hasPin ? { pin: pinValidation.value } : {}),
-      },
-      select: sectorSelect(hasPin),
-    })
+    const sectors = hasPin
+      ? await prisma.$queryRaw<SectorRow[]>`
+          UPDATE "Sector"
+          SET "name" = ${nameValidation.value}, "pin" = ${pinValidation.value}, "updatedAt" = CURRENT_TIMESTAMP
+          WHERE "id" = ${idValidation.value}
+          RETURNING "id", "name", "active", "pin", "createdAt", "updatedAt"
+        `
+      : await prisma.$queryRaw<SectorRow[]>`
+          UPDATE "Sector"
+          SET "name" = ${nameValidation.value}, "updatedAt" = CURRENT_TIMESTAMP
+          WHERE "id" = ${idValidation.value}
+          RETURNING "id", "name", "active", "createdAt", "updatedAt"
+        `
 
-    res.json({ ...sector, pin: "pin" in sector ? sector.pin : "" })
+    if (!sectors[0]) {
+      return res.status(404).json({ message: "Setor não encontrado." })
+    }
+
+    res.json(publicSector(sectors[0]))
   } catch (error: any) {
     console.error("Erro ao salvar setor:", error)
 
-    if (error?.code === "P2002") {
+    if (error?.code === "P2002" || error?.meta?.code === "23505") {
       return res.status(409).json({ message: "Já existe um setor com esse nome." })
     }
 
@@ -159,12 +199,13 @@ sectorsRoutes.delete("/:id", requireTechnical(["Admin"]), async (req, res) => {
     return res.status(400).json({ message: idValidation.message })
   }
 
-  const activeEmployees = await prisma.employee.count({
-    where: {
-      sectorId: idValidation.value,
-      active: true,
-    },
-  })
+  const activeEmployeesResult = await prisma.$queryRaw<{ count: bigint }[]>`
+    SELECT COUNT(*)::bigint AS "count"
+    FROM "Employee"
+    WHERE "sectorId" = ${idValidation.value}
+      AND "active" = true
+  `
+  const activeEmployees = Number(activeEmployeesResult[0]?.count || 0)
 
   if (activeEmployees > 0) {
     return res.status(409).json({
@@ -172,12 +213,11 @@ sectorsRoutes.delete("/:id", requireTechnical(["Admin"]), async (req, res) => {
     })
   }
 
-  await prisma.sector.update({
-    where: { id: idValidation.value },
-    data: {
-      active: false,
-    },
-  })
+  await prisma.$executeRaw`
+    UPDATE "Sector"
+    SET "active" = false, "updatedAt" = CURRENT_TIMESTAMP
+    WHERE "id" = ${idValidation.value}
+  `
 
   res.status(204).send()
 })
