@@ -15,6 +15,20 @@ type Employee = {
   sector: { id: number; name: string }
 }
 
+async function readApiJson(response: Response, fallbackMessage: string) {
+  const contentType = response.headers.get("content-type") || ""
+
+  if (contentType.includes("application/json")) {
+    return response.json()
+  }
+
+  if (!response.ok) {
+    throw new Error(fallbackMessage)
+  }
+
+  return null
+}
+
 export function SettingsPage() {
   const [sectors, setSectors] = useState<Sector[]>([])
   const [employees, setEmployees] = useState<Employee[]>([])
@@ -29,14 +43,24 @@ export function SettingsPage() {
   async function loadData() {
     const sectorsResponse = await apiFetch("/sectors")
     const employeesResponse = await apiFetch("/employees")
-    const sectorsData = await sectorsResponse.json()
-    const employeesData = await employeesResponse.json()
+
+    if (!sectorsResponse.ok || !employeesResponse.ok) {
+      throw new Error("Não foi possível carregar setores e funcionários.")
+    }
+
+    const sectorsData = await readApiJson(sectorsResponse, "Erro ao carregar setores.")
+    const employeesData = await readApiJson(employeesResponse, "Erro ao carregar funcionários.")
     setSectors(sectorsData)
     setEmployees(employeesData.map((employee: Employee) => ({ ...employee, password: "" })))
     if (sectorsData.length > 0 && !newEmployeeSectorId) setNewEmployeeSectorId(String(sectorsData[0].id))
   }
 
-  useEffect(() => { loadData() }, [])
+  useEffect(() => {
+    loadData().catch((error) => {
+      console.error("Erro ao carregar configurações:", error)
+      alert(error instanceof Error ? error.message : "Erro ao carregar configurações.")
+    })
+  }, [])
 
   async function addSector() {
     const sectorName = newSectorName.trim()
@@ -59,6 +83,9 @@ export function SettingsPage() {
       setNewSectorName("")
       setNewSectorPin("")
       await loadData()
+    } catch (error) {
+      console.error("Erro ao criar setor:", error)
+      alert(error instanceof Error ? error.message : "Erro ao criar setor.")
     } finally {
       setIsAddingSector(false)
     }

@@ -16,9 +16,17 @@ import {
 
 export const ticketsRoutes = Router()
 
+const sectorPublicSelect = {
+  id: true,
+  name: true,
+  active: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 const ticketInclude = {
   employee: true,
-  sector: true,
+  sector: { select: sectorPublicSelect },
   timeline: {
     orderBy: { createdAt: "asc" as const },
   },
@@ -29,7 +37,7 @@ const ticketInclude = {
 
 const ticketListInclude = {
   employee: true,
-  sector: true,
+  sector: { select: sectorPublicSelect },
   timeline: {
     orderBy: { createdAt: "asc" as const },
   },
@@ -38,7 +46,7 @@ const ticketListInclude = {
 const ticketSummarySelect = {
   id: true,
   employee: true,
-  sector: true,
+  sector: { select: sectorPublicSelect },
   category: true,
   status: true,
   origin: true,
@@ -139,7 +147,7 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
       id: employeeIdValidation.value,
       active: true,
     },
-    include: { sector: true },
+    include: { sector: { select: sectorPublicSelect } },
   })
 
   if (!employee || !employee.sector.active) {

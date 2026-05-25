@@ -6,6 +6,14 @@ import { validateId, validateName, validatePassword, validateUsername } from "..
 
 export const employeesRoutes = Router()
 
+const sectorPublicSelect = {
+  id: true,
+  name: true,
+  active: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 function publicEmployee(employee: any) {
   return {
     id: employee.id,
@@ -20,19 +28,31 @@ function publicEmployee(employee: any) {
 }
 
 employeesRoutes.get("/", requireTechnical(["Admin", "TI"]), async (_req, res) => {
-  const employees = await prisma.employee.findMany({
-    where: {
-      active: true,
-    },
-    include: {
-      sector: true,
-    },
-    orderBy: {
-      name: "asc",
-    },
-  })
+  try {
+    const employees = await prisma.employee.findMany({
+      where: {
+        active: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        active: true,
+        sectorId: true,
+        sector: { select: sectorPublicSelect },
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    })
 
-  res.json(employees.map(publicEmployee))
+    res.json(employees.map(publicEmployee))
+  } catch (error) {
+    console.error("Erro ao listar funcionários:", error)
+    res.status(500).json({ message: "Erro ao listar funcionários." })
+  }
 })
 
 employeesRoutes.post("/login", async (req, res) => {
@@ -48,7 +68,7 @@ employeesRoutes.post("/login", async (req, res) => {
       username: usernameValidation.value,
     },
     include: {
-      sector: true,
+      sector: { select: sectorPublicSelect },
     },
   })
 
@@ -97,6 +117,9 @@ employeesRoutes.post("/", requireTechnical(["Admin"]), async (req, res) => {
         id: sectorIdValidation.value,
         active: true,
       },
+      select: {
+        id: true,
+      },
     })
 
     if (!sector) {
@@ -111,7 +134,7 @@ employeesRoutes.post("/", requireTechnical(["Admin"]), async (req, res) => {
         passwordHash: hashPassword(passwordValidation.value || ""),
       },
       include: {
-        sector: true,
+        sector: { select: sectorPublicSelect },
       },
     })
 
@@ -165,6 +188,9 @@ employeesRoutes.put("/:id", requireTechnical(["Admin"]), async (req, res) => {
       id: sectorIdValidation.value,
       active: true,
     },
+    select: {
+      id: true,
+    },
   })
 
   if (!sector) {
@@ -188,7 +214,7 @@ employeesRoutes.put("/:id", requireTechnical(["Admin"]), async (req, res) => {
     },
     data,
     include: {
-      sector: true,
+      sector: { select: sectorPublicSelect },
     },
   })
 
