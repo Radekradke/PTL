@@ -25,6 +25,29 @@ sectorsRoutes.post("/", requireTechnical(["Admin"]), async (req, res) => {
       return res.status(400).json({ message: nameValidation.message })
     }
 
+    const existingSector = await prisma.sector.findUnique({
+      where: {
+        name: nameValidation.value,
+      },
+    })
+
+    if (existingSector?.active) {
+      return res.status(409).json({ message: "Já existe um setor com esse nome." })
+    }
+
+    if (existingSector) {
+      const sector = await prisma.sector.update({
+        where: {
+          id: existingSector.id,
+        },
+        data: {
+          active: true,
+        },
+      })
+
+      return res.status(200).json(sector)
+    }
+
     const sector = await prisma.sector.create({
       data: {
         name: nameValidation.value,
