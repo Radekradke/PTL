@@ -310,17 +310,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
     })
       .then(() => {
         onTicketsChange()
-        setSelectedTicket({
-          ...selectedTicket,
-          status: "Finalizado",
-          timeline: [
-            ...(selectedTicket.timeline || []),
-            {
-              date: getCurrentDateTime(),
-              action: "Chamado finalizado",
-            },
-          ],
-        })
+        setSelectedTicket(null)
       })
       .catch((error) => {
         console.error("Erro ao finalizar chamado:", error)
