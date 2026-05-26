@@ -64,6 +64,10 @@ function nextStatusFromSender(senderType: string) {
   return senderType === "employee" ? "Em andamento" : "Aguardando usuário"
 }
 
+function shouldArchiveStatus(status: string) {
+  return status === "Finalizado"
+}
+
 ticketsRoutes.get("/", requireTechnical(["Admin", "TI", "Diretoria"]), async (req, res) => {
   const { archived, includeArchived, summary } = req.query
   const showArchived = archived === "true"
@@ -255,6 +259,7 @@ ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI"]), a
     where: { id: idValidation.value },
     data: {
       status: nextStatus,
+      archived: shouldArchiveStatus(nextStatus),
       technicalResponse: normalizedSenderType === "technician" ? messageValidation.value : undefined,
       timeline: {
         create: {
@@ -288,7 +293,7 @@ ticketsRoutes.patch("/:id/status", requireTechnical(["Admin", "TI"]), async (req
     where: { id: idValidation.value },
     data: {
       status: statusValidation.value,
-      archived: statusValidation.value === "Finalizado" ? true : undefined,
+      archived: shouldArchiveStatus(statusValidation.value),
       timeline: {
         create: {
           action: `Status alterado para ${statusValidation.value}`,
@@ -320,6 +325,7 @@ ticketsRoutes.patch("/:id/response", requireTechnical(["Admin", "TI"]), async (r
     data: {
       technicalResponse: responseValidation.value,
       status: "Aguardando usuário",
+      archived: false,
       timeline: {
         create: {
           action: "Resposta técnica adicionada",
@@ -357,7 +363,7 @@ ticketsRoutes.patch("/:id", requireTechnical(["Admin", "TI"]), async (req, res) 
     where: { id: idValidation.value },
     data: {
       status: statusValidation.value,
-      archived: statusValidation.value === "Finalizado" ? true : undefined,
+      archived: shouldArchiveStatus(statusValidation.value),
       timeline: {
         create: {
           action: `Status alterado para ${statusValidation.value}`,
