@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { apiFetch } from "@/services/api"
 
 type Sector = { id: number; name: string; pin?: string }
@@ -39,20 +40,27 @@ export function SettingsPage() {
   const [newEmployeePassword, setNewEmployeePassword] = useState("")
   const [newEmployeeSectorId, setNewEmployeeSectorId] = useState("")
   const [isAddingSector, setIsAddingSector] = useState(false)
+  const [isLoadingData, setIsLoadingData] = useState(true)
 
   async function loadData() {
-    const sectorsResponse = await apiFetch("/sectors")
-    const employeesResponse = await apiFetch("/employees")
+    setIsLoadingData(true)
 
-    if (!sectorsResponse.ok || !employeesResponse.ok) {
-      throw new Error("Não foi possível carregar setores e funcionários.")
+    try {
+      const sectorsResponse = await apiFetch("/sectors")
+      const employeesResponse = await apiFetch("/employees")
+
+      if (!sectorsResponse.ok || !employeesResponse.ok) {
+        throw new Error("Não foi possível carregar setores e funcionários.")
+      }
+
+      const sectorsData = await readApiJson(sectorsResponse, "Erro ao carregar setores.")
+      const employeesData = await readApiJson(employeesResponse, "Erro ao carregar funcionários.")
+      setSectors(sectorsData)
+      setEmployees(employeesData.map((employee: Employee) => ({ ...employee, password: "" })))
+      if (sectorsData.length > 0 && !newEmployeeSectorId) setNewEmployeeSectorId(String(sectorsData[0].id))
+    } finally {
+      setIsLoadingData(false)
     }
-
-    const sectorsData = await readApiJson(sectorsResponse, "Erro ao carregar setores.")
-    const employeesData = await readApiJson(employeesResponse, "Erro ao carregar funcionários.")
-    setSectors(sectorsData)
-    setEmployees(employeesData.map((employee: Employee) => ({ ...employee, password: "" })))
-    if (sectorsData.length > 0 && !newEmployeeSectorId) setNewEmployeeSectorId(String(sectorsData[0].id))
   }
 
   useEffect(() => {
@@ -169,13 +177,13 @@ export function SettingsPage() {
           <section className="ls-card p-5 sm:p-6">
             <div className="mb-5"><h2 className="ls-section-title text-2xl">Setores</h2><p className="mt-1 text-sm text-slate-500">Controle os setores usados no painel e portal.</p></div>
             <div className="grid gap-3 sm:grid-cols-[1fr_10rem_auto]"><Input placeholder="Nome do setor" value={newSectorName} onChange={(e) => setNewSectorName(e.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addSector() }} className="ls-input" /><Input inputMode="numeric" placeholder="PIN" value={newSectorPin} onChange={(e) => setNewSectorPin(e.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addSector() }} className="ls-input" /><Button className="ls-button-primary h-11 font-black" onClick={addSector} disabled={isAddingSector}>{isAddingSector ? "Adicionando..." : "Adicionar"}</Button></div>
-            <div className="mt-6 space-y-4">{sectors.map((sector) => <div key={sector.id} className="rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm"><div className="grid gap-3 sm:grid-cols-[1fr_10rem]"><Input value={sector.name} onChange={(e) => updateSectorState(sector.id, "name", e.target.value)} className="ls-input" /><Input inputMode="numeric" placeholder="PIN" value={sector.pin || ""} onChange={(e) => updateSectorState(sector.id, "pin", e.target.value)} className="ls-input" /></div><div className="mt-4 flex flex-wrap justify-end gap-3"><Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateSector(sector)}>Salvar</Button><Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeSector(sector.id)}>Excluir</Button></div></div>)}</div>
+            <div className="mt-6 space-y-4">{isLoadingData ? Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-32 rounded-3xl bg-white/80" />) : sectors.map((sector) => <div key={sector.id} className="rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(7,59,42,0.10)]"><div className="grid gap-3 sm:grid-cols-[1fr_10rem]"><Input value={sector.name} onChange={(e) => updateSectorState(sector.id, "name", e.target.value)} className="ls-input" /><Input inputMode="numeric" placeholder="PIN" value={sector.pin || ""} onChange={(e) => updateSectorState(sector.id, "pin", e.target.value)} className="ls-input" /></div><div className="mt-4 flex flex-wrap justify-end gap-3"><Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateSector(sector)}>Salvar</Button><Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeSector(sector.id)}>Excluir</Button></div></div>)}</div>
           </section>
 
           <section className="ls-card p-5 sm:p-6">
             <div className="mb-5"><h2 className="ls-section-title text-2xl">Funcionários</h2><p className="mt-1 text-sm text-slate-500">Usuário, senha e setor definem o acesso ao portal.</p></div>
             <div className="grid gap-3 xl:grid-cols-[1.2fr_1fr_1fr_1fr_auto]"><Input placeholder="Nome" value={newEmployeeName} onChange={(e) => setNewEmployeeName(e.target.value)} className="ls-input" /><Input placeholder="Usuário" value={newEmployeeUsername} onChange={(e) => setNewEmployeeUsername(e.target.value)} className="ls-input" /><Input type="password" placeholder="Senha" value={newEmployeePassword} onChange={(e) => setNewEmployeePassword(e.target.value)} className="ls-input" /><select value={newEmployeeSectorId} onChange={(e) => setNewEmployeeSectorId(e.target.value)} className="ls-input">{sectors.map((sector) => <option key={sector.id} value={sector.id}>{sector.name}</option>)}</select><Button className="ls-button-primary h-11 font-black" onClick={addEmployee}>Adicionar</Button></div>
-            <div className="mt-6 space-y-4">{employees.map((employee) => <div key={employee.id} className="rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm"><div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-sm font-black text-[#111827]">{employee.name}</p><p className="text-xs text-slate-500">Usuário: {employee.username || "não configurado"}</p></div><span className="w-fit rounded-full bg-[#ECFBF3] px-3 py-1 text-xs font-black text-[#073B2A]">{sectors.find((sector) => sector.id === employee.sectorId)?.name || employee.sector?.name || "Sem setor"}</span></div><div className="grid gap-3 xl:grid-cols-[1.2fr_1fr_1fr_1fr]"><Input value={employee.name} onChange={(e) => updateEmployeeState(employee.id, "name", e.target.value)} className="ls-input" /><Input value={employee.username || ""} onChange={(e) => updateEmployeeState(employee.id, "username", e.target.value)} placeholder="usuário" className="ls-input" /><Input type="password" value={employee.password || ""} onChange={(e) => updateEmployeeState(employee.id, "password", e.target.value)} placeholder="Nova senha opcional" className="ls-input" /><select value={employee.sectorId} onChange={(e) => updateEmployeeState(employee.id, "sectorId", e.target.value)} className="ls-input">{sectors.map((sector) => <option key={sector.id} value={sector.id}>{sector.name}</option>)}</select></div><div className="mt-4 flex flex-wrap justify-end gap-3"><Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateEmployee(employee)}>Salvar</Button><Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeEmployee(employee.id)}>Excluir</Button></div></div>)}</div>
+            <div className="mt-6 space-y-4">{isLoadingData ? Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-40 rounded-3xl bg-white/80" />) : employees.map((employee) => <div key={employee.id} className="rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(7,59,42,0.10)]"><div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-sm font-black text-[#111827]">{employee.name}</p><p className="text-xs text-slate-500">Usuário: {employee.username || "não configurado"}</p></div><span className="status-badge-animated w-fit rounded-full bg-[#ECFBF3] px-3 py-1 text-xs font-black text-[#073B2A]">{sectors.find((sector) => sector.id === employee.sectorId)?.name || employee.sector?.name || "Sem setor"}</span></div><div className="grid gap-3 xl:grid-cols-[1.2fr_1fr_1fr_1fr]"><Input value={employee.name} onChange={(e) => updateEmployeeState(employee.id, "name", e.target.value)} className="ls-input" /><Input value={employee.username || ""} onChange={(e) => updateEmployeeState(employee.id, "username", e.target.value)} placeholder="usuário" className="ls-input" /><Input type="password" value={employee.password || ""} onChange={(e) => updateEmployeeState(employee.id, "password", e.target.value)} placeholder="Nova senha opcional" className="ls-input" /><select value={employee.sectorId} onChange={(e) => updateEmployeeState(employee.id, "sectorId", e.target.value)} className="ls-input">{sectors.map((sector) => <option key={sector.id} value={sector.id}>{sector.name}</option>)}</select></div><div className="mt-4 flex flex-wrap justify-end gap-3"><Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateEmployee(employee)}>Salvar</Button><Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeEmployee(employee.id)}>Excluir</Button></div></div>)}</div>
           </section>
         </div>
       </div>

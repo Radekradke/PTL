@@ -68,7 +68,10 @@ export function Login() {
           role="status"
           aria-live="polite"
         >
-          <p className="login-credit-text">Criado por André Gomes</p>
+          <div className="login-credit-content">
+            <img src={logoLifting} alt="" className="login-credit-logo" />
+            <p className="login-credit-text">Criado por André Gomes</p>
+          </div>
         </div>
       )}
 

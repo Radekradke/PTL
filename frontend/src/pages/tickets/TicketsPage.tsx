@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { StatsCard } from "@/components/dashboard/StatsCard"
 import { TicketsTable } from "@/components/tickets/TicketsTable"
+import { Skeleton } from "@/components/ui/skeleton"
 import { apiFetch } from "@/services/api"
 import { useNotifications } from "@/contexts/NotificationContext"
 
 export function TicketsPage() {
   const [tickets, setTickets] = useState<any[]>([])
+  const [isLoadingTickets, setIsLoadingTickets] = useState(true)
+  const hasLoadedTickets = useRef(false)
   const { setTickets: setGlobalTickets } = useNotifications()
 
   useEffect(() => {
@@ -17,6 +20,10 @@ export function TicketsPage() {
 
   async function loadTickets() {
     try {
+      if (!hasLoadedTickets.current) {
+        setIsLoadingTickets(true)
+      }
+
       const response = await apiFetch("/tickets?includeArchived=true")
       const data = await response.json()
       const formattedTickets = data.map((ticket: any) => ({
@@ -39,6 +46,9 @@ export function TicketsPage() {
       setGlobalTickets(formattedTickets)
     } catch (error) {
       console.error("Erro ao carregar tickets:", error)
+    } finally {
+      hasLoadedTickets.current = true
+      setIsLoadingTickets(false)
     }
   }
 
@@ -81,38 +91,54 @@ export function TicketsPage() {
           </div>
         </section>
 
-        <section className="space-y-3 sm:space-y-4 lg:space-y-4">
-          <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Status</h3>
-          <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
-            <div className="hidden sm:block">
-              <StatsCard title="Total" value={String(totalTickets)} tone="neutral" />
-            </div>
-            <StatsCard title="Abertos" value={String(openTickets)} tone="warning" />
-            <StatsCard title="Em andamento" value={String(progressTickets)} tone="info" />
-            <StatsCard title="Aguardando usuário" value={String(waitingUserTickets)} tone="danger" />
-            <StatsCard title="Finalizados" value={String(finishedTickets)} tone="success" />
-          </div>
-        </section>
+        {isLoadingTickets ? (
+          <>
+            <section className="space-y-3 sm:space-y-4 lg:space-y-4">
+              <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Status</h3>
+              <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Skeleton key={index} className="h-28 rounded-[1.15rem] bg-white/80 sm:h-32 sm:rounded-[1.5rem]" />
+                ))}
+              </div>
+            </section>
+            <Skeleton className="h-[420px] rounded-3xl bg-white/80" />
+          </>
+        ) : (
+          <>
+            <section className="space-y-3 sm:space-y-4 lg:space-y-4">
+              <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Status</h3>
+              <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+                <div className="hidden sm:block">
+                  <StatsCard title="Total" value={String(totalTickets)} tone="neutral" />
+                </div>
+                <StatsCard title="Abertos" value={String(openTickets)} tone="warning" />
+                <StatsCard title="Em andamento" value={String(progressTickets)} tone="info" />
+                <StatsCard title="Aguardando usuário" value={String(waitingUserTickets)} tone="danger" />
+                <StatsCard title="Finalizados" value={String(finishedTickets)} tone="success" />
+              </div>
+            </section>
 
-        <section className="space-y-3 sm:space-y-4 lg:space-y-4">
-          <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Origem</h3>
-          <div className="grid grid-cols-2 gap-2 sm:hidden">
-            <div className="rounded-2xl border border-[#DDE8E2] bg-white px-3 py-3 shadow-sm">
-              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Base</p>
-              <p className="mt-1 text-2xl font-black text-cyan-700">{baseTickets}</p>
-            </div>
-            <div className="rounded-2xl border border-rose-100 bg-[#FFF7F8] px-3 py-3 shadow-sm">
-              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-rose-600">Offshore</p>
-              <p className="mt-1 text-2xl font-black text-rose-700">{offshoreTickets}</p>
-            </div>
-          </div>
-          <div className="hidden gap-2 sm:grid sm:gap-3 lg:gap-4 sm:grid-cols-2">
-            <StatsCard title="Offshore" value={String(offshoreTickets)} tone="danger" />
-            <StatsCard title="Base" value={String(baseTickets)} tone="base" />
-          </div>
-        </section>
+            <section className="space-y-3 sm:space-y-4 lg:space-y-4">
+              <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Origem</h3>
+              <div className="grid grid-cols-2 gap-2 sm:hidden">
+                <div className="rounded-2xl border border-[#DDE8E2] bg-white px-3 py-3 shadow-sm">
+                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Base</p>
+                  <p className="mt-1 text-2xl font-black text-cyan-700">{baseTickets}</p>
+                </div>
+                <div className="rounded-2xl border border-rose-100 bg-[#FFF7F8] px-3 py-3 shadow-sm">
+                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-rose-600">Offshore</p>
+                  <p className="mt-1 text-2xl font-black text-rose-700">{offshoreTickets}</p>
+                </div>
+              </div>
+              <div className="hidden gap-2 sm:grid sm:gap-3 lg:gap-4 sm:grid-cols-2">
+                <StatsCard title="Offshore" value={String(offshoreTickets)} tone="danger" />
+                <StatsCard title="Base" value={String(baseTickets)} tone="base" />
+              </div>
+            </section>
 
-        <TicketsTable tickets={tickets} onTicketsChange={loadTickets} />
+            <TicketsTable tickets={tickets} onTicketsChange={loadTickets} />
+          </>
+        )}
       </div>
     </AppLayout>
   )

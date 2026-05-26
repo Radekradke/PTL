@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout"
 import { StatsCard } from "@/components/dashboard/StatsCard"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { FileSpreadsheet, Download, RotateCcw, Search, Calendar, FileText } from "lucide-react"
 import { apiFetch } from "@/services/api"
 
@@ -140,7 +141,32 @@ export function ReportsPage() {
   }
 
   if (loading) {
-    return <AppLayout><div className="flex h-64 items-center justify-center"><div className="ls-card px-6 py-4 text-sm font-bold text-slate-700">Carregando relatórios...</div></div></AppLayout>
+    return (
+      <AppLayout>
+        <div className="ls-page-shell py-2">
+          <section className="ls-hero-clean p-6 sm:p-8">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="w-full max-w-2xl space-y-3">
+                <Skeleton className="h-4 w-44 rounded-full bg-white/80" />
+                <Skeleton className="h-12 w-64 rounded-2xl bg-white/80" />
+                <Skeleton className="h-5 w-full max-w-xl rounded-full bg-white/80" />
+              </div>
+              <div className="grid w-full gap-3 sm:w-auto sm:grid-cols-2">
+                <Skeleton className="h-12 w-full rounded-2xl bg-white/80 sm:w-36" />
+                <Skeleton className="h-12 w-full rounded-2xl bg-white/80 sm:w-36" />
+              </div>
+            </div>
+          </section>
+          <Skeleton className="h-56 rounded-3xl bg-white/80" />
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <Skeleton key={index} className="h-32 rounded-[1.5rem] bg-white/80" />
+            ))}
+          </div>
+          <Skeleton className="h-72 rounded-3xl bg-white/80" />
+        </div>
+      </AppLayout>
+    )
   }
 
   return (
@@ -186,7 +212,7 @@ export function ReportsPage() {
         <section className="ls-card p-4 sm:p-6">
           <h2 className="ls-section-title text-xl">Preview dos dados</h2>
           <div className="mt-5 overflow-x-auto rounded-3xl border border-[#DDE8E2] bg-white">
-            <table className="min-w-[820px] w-full text-sm"><thead className="bg-[#F8FCFA]"><tr className="border-b border-[#DDE8E2]"><th className="p-3 text-left text-slate-500">ID</th><th className="p-3 text-left text-slate-500">Solicitante</th><th className="p-3 text-left text-slate-500">Setor</th><th className="p-3 text-left text-slate-500">Categoria</th><th className="p-3 text-left text-slate-500">Status</th><th className="p-3 text-left text-slate-500">Origem</th><th className="p-3 text-left text-slate-500">Criado em</th></tr></thead><tbody>{filteredTickets.slice(0,20).map((ticket) => <tr key={ticket.id} className="border-b border-[#DDE8E2] hover:bg-[#F8FCFA]"><td className="p-3 text-slate-900">#{ticket.id}</td><td className="p-3 text-slate-900">{ticket.user}</td><td className="p-3 text-slate-700">{ticket.sector}</td><td className="p-3 text-slate-700">{ticket.category}</td><td className="p-3"><span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${getStatusColor(ticket.status)}`}>{ticket.status}</span></td><td className="p-3 text-slate-700">{ticket.origin}</td><td className="p-3 text-slate-700">{ticket.createdAt}</td></tr>)}</tbody></table>
+            <table className="min-w-[820px] w-full text-sm"><thead className="bg-[#F8FCFA]"><tr className="border-b border-[#DDE8E2]"><th className="p-3 text-left text-slate-500">ID</th><th className="p-3 text-left text-slate-500">Solicitante</th><th className="p-3 text-left text-slate-500">Setor</th><th className="p-3 text-left text-slate-500">Categoria</th><th className="p-3 text-left text-slate-500">Status</th><th className="p-3 text-left text-slate-500">Origem</th><th className="p-3 text-left text-slate-500">Criado em</th></tr></thead><tbody>{filteredTickets.slice(0,20).map((ticket) => <tr key={ticket.id} className="border-b border-[#DDE8E2] transition hover:bg-[#F8FCFA]"><td className="p-3 text-slate-900">#{ticket.id}</td><td className="p-3 text-slate-900">{ticket.user}</td><td className="p-3 text-slate-700">{ticket.sector}</td><td className="p-3 text-slate-700">{ticket.category}</td><td className="p-3"><span className={`status-badge-animated inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${getStatusColor(ticket.status)}`}>{ticket.status}</span></td><td className="p-3 text-slate-700">{ticket.origin}</td><td className="p-3 text-slate-700">{ticket.createdAt}</td></tr>)}</tbody></table>
           </div>
           {filteredTickets.length > 20 && <div className="p-3 text-center text-slate-500">... e mais {filteredTickets.length - 20} registros no export</div>}
           {filteredTickets.length === 0 && <div className="p-8 text-center text-slate-500">Nenhum chamado encontrado com os filtros aplicados.</div>}

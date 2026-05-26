@@ -132,6 +132,21 @@ function PortalShell({ children }: { children: React.ReactNode }) {
   return <div className={styles.page}>{children}</div>
 }
 
+function CreditOverlay() {
+  return (
+    <div
+      className="login-credit-overlay"
+      role="status"
+      aria-live="polite"
+    >
+      <div className="login-credit-content">
+        <img src={logoLifting} alt="" className="login-credit-logo" />
+        <p className="login-credit-text">Criado por André Gomes</p>
+      </div>
+    </div>
+  )
+}
+
 function GlassCard({
   children,
   className = "",
@@ -502,15 +517,7 @@ export function AdminPortal() {
   if (!loggedEmployee) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.20),transparent_30%),linear-gradient(180deg,#F7FAF8,#EAF0ED)] px-4 py-8 text-[#111827]">
-        {showCredit && (
-          <div
-            className="login-credit-overlay"
-            role="status"
-            aria-live="polite"
-          >
-            <p className="login-credit-text">Criado por André Gomes</p>
-          </div>
-        )}
+        {showCredit && <CreditOverlay />}
 
         <div className="grid w-full max-w-5xl overflow-hidden rounded-[1.5rem] border border-white/80 bg-white shadow-[0_28px_90px_rgba(7,59,42,0.14)] sm:rounded-[2rem] lg:grid-cols-[1.05fr_0.95fr]">
           <section className="relative hidden min-h-[620px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.28),transparent_32%),linear-gradient(135deg,#073B2A,#102A43)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
@@ -636,7 +643,7 @@ export function AdminPortal() {
             <div className="flex justify-center">
               <div className="relative">
                 <div className="absolute inset-0 rounded-full bg-[#39D98A]/25 blur-2xl" />
-                <CheckCircle2 className="relative h-16 w-16 text-[#00A859] sm:h-20 sm:w-20" />
+                <CheckCircle2 className="portal-success-check relative h-16 w-16 text-[#00A859] sm:h-20 sm:w-20" />
               </div>
             </div>
 
@@ -656,7 +663,7 @@ export function AdminPortal() {
               </div>
             </div>
 
-            <div className="mt-6 grid gap-3 sm:mt-7 sm:grid-cols-3">
+            <div className="portal-success-actions mt-6 grid gap-3 sm:mt-7 sm:grid-cols-3">
               <Button variant="outline" className={styles.secondary} onClick={handleExit}>
                 Sair
               </Button>
@@ -674,15 +681,7 @@ export function AdminPortal() {
 
   return (
     <PortalShell>
-      {showCredit && (
-        <div
-          className="login-credit-overlay"
-          role="status"
-          aria-live="polite"
-        >
-          <p className="login-credit-text">Criado por André Gomes</p>
-        </div>
-      )}
+      {showCredit && <CreditOverlay />}
 
       <div className={styles.shell}>
         <header className={`${styles.glass} p-4 sm:p-5`}>

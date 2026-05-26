@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useState } from "react"
+
 type StatsCardTone = "neutral" | "warning" | "info" | "success" | "danger" | "base"
 
 interface Props {
@@ -28,6 +30,45 @@ function resolveTone(tone?: StatsCardTone, color?: string): StatsCardTone {
 
 export function StatsCard({ title, value, color, tone }: Props) {
   const styles = toneStyles[resolveTone(tone, color)]
+  const numericValue = useMemo(() => {
+    if (!/^\d+$/.test(value)) return null
+    return Number(value)
+  }, [value])
+  const [animatedValue, setAnimatedValue] = useState(numericValue ?? 0)
+
+  useEffect(() => {
+    if (numericValue === null) return
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+    if (reduceMotion) {
+      setAnimatedValue(numericValue)
+      return
+    }
+
+    let frame = 0
+    const startValue = animatedValue
+    const difference = numericValue - startValue
+    const startTime = performance.now()
+    const duration = 650
+
+    function tick(currentTime: number) {
+      const progress = Math.min((currentTime - startTime) / duration, 1)
+      const easedProgress = 1 - Math.pow(1 - progress, 3)
+
+      setAnimatedValue(Math.round(startValue + difference * easedProgress))
+
+      if (progress < 1) {
+        frame = window.requestAnimationFrame(tick)
+      }
+    }
+
+    frame = window.requestAnimationFrame(tick)
+
+    return () => window.cancelAnimationFrame(frame)
+  }, [numericValue])
+
+  const displayValue = numericValue === null ? value : String(animatedValue)
 
   return (
     <div className="group relative overflow-hidden rounded-[1.15rem] border border-[#DDE8E2] bg-[linear-gradient(180deg,#FFFFFF_0%,#F8FCFA_100%)] p-3 shadow-[0_10px_28px_rgba(16,42,67,0.06)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#BFEFD7] hover:shadow-[0_20px_54px_rgba(16,42,67,0.12)] sm:rounded-[1.5rem] sm:p-5 sm:shadow-[0_16px_44px_rgba(16,42,67,0.07)]">
@@ -40,7 +81,7 @@ export function StatsCard({ title, value, color, tone }: Props) {
         <span className={`${styles.glow} h-6 w-6 shrink-0 rounded-xl ring-1 ring-black/5 transition-transform duration-200 group-hover:scale-110 sm:h-8 sm:w-8 sm:rounded-2xl`} />
       </div>
       <h2 className={`${styles.value} mt-3 pl-1 text-2xl font-black leading-none tracking-[-0.045em] sm:mt-4 sm:text-4xl sm:tracking-[-0.055em]`}>
-        {value}
+        {displayValue}
       </h2>
     </div>
   )

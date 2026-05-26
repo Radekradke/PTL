@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -92,6 +92,9 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   const [technicalResponse, setTechnicalResponse] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [highlightedTicketIds, setHighlightedTicketIds] = useState<Set<number>>(new Set())
+  const knownTicketIds = useRef<Set<number>>(new Set())
+  const hasSyncedTickets = useRef(false)
 
   const selectedEmployee = employees.find((employee) => String(employee.id) === employeeId)
   const selectedEmployeeSector = selectedEmployee?.sector
@@ -119,6 +122,30 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
   useEffect(() => {
     setTableTickets(tickets)
+
+    const currentIds = new Set(tickets.map((ticket) => ticket.id))
+
+    if (!hasSyncedTickets.current) {
+      knownTicketIds.current = currentIds
+      hasSyncedTickets.current = true
+      return
+    }
+
+    const newIds = tickets
+      .map((ticket) => ticket.id)
+      .filter((ticketId) => !knownTicketIds.current.has(ticketId))
+
+    knownTicketIds.current = currentIds
+
+    if (newIds.length === 0) return
+
+    setHighlightedTicketIds(new Set(newIds))
+
+    const timeout = window.setTimeout(() => {
+      setHighlightedTicketIds(new Set())
+    }, 2200)
+
+    return () => window.clearTimeout(timeout)
   }, [tickets])
 
   async function loadEmployeesAndSectors() {
@@ -556,23 +583,23 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             </thead>
             <tbody>
               {filteredTickets.map((ticket) => (
-                <tr key={ticket.id} className={`border-t border-slate-100 transition-all hover:bg-[#E9FFF3]/50 ${ticket.archived ? "bg-slate-50/70 opacity-75" : ""}`}>
+                <tr key={ticket.id} className={`border-t border-slate-100 transition-all hover:bg-[#E9FFF3]/50 ${highlightedTicketIds.has(ticket.id) ? "ticket-row-new" : ""} ${ticket.archived ? "bg-slate-50/70 opacity-75" : ""}`}>
                   <td className="px-3 py-3 text-[#111827] whitespace-nowrap">#{ticket.id}</td>
                   <td className="px-3 py-3 text-[#102A43] whitespace-nowrap">{ticket.user}</td>
                   <td className="px-3 py-3 text-[#334155] whitespace-nowrap">{ticket.sector}</td>
                   <td className="px-3 py-3 text-[#334155] whitespace-nowrap">{ticket.category}</td>
                   <td className="px-3 py-3 whitespace-nowrap">
-                    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${ticket.origin === "Offshore" ? "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]" : "bg-[#EAF0ED] text-[#334155] ring-1 ring-[#DDE7E2]"}`}>
+                    <span className={`status-badge-animated inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${ticket.origin === "Offshore" ? "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]" : "bg-[#EAF0ED] text-[#334155] ring-1 ring-[#DDE7E2]"}`}>
                       {ticket.origin}
                     </span>
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">
-                    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getSlaStatus(ticket).className}`}>
+                    <span className={`status-badge-animated inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getSlaStatus(ticket).className}`}>
                       {getSlaStatus(ticket).label}
                     </span>
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">
-                    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getStatusStyle(ticket.status)}`}>
+                    <span className={`status-badge-animated inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getStatusStyle(ticket.status)}`}>
                       {ticket.status}
                     </span>
                     {ticket.archived && (
@@ -608,7 +635,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           {filteredTickets.map((ticket) => (
             <div
               key={ticket.id}
-              className={`rounded-2xl border border-l-4 border-[#DDE7E2] bg-white p-4 shadow-sm ${ticket.archived ? "opacity-75" : ""}`}
+              className={`rounded-2xl border border-l-4 border-[#DDE7E2] bg-white p-4 shadow-sm ${highlightedTicketIds.has(ticket.id) ? "ticket-row-new" : ""} ${ticket.archived ? "opacity-75" : ""}`}
               style={{ borderLeftColor: getTicketAccentColor(ticket) }}
             >
               <div className="flex items-start justify-between gap-3">
@@ -617,7 +644,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                   <h3 className="mt-1 truncate text-base font-bold text-[#111827]">{ticket.category}</h3>
                   <p className="mt-1 text-sm text-[#516070]">{ticket.user} · {ticket.sector}</p>
                 </div>
-                <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${getStatusStyle(ticket.status)}`}>
+                <span className={`status-badge-animated shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${getStatusStyle(ticket.status)}`}>
                   {ticket.status}
                 </span>
               </div>
@@ -632,7 +659,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
               </p>
 
               <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
-                <span className={`rounded-full px-3 py-1.5 font-semibold ${getSlaStatus(ticket).className}`}>
+                <span className={`status-badge-animated rounded-full px-3 py-1.5 font-semibold ${getSlaStatus(ticket).className}`}>
                   {getSlaStatus(ticket).label}
                 </span>
                 <span className="text-[11px] font-bold text-slate-400">
@@ -685,7 +712,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
               </div>
 
               {selectedTicket && (
-                <span className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(selectedTicket.status)}`}>
+                <span className={`status-badge-animated w-fit rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(selectedTicket.status)}`}>
                   {selectedTicket.status}
                 </span>
               )}
