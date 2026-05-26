@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png";
+import loadingLogo from "../../assets/lifting-loading-logo.png"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -140,7 +141,7 @@ function CreditOverlay() {
       aria-live="polite"
     >
       <div className="login-credit-content">
-        <img src={logoLifting} alt="" className="login-credit-logo" />
+        <img src={loadingLogo} alt="" className="login-credit-logo" />
         <p className="login-credit-text">Criado por André Gomes</p>
       </div>
     </div>

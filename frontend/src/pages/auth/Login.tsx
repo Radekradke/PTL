@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { LockKeyhole, ShieldCheck, UserRound, ArrowRight } from "lucide-react"
 import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png";
+import loadingLogo from "../../assets/lifting-loading-logo.png"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { API_URL, AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY } from "@/services/api"
@@ -69,7 +70,7 @@ export function Login() {
           aria-live="polite"
         >
           <div className="login-credit-content">
-            <img src={logoLifting} alt="" className="login-credit-logo" />
+            <img src={loadingLogo} alt="" className="login-credit-logo" />
             <p className="login-credit-text">Criado por André Gomes</p>
           </div>
         </div>
