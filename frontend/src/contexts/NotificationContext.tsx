@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useRef } from "react"
 import type { ReactNode } from "react"
 import toast from "react-hot-toast"
-import { AUTH_CHANGED_EVENT, apiFetch } from "@/services/api"
+import { AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY, apiFetch, getTechnicalToken } from "@/services/api"
 
 interface NotificationContextType {
   tickets: any[]
@@ -18,8 +18,23 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const notificationCount = tickets.filter(ticket => ticket.status === "Aberto" && !ticket.archived).length
 
   async function loadTickets() {
+    if (!getTechnicalToken()) {
+      setTickets([])
+      previousTicketCount.current = 0
+      return
+    }
+
     try {
       const response = await apiFetch("/tickets?includeArchived=true&summary=true")
+
+      if (response.status === 401) {
+        localStorage.removeItem(TECHNICAL_USER_KEY)
+        setTickets([])
+        previousTicketCount.current = 0
+        window.dispatchEvent(new Event(AUTH_CHANGED_EVENT))
+        return
+      }
+
       if (!response.ok) {
         setTickets([])
         return

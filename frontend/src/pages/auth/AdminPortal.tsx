@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png";
 import loadingLogo from "../../assets/lifting-loading-logo.png"
 import { Input } from "@/components/ui/input"
@@ -206,6 +206,7 @@ export function AdminPortal() {
   const [isLoadingTickets, setIsLoadingTickets] = useState(false)
   const [isSendingReply, setIsSendingReply] = useState(false)
   const [isFinishingTicket, setIsFinishingTicket] = useState(false)
+  const hasShownExpiredSession = useRef(false)
 
   const [successState, setSuccessState] = useState<SuccessState>({
     isVisible: false,
@@ -265,6 +266,7 @@ export function AdminPortal() {
       }
 
       const employee = await response.json()
+      hasShownExpiredSession.current = false
       localStorage.setItem(PORTAL_USER_KEY, JSON.stringify(employee))
       setUsername("")
       setPassword("")
@@ -295,6 +297,11 @@ export function AdminPortal() {
 
     try {
       const response = await apiFetch(`/tickets/employee/${idToSearch}?archived=false`, {}, getPortalToken())
+
+      if (handleUnauthorizedPortalResponse(response)) {
+        setMyTickets([])
+        return
+      }
 
       if (!response.ok) {
         setMyTickets([])
@@ -335,6 +342,11 @@ export function AdminPortal() {
     try {
       const response = await apiFetch(`/tickets/employee/${idToSearch}?archived=true`, {}, getPortalToken())
 
+      if (handleUnauthorizedPortalResponse(response)) {
+        setArchivedTickets([])
+        return
+      }
+
       if (!response.ok) {
         setArchivedTickets([])
         return
@@ -354,6 +366,11 @@ export function AdminPortal() {
 
     try {
       const response = await apiFetch(`/tickets/${ticket.id}/messages`, {}, getPortalToken())
+
+      if (handleUnauthorizedPortalResponse(response)) {
+        setMessages([])
+        return
+      }
 
       if (!response.ok) {
         setMessages(ticket.messages || [])
@@ -389,6 +406,10 @@ export function AdminPortal() {
           description,
         }),
       }, getPortalToken())
+
+      if (handleUnauthorizedPortalResponse(response)) {
+        return
+      }
 
       if (!response.ok) {
         alert("Erro ao abrir chamado.")
@@ -433,6 +454,10 @@ export function AdminPortal() {
         }),
       }, getPortalToken())
 
+      if (handleUnauthorizedPortalResponse(response)) {
+        return
+      }
+
       if (!response.ok) {
         alert("Erro ao enviar resposta.")
         return
@@ -463,6 +488,10 @@ export function AdminPortal() {
           "Content-Type": "application/json",
         },
       }, getPortalToken())
+
+      if (handleUnauthorizedPortalResponse(response)) {
+        return
+      }
 
       if (!response.ok) {
         alert("Erro ao finalizar chamado.")
@@ -495,6 +524,7 @@ export function AdminPortal() {
 
   function handleExit() {
     localStorage.removeItem(PORTAL_USER_KEY)
+    hasShownExpiredSession.current = false
     setLoggedEmployee(null)
     setUsername("")
     setPassword("")
@@ -509,6 +539,27 @@ export function AdminPortal() {
     setMessages([])
     setSuccessState({ isVisible: false })
     setShowCredit(false)
+  }
+
+  function handleUnauthorizedPortalResponse(response: Response) {
+    if (response.status !== 401) return false
+
+    localStorage.removeItem(PORTAL_USER_KEY)
+
+    if (!hasShownExpiredSession.current) {
+      hasShownExpiredSession.current = true
+      alert("Sua sessão expirou. Entre novamente no portal para abrir ou acompanhar chamados.")
+    }
+
+    setLoggedEmployee(null)
+    setPassword("")
+    setMyTickets([])
+    setArchivedTickets([])
+    setSelectedTicket(null)
+    setMessages([])
+    setSuccessState({ isVisible: false })
+
+    return true
   }
 
   const allTickets = [...myTickets, ...archivedTickets]
