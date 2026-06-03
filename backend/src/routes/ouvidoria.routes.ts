@@ -4,6 +4,20 @@ import { requireAuth } from "../middlewares/auth.middleware"
 
 export const ouvidoriaRoutes = Router()
 
+function createTransporter() {
+  const pass = (process.env.SMTP_PASS || "").replace(/\s/g, "")
+
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST || "smtp.gmail.com",
+    port: Number(process.env.SMTP_PORT) || 587,
+    secure: process.env.SMTP_SECURE === "true",
+    auth: {
+      user: process.env.SMTP_USER,
+      pass,
+    },
+  })
+}
+
 ouvidoriaRoutes.post("/", requireAuth, async (req, res) => {
   const { name, sector, complaint } = req.body
 
@@ -20,20 +34,12 @@ ouvidoriaRoutes.post("/", requireAuth, async (req, res) => {
   }
 
   const destinatario = process.env.OUVIDORIA_EMAIL
-  if (!destinatario) {
-    console.error("OUVIDORIA_EMAIL não configurado no .env")
+  const remetente = process.env.SMTP_USER
+
+  if (!destinatario || !remetente) {
+    console.error("Ouvidoria: OUVIDORIA_EMAIL ou SMTP_USER não configurados.")
     return res.status(500).json({ message: "Ouvidoria não configurada. Contate o administrador." })
   }
-
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT) || 587,
-    secure: process.env.SMTP_SECURE === "true",
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  })
 
   const dataHora = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })
   const html = `
@@ -58,16 +64,17 @@ ouvidoriaRoutes.post("/", requireAuth, async (req, res) => {
   `
 
   try {
+    const transporter = createTransporter()
     await transporter.sendMail({
-      from: `"Ouvidoria Lifting" <${process.env.SMTP_USER}>`,
+      from: `"Ouvidoria Lifting" <${remetente}>`,
       to: destinatario,
       subject: `[Ouvidoria] Denúncia de ${name.trim()} — ${sector.trim()}`,
       html,
     })
 
     res.status(200).json({ message: "Denúncia enviada com sucesso." })
-  } catch (error) {
-    console.error("Erro ao enviar e-mail de ouvidoria:", error)
+  } catch (error: any) {
+    console.error("Ouvidoria SMTP erro:", error?.message || error)
     res.status(500).json({ message: "Erro ao enviar a denúncia. Tente novamente mais tarde." })
   }
 })
