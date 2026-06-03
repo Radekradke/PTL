@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { StatsCard } from "@/components/dashboard/StatsCard"

@@ -42,38 +42,6 @@ function FieldCard({ label, value }: { label: string; value: string }) {
 }
 
 
-function DetailsSection({
-  title,
-  defaultOpen = false,
-  children,
-}: {
-  title: string
-  defaultOpen?: boolean
-  children: React.ReactNode
-}) {
-  const [open, setOpen] = useState(defaultOpen)
-
-  return (
-    <div className="overflow-hidden rounded-2xl border border-[#DDE7E2] bg-white shadow-sm">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-[#F7FAF8]"
-      >
-        <span className="text-sm font-black text-[#073B2A]">{title}</span>
-        <span className="text-sm font-black text-[#00A859]">
-          {open ? "−" : "+"}
-        </span>
-      </button>
-
-      {open && (
-        <div className="border-t border-slate-100 px-4 py-4">
-          {children}
-        </div>
-      )}
-    </div>
-  )
-}
 
 
 export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
