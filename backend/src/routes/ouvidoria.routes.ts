@@ -1,13 +1,13 @@
 import { Router } from "express"
-import nodemailer from "nodemailer"
 import { requireAuth } from "../middlewares/auth.middleware"
 
 export const ouvidoriaRoutes = Router()
 
-function createTransporter() {
+async function createTransporter() {
+  const nodemailer = await import("nodemailer")
   const pass = (process.env.SMTP_PASS || "").replace(/\s/g, "")
 
-  return nodemailer.createTransport({
+  return nodemailer.default.createTransport({
     host: process.env.SMTP_HOST || "smtp.gmail.com",
     port: Number(process.env.SMTP_PORT) || 587,
     secure: process.env.SMTP_SECURE === "true",
@@ -64,7 +64,7 @@ ouvidoriaRoutes.post("/", requireAuth, async (req, res) => {
   `
 
   try {
-    const transporter = createTransporter()
+    const transporter = await createTransporter()
     await transporter.sendMail({
       from: `"Ouvidoria Lifting" <${remetente}>`,
       to: destinatario,
