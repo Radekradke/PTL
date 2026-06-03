@@ -1,81 +1,87 @@
 import { Router } from "express"
+import nodemailer from "nodemailer"
 import { requireAuth } from "../middlewares/auth.middleware"
 
 export const ouvidoriaRoutes = Router()
 
-async function createTransporter() {
-  const nodemailer = await import("nodemailer")
-  const pass = (process.env.SMTP_PASS || "").replace(/\s/g, "")
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  family: 4,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: (process.env.SMTP_PASS || "").replace(/\s/g, ""),
+  },
+  pool: true,
+  maxConnections: 3,
+})
 
-  return nodemailer.default.createTransport({
-    host: process.env.SMTP_HOST || "smtp.gmail.com",
-    port: Number(process.env.SMTP_PORT) || 587,
-    secure: process.env.SMTP_SECURE === "true",
-    family: 4,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass,
-    },
-  })
+function buildEmailHtml(name: string, sector: string, complaint: string) {
+  const dataHora = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;background:#fff;border:1px solid #DDE7E2;border-radius:12px;overflow:hidden;">
+      <div style="background:linear-gradient(135deg,#073B2A,#00A859);padding:24px 28px;">
+        <h2 style="color:#fff;margin:0;font-size:20px;">📋 Nova Denúncia — Ouvidoria</h2>
+        <p style="color:rgba(255,255,255,0.75);margin:6px 0 0;font-size:13px;">Recebido em ${dataHora}</p>
+      </div>
+      <div style="padding:24px 28px;">
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <tr>
+            <td style="padding:10px 14px;background:#F8FAF9;font-weight:bold;color:#00A859;text-transform:uppercase;font-size:11px;letter-spacing:0.08em;border:1px solid #DDE7E2;width:110px;">Nome</td>
+            <td style="padding:10px 14px;border:1px solid #DDE7E2;color:#111827;">${name}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 14px;background:#F8FAF9;font-weight:bold;color:#00A859;text-transform:uppercase;font-size:11px;letter-spacing:0.08em;border:1px solid #DDE7E2;">Setor</td>
+            <td style="padding:10px 14px;border:1px solid #DDE7E2;color:#111827;">${sector}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 14px;background:#F8FAF9;font-weight:bold;color:#00A859;text-transform:uppercase;font-size:11px;letter-spacing:0.08em;border:1px solid #DDE7E2;vertical-align:top;">Denúncia</td>
+            <td style="padding:10px 14px;border:1px solid #DDE7E2;color:#111827;white-space:pre-line;line-height:1.6;">${complaint}</td>
+          </tr>
+        </table>
+      </div>
+      <div style="padding:12px 28px 20px;border-top:1px solid #DDE7E2;">
+        <p style="margin:0;font-size:11px;color:#9CA3AF;">Esta mensagem foi enviada automaticamente pelo sistema de Ouvidoria da Lifting.</p>
+      </div>
+    </div>
+  `
 }
 
 ouvidoriaRoutes.post("/", requireAuth, async (req, res) => {
   const { name, sector, complaint } = req.body
 
-  if (!name || typeof name !== "string" || name.trim().length < 2) {
+  const cleanName = String(name || "").trim()
+  const cleanSector = String(sector || "").trim()
+  const cleanComplaint = String(complaint || "").trim()
+
+  if (cleanName.length < 2) {
     return res.status(400).json({ message: "Nome inválido." })
   }
-
-  if (!sector || typeof sector !== "string" || sector.trim().length < 1) {
+  if (cleanSector.length < 1) {
     return res.status(400).json({ message: "Setor inválido." })
   }
-
-  if (!complaint || typeof complaint !== "string" || complaint.trim().length < 10) {
+  if (cleanComplaint.length < 10) {
     return res.status(400).json({ message: "Descreva a denúncia com pelo menos 10 caracteres." })
   }
 
   const destinatario = process.env.OUVIDORIA_EMAIL
-  const remetente = process.env.SMTP_USER
-
-  if (!destinatario || !remetente) {
-    console.error("Ouvidoria: OUVIDORIA_EMAIL ou SMTP_USER não configurados.")
+  if (!destinatario) {
+    console.error("[Ouvidoria] OUVIDORIA_EMAIL não configurado.")
     return res.status(500).json({ message: "Ouvidoria não configurada. Contate o administrador." })
   }
 
-  const dataHora = new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })
-  const html = `
-    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;border:1px solid #DDE7E2;border-radius:12px;">
-      <h2 style="color:#073B2A;margin-bottom:24px;">📋 Nova Denúncia — Ouvidoria</h2>
-      <table style="width:100%;border-collapse:collapse;">
-        <tr style="background:#F8FAF9;">
-          <th style="text-align:left;padding:10px 14px;color:#00A859;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;border:1px solid #DDE7E2;width:120px;">Nome</th>
-          <td style="padding:10px 14px;border:1px solid #DDE7E2;color:#111827;">${name.trim()}</td>
-        </tr>
-        <tr>
-          <th style="text-align:left;padding:10px 14px;color:#00A859;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;border:1px solid #DDE7E2;">Setor</th>
-          <td style="padding:10px 14px;border:1px solid #DDE7E2;color:#111827;">${sector.trim()}</td>
-        </tr>
-        <tr style="background:#F8FAF9;">
-          <th style="text-align:left;padding:10px 14px;color:#00A859;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;border:1px solid #DDE7E2;vertical-align:top;">Denúncia</th>
-          <td style="padding:10px 14px;border:1px solid #DDE7E2;color:#111827;white-space:pre-line;">${complaint.trim()}</td>
-        </tr>
-      </table>
-      <p style="margin-top:20px;font-size:12px;color:#6B7280;">Enviado em: ${dataHora}</p>
-    </div>
-  `
+  // Responde imediatamente — e-mail é enviado em background
+  res.status(200).json({ message: "Denúncia registrada com sucesso." })
 
-  try {
-    const transporter = await createTransporter()
-    await transporter.sendMail({
-      from: `"Ouvidoria Lifting" <${remetente}>`,
-      to: destinatario,
-      subject: `[Ouvidoria] Denúncia de ${name.trim()} — ${sector.trim()}`,
-      html,
-    })
-
-    res.status(200).json({ message: "Denúncia enviada com sucesso." })
-  } catch (error: any) {
-    console.error("Ouvidoria SMTP erro:", error?.message || error)
-    res.status(500).json({ message: "Erro ao enviar a denúncia. Tente novamente mais tarde." })
-  }
+  transporter.sendMail({
+    from: `"Ouvidoria Lifting" <${process.env.SMTP_USER}>`,
+    to: destinatario,
+    subject: `[Ouvidoria] ${cleanName} — ${cleanSector}`,
+    html: buildEmailHtml(cleanName, cleanSector, cleanComplaint),
+  }).then(() => {
+    console.log(`[Ouvidoria] E-mail enviado para ${destinatario}`)
+  }).catch((err: any) => {
+    console.error("[Ouvidoria] Falha ao enviar e-mail:", err?.message || err)
+  })
 })

@@ -398,31 +398,28 @@ export function AdminPortal() {
   async function handleOuvidoriaSubmit() {
     if (isSubmittingOuvidoria) return
 
-    if (!ouvidoriaName.trim()) {
-      toast.error("Informe seu nome.")
-      return
-    }
-    if (!ouvidoriaSector.trim()) {
-      toast.error("Informe seu setor.")
-      return
-    }
-    if (ouvidoriaComplaint.trim().length < 10) {
-      toast.error("Descreva a denúncia com pelo menos 10 caracteres.")
-      return
-    }
+    const name = ouvidoriaName.trim()
+    const sector = ouvidoriaSector.trim()
+    const complaint = ouvidoriaComplaint.trim()
+
+    if (name.length < 2) { toast.error("Informe seu nome."); return }
+    if (sector.length < 1) { toast.error("Informe seu setor."); return }
+    if (complaint.length < 10) { toast.error("Descreva a denúncia com pelo menos 10 caracteres."); return }
 
     setIsSubmittingOuvidoria(true)
 
     try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 15000)
+
       const response = await apiFetch("/ouvidoria", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: ouvidoriaName.trim(),
-          sector: ouvidoriaSector.trim(),
-          complaint: ouvidoriaComplaint.trim(),
-        }),
+        body: JSON.stringify({ name, sector, complaint }),
+        signal: controller.signal,
       }, getPortalToken())
+
+      clearTimeout(timeout)
 
       if (handleUnauthorizedPortalResponse(response)) return
 
@@ -434,9 +431,13 @@ export function AdminPortal() {
 
       setOuvidoriaSuccess(true)
       setOuvidoriaComplaint("")
-    } catch (error) {
-      console.error("Erro ao enviar ouvidoria:", error)
-      toast.error("Erro ao enviar denúncia. Verifique sua conexão.")
+    } catch (error: any) {
+      if (error?.name === "AbortError") {
+        toast.error("Tempo limite atingido. Tente novamente.")
+      } else {
+        console.error("Erro ao enviar ouvidoria:", error)
+        toast.error("Erro ao enviar denúncia. Verifique sua conexão.")
+      }
     } finally {
       setIsSubmittingOuvidoria(false)
     }
@@ -889,83 +890,93 @@ export function AdminPortal() {
         {activeTab === "ouvidoria" ? (
           <GlassCard className="p-4 sm:p-6">
             {ouvidoriaSuccess ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="relative">
-                  <div className="absolute inset-0 rounded-full bg-[#39D98A]/25 blur-2xl" />
+              <div className="flex flex-col items-center justify-center py-14 text-center">
+                <div className="relative mb-2">
+                  <div className="absolute inset-0 rounded-full bg-[#39D98A]/20 blur-2xl" />
                   <CheckCircle2 className="relative h-16 w-16 text-[#00A859]" />
                 </div>
-                <h2 className="mt-6 text-2xl font-black tracking-[-0.04em] text-[#111827]">Denúncia enviada!</h2>
-                <p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">
-                  Sua denúncia foi registrada e encaminhada com sigilo para o setor responsável.
+                <h2 className="mt-5 text-2xl font-black tracking-[-0.04em] text-[#111827]">Denúncia registrada!</h2>
+                <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">
+                  Sua denúncia foi recebida e será encaminhada com sigilo ao responsável.
                 </p>
                 <Button
-                  className={`mt-8 h-11 px-8 ${styles.primary}`}
-                  onClick={() => {
-                    setOuvidoriaSuccess(false)
-                    setOuvidoriaComplaint("")
-                  }}
+                  className="mt-8 h-11 px-8 rounded-2xl bg-[linear-gradient(135deg,#073B2A,#00A859)] font-bold text-white shadow-md transition hover:-translate-y-0.5"
+                  onClick={() => setOuvidoriaSuccess(false)}
                 >
                   Enviar nova denúncia
                 </Button>
               </div>
             ) : (
               <>
-                <div className="mb-5">
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#073B2A]">Canal confidencial</p>
-                  <h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[#111827]">Ouvidoria</h2>
-                  <p className="mt-1 text-sm leading-6 text-slate-500">
-                    Registre denúncias, irregularidades ou sugestões de forma sigilosa. O conteúdo será enviado por e-mail ao setor responsável.
+                <div className="mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#073B2A]/10 text-[#073B2A]">
+                      <Megaphone size={20} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-[0.16em] text-[#073B2A]">Canal confidencial</p>
+                      <h2 className="text-xl font-black tracking-[-0.03em] text-[#111827]">Ouvidoria</h2>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-sm leading-6 text-slate-500">
+                    Registre denúncias ou irregularidades de forma sigilosa. Após o envio, a mensagem é encaminhada diretamente ao responsável por e-mail.
                   </p>
                 </div>
 
-                <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-                  <div className="space-y-4 rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Seu nome</label>
-                      <Input
-                        value={ouvidoriaName}
-                        onChange={(e) => setOuvidoriaName(e.target.value)}
-                        placeholder="Nome completo"
-                        className={`mt-2 ${styles.input}`}
-                      />
+                <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
+                  <div className="space-y-4">
+                    <div className="rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
+                      <p className="mb-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Identificação</p>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Nome</label>
+                          <Input
+                            value={ouvidoriaName}
+                            onChange={(e) => setOuvidoriaName(e.target.value)}
+                            placeholder="Seu nome completo"
+                            className={`mt-1.5 ${styles.input}`}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Setor</label>
+                          <Input
+                            value={ouvidoriaSector}
+                            onChange={(e) => setOuvidoriaSector(e.target.value)}
+                            placeholder="Seu setor"
+                            className={`mt-1.5 ${styles.input}`}
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Setor</label>
-                      <Input
-                        value={ouvidoriaSector}
-                        onChange={(e) => setOuvidoriaSector(e.target.value)}
-                        placeholder="Seu setor"
-                        className={`mt-2 ${styles.input}`}
-                      />
-                    </div>
-                    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs leading-5 text-amber-800">
-                      <p className="font-black">Confidencialidade</p>
-                      <p className="mt-1">
-                        Sua denúncia será enviada diretamente para o responsável pela ouvidoria. Seja claro e objetivo para facilitar a apuração.
+
+                    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                      <p className="text-xs font-black text-amber-800">Sigilo garantido</p>
+                      <p className="mt-1 text-xs leading-5 text-amber-700">
+                        O conteúdo desta denúncia é enviado diretamente ao responsável pela ouvidoria. Seja objetivo e inclua o máximo de detalhes possível.
                       </p>
                     </div>
                   </div>
 
-                  <div className="space-y-3 rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-3 shadow-sm sm:rounded-[1.5rem] sm:p-4">
-                    <div>
-                      <label className="text-sm font-bold text-[#102A43]">Descrição da denúncia</label>
+                  <div className="flex flex-col gap-3 rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
+                    <div className="flex-1">
+                      <label className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Descrição da denúncia</label>
                       <Textarea
                         value={ouvidoriaComplaint}
                         onChange={(e) => setOuvidoriaComplaint(e.target.value)}
-                        placeholder="Descreva a situação com o máximo de detalhes possível: o que aconteceu, quando, onde e quem está envolvido..."
-                        className="mt-2 min-h-[220px] rounded-2xl border-[#DDE7E2] bg-white/95 px-4 py-3 text-slate-950 focus:border-[#073B2A]"
+                        placeholder="Descreva o que aconteceu, quando, onde e quem está envolvido..."
+                        className="mt-2 min-h-[240px] w-full rounded-2xl border-[#DDE7E2] bg-white px-4 py-3 text-sm text-slate-950 focus:border-[#073B2A] focus:outline-none focus:ring-2 focus:ring-[#073B2A]/10"
                       />
-                      <p className="mt-2 text-xs font-semibold leading-5 text-slate-500">
-                        Mínimo de 10 caracteres. Quanto mais detalhes, mais fácil será a apuração.
+                      <p className="mt-1.5 text-xs text-slate-400">
+                        {ouvidoriaComplaint.trim().length} caracteres {ouvidoriaComplaint.trim().length < 10 && "(mínimo 10)"}
                       </p>
                     </div>
 
                     <Button
-                      className="h-12 w-full rounded-2xl bg-[linear-gradient(135deg,#073B2A,#102A43)] font-bold text-white shadow-[0_14px_30px_rgba(7,59,42,0.22)] transition hover:-translate-y-0.5 hover:brightness-105 disabled:opacity-50 disabled:hover:translate-y-0"
+                      className="h-12 w-full rounded-2xl bg-[linear-gradient(135deg,#073B2A,#102A43)] font-bold text-white shadow-[0_10px_28px_rgba(7,59,42,0.2)] transition hover:-translate-y-0.5 hover:brightness-105 disabled:opacity-50 disabled:hover:translate-y-0"
                       onClick={handleOuvidoriaSubmit}
-                      disabled={isSubmittingOuvidoria || ouvidoriaComplaint.trim().length < 10}
+                      disabled={isSubmittingOuvidoria || ouvidoriaComplaint.trim().length < 10 || !ouvidoriaName.trim() || !ouvidoriaSector.trim()}
                     >
-                      {isSubmittingOuvidoria ? "Enviando..." : "Enviar denúncia"}
+                      {isSubmittingOuvidoria ? "Registrando..." : "Enviar denúncia"}
                       <Send size={16} className="ml-2" />
                     </Button>
                   </div>
