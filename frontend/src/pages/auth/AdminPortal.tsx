@@ -685,6 +685,15 @@ export function AdminPortal() {
                 <p className="text-xs leading-5 text-slate-400">
                   Acesso restrito para funcionários autorizados.
                 </p>
+                <div className="mt-4 border-t border-slate-100 pt-4">
+                  <p className="text-xs text-slate-400">É técnico ou gestor?</p>
+                  <button
+                    onClick={() => navigate("/")}
+                    className="mt-2 text-sm font-bold text-[#00A859] transition hover:underline"
+                  >
+                    Acessar painel técnico →
+                  </button>
+                </div>
               </div>
             </div>
           </section>
@@ -787,14 +796,6 @@ export function AdminPortal() {
             </div>
 
             <div className="flex flex-col gap-2 sm:flex-row">
-              <Button
-                variant="outline"
-                className="h-10 rounded-2xl border border-[#DDE7E2] bg-white font-bold text-[#073B2A] transition hover:bg-[#ECFBF3] hover:border-[#00A859]/40"
-                onClick={() => navigate("/")}
-              >
-                <LayoutDashboard size={16} className="mr-2" />
-                Painel técnico
-              </Button>
               <Button
                 variant="outline"
                 className="h-10 rounded-2xl border border-[#DDE7E2] bg-white font-bold text-slate-700 transition hover:bg-red-50 hover:text-red-700"
