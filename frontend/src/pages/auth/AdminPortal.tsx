@@ -1009,6 +1009,7 @@ export function AdminPortal() {
                   <div className="flex-1 space-y-4 overflow-y-auto bg-[#F8FCFA] p-4 sm:p-5">
                     {messages.map((message) => {
                       const isEmployee = message.senderType === "employee"
+                      const isBot = message.senderType === "bot"
 
                       return (
                         <div key={message.id} className={`flex ${isEmployee ? "justify-end" : "justify-start"}`}>
@@ -1016,12 +1017,14 @@ export function AdminPortal() {
                             className={`max-w-[88%] rounded-3xl border p-4 shadow-sm ${
                               isEmployee
                                 ? "border-[#00A859]/20 bg-[#00A859]/12 text-[#073B2A]"
+                                : isBot
+                                ? "border-blue-200 bg-blue-50 text-[#111827]"
                                 : "border-[#DDE7E2] bg-white text-[#111827]"
                             }`}
                           >
                             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                              <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">
-                                {isEmployee ? "Você" : message.senderName || "Técnico"}
+                              <p className={`text-xs font-black uppercase tracking-[0.12em] ${isBot ? "text-blue-600" : "text-slate-500"}`}>
+                                {isEmployee ? "Você" : isBot ? "🤖 Atendimento Automático" : message.senderName || "Técnico"}
                               </p>
                               <p className="text-[11px] text-slate-400">
                                 {new Date(message.createdAt).toLocaleString("pt-BR")}
