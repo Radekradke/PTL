@@ -30,7 +30,7 @@ export function Sidebar() {
   ].filter((item) => item.allowed.includes(role))
 
   return (
-    <aside className="sticky top-0 hidden h-screen w-72 shrink-0 border-r border-[#DDE8E2] bg-white/88 px-4 py-5 text-[#111827] backdrop-blur-xl lg:block">  <div className="rounded-3xl border border-[#DDE8E2] bg-gradient-to-br from-white to-[#F2F8F5] p-4 shadow-sm">
+    <aside className="sticky top-0 hidden h-screen w-60 shrink-0 border-r border-[#DDE8E2] bg-white/88 px-4 py-5 text-[#111827] backdrop-blur-xl lg:block">  <div className="rounded-3xl border border-[#DDE8E2] bg-gradient-to-br from-white to-[#F2F8F5] p-4 shadow-sm">
       <div className="rounded-3xl border border-[#DDE8E2] bg-gradient-to-br from-white to-[#F2F8F5] p-4 shadow-sm">
   <div className="flex w-full flex-col items-center justify-center text-center">
     <img

@@ -186,6 +186,7 @@ export function Dashboard() {
   const [originFilter, setOriginFilter] = useState("Todas")
   const [statusFilter, setStatusFilter] = useState("Todos")
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const hasActiveFilters = sectorFilter !== "Todos" || categoryFilter !== "Todas" || originFilter !== "Todas" || statusFilter !== "Todos"
 
   const filteredTickets = useMemo(() => tickets.filter((ticket) => {
     const matchesSector = sectorFilter === "Todos" || ticket.sector === sectorFilter
@@ -269,14 +270,33 @@ export function Dashboard() {
               <h2 className="ls-section-title text-base sm:text-lg lg:text-xl">Filtros <span className="ls-help" title="Refina todos os cards e gráficos desta tela.">?</span></h2>
               <p className="text-xs sm:text-sm text-slate-500">Segmentação rápida dos indicadores.</p>
             </div>
-            <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
-              <button onClick={() => setFiltersOpen((open) => !open)} className="ls-button-secondary h-10 px-4 text-xs font-bold sm:hidden">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setFiltersOpen((open) => !open)}
+                className="ls-button-secondary h-10 px-4 text-xs font-bold sm:hidden"
+              >
                 {filtersOpen ? "Ocultar" : "Filtros"}
               </button>
-              <button onClick={() => { setSectorFilter("Todos"); setCategoryFilter("Todas"); setOriginFilter("Todas"); setStatusFilter("Todos") }} className="ls-button-secondary h-10 sm:h-11 px-4 sm:px-5 text-xs sm:text-sm font-bold whitespace-nowrap">Limpar</button>
+              {hasActiveFilters && (
+                <button
+                  onClick={() => { setSectorFilter("Todos"); setCategoryFilter("Todas"); setOriginFilter("Todas"); setStatusFilter("Todos") }}
+                  className="ls-button-secondary h-10 px-4 text-xs font-bold text-rose-600 hover:bg-rose-50 hover:border-rose-200"
+                >
+                  Limpar filtros
+                </button>
+              )}
+              {!hasActiveFilters && (
+                <button
+                  onClick={() => { setSectorFilter("Todos"); setCategoryFilter("Todas"); setOriginFilter("Todas"); setStatusFilter("Todos") }}
+                  className="ls-button-secondary hidden h-10 px-4 text-xs font-bold sm:inline-flex"
+                >
+                  Limpar
+                </button>
+              )}
             </div>
           </div>
-          <div className={`${filtersOpen ? "grid animate-in fade-in-0 slide-in-from-top-1 duration-200" : "hidden"} mt-3 gap-2 sm:mt-4 sm:grid sm:gap-3 sm:grid-cols-2 lg:mt-5 lg:grid-cols-5`}>
+          {/* Mobile: toggle | Desktop: sempre visível */}
+          <div className={`${filtersOpen ? "grid animate-in fade-in-0 slide-in-from-top-1 duration-200" : "hidden"} mt-3 gap-2 sm:mt-4 sm:grid sm:gap-3 sm:grid-cols-2 lg:mt-4 lg:grid-cols-4`}>
             <select value={sectorFilter} onChange={(e) => setSectorFilter(e.target.value)} className="ls-input text-sm"><option value="Todos">Todos setores</option>{uniqueSectors.map((sector) => <option key={sector} value={sector}>{sector}</option>)}</select>
             <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="ls-input text-sm"><option value="Todas">Todas categorias</option>{uniqueCategories.map((category) => <option key={category} value={category}>{category}</option>)}</select>
             <select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="ls-input text-sm"><option value="Todas">Todas origens</option><option value="Base">Base</option><option value="Offshore">Offshore</option></select>

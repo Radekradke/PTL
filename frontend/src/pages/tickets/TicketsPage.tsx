@@ -78,15 +78,15 @@ export function TicketsPage() {
 
             <div className="grid gap-2 sm:gap-3 grid-cols-3 shrink-0">
               <div className="rounded-2xl sm:rounded-3xl border border-[#DDE8E2] bg-white p-3 sm:p-4 text-center shadow-sm">
-                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Total</p>
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">Total</p>
                 <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-[#111827]">{totalTickets}</p>
               </div>
               <div className="rounded-2xl sm:rounded-3xl border border-amber-200 bg-amber-50 p-3 sm:p-4 text-center shadow-sm">
-                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-amber-700">Pendentes</p>
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.14em] text-amber-700">Pendentes</p>
                 <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-amber-700">{openTickets + waitingUserTickets}</p>
               </div>
               <div className="rounded-2xl sm:rounded-3xl border border-[#DDE8E2] bg-[#ECFBF3] p-3 sm:p-4 text-center shadow-sm">
-                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-[#073B2A]">Em atendimento</p>
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.14em] text-[#073B2A]">Em atendimento</p>
                 <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-[#00A859]">{progressTickets}</p>
               </div>
             </div>
