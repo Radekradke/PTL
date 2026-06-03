@@ -24,7 +24,6 @@ import {
   ClipboardList,
   Clock3,
   Send,
-  LayoutDashboard,
 } from "lucide-react"
 
 type Sector = {
