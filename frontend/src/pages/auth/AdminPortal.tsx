@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react"
-import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png";
+import toast from "react-hot-toast"
+import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png"
+import { Skeleton } from "@/components/ui/skeleton"
 import loadingLogo from "../../assets/lifting-loading-logo.png"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -242,7 +244,7 @@ export function AdminPortal() {
     if (isLoggingIn) return
 
     if (!username || !password) {
-      alert("Digite seu usuário e senha.")
+      toast.error("Digite seu usuário e senha.")
       return
     }
 
@@ -261,7 +263,7 @@ export function AdminPortal() {
       })
 
       if (!response.ok) {
-        alert("Usuário ou senha inválidos.")
+        toast.error("Usuário ou senha inválidos.")
         return
       }
 
@@ -277,7 +279,7 @@ export function AdminPortal() {
       }, 1900)
     } catch (error) {
       console.error("Erro ao acessar portal:", error)
-      alert("Erro ao acessar portal.")
+      toast.error("Erro ao acessar portal.")
     } finally {
       setIsLoggingIn(false)
     }
@@ -387,7 +389,7 @@ export function AdminPortal() {
 
   async function handleSubmit() {
     if (!loggedEmployee || !description) {
-      alert("Descreva o problema antes de abrir o chamado.")
+      toast.error("Descreva o problema antes de abrir o chamado.")
       return
     }
 
@@ -412,7 +414,7 @@ export function AdminPortal() {
       }
 
       if (!response.ok) {
-        alert("Erro ao abrir chamado.")
+        toast.error("Erro ao abrir chamado.")
         return
       }
 
@@ -430,7 +432,7 @@ export function AdminPortal() {
       loadMyTickets(loggedEmployee.id)
     } catch (error) {
       console.error(error)
-      alert("Erro ao abrir chamado.")
+      toast.error("Erro ao abrir chamado.")
     } finally {
       setIsSubmitting(false)
     }
@@ -459,7 +461,7 @@ export function AdminPortal() {
       }
 
       if (!response.ok) {
-        alert("Erro ao enviar resposta.")
+        toast.error("Erro ao enviar resposta.")
         return
       }
 
@@ -470,7 +472,7 @@ export function AdminPortal() {
       loadMyTickets(loggedEmployee.id)
     } catch (error) {
       console.error("Erro ao responder chamado:", error)
-      alert("Erro ao enviar resposta.")
+      toast.error("Erro ao enviar resposta.")
     } finally {
       setIsSendingReply(false)
     }
@@ -494,7 +496,7 @@ export function AdminPortal() {
       }
 
       if (!response.ok) {
-        alert("Erro ao finalizar chamado.")
+        toast.error("Erro ao finalizar chamado.")
         return
       }
 
@@ -504,7 +506,7 @@ export function AdminPortal() {
       loadArchivedTickets(loggedEmployee?.id)
     } catch (error) {
       console.error("Erro ao finalizar chamado:", error)
-      alert("Erro ao finalizar chamado.")
+      toast.error("Erro ao finalizar chamado.")
     } finally {
       setIsFinishingTicket(false)
     }
@@ -548,7 +550,7 @@ export function AdminPortal() {
 
     if (!hasShownExpiredSession.current) {
       hasShownExpiredSession.current = true
-      alert("Sua sessão expirou. Entre novamente no portal para abrir ou acompanhar chamados.")
+      toast.error("Sua sessão expirou. Entre novamente no portal para abrir ou acompanhar chamados.")
     }
 
     setLoggedEmployee(null)
@@ -906,6 +908,13 @@ export function AdminPortal() {
               </div>
 
               <div className="max-h-[560px] space-y-3 overflow-y-auto pr-1">
+                {isLoadingTickets && myTickets.length === 0 && (
+                  <>
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <Skeleton key={i} className="h-28 rounded-2xl bg-white/80" />
+                    ))}
+                  </>
+                )}
                 {myTickets.map((ticket) => (
                   <button
                     key={ticket.id}

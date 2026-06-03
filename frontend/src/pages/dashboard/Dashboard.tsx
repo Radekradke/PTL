@@ -187,10 +187,6 @@ export function Dashboard() {
   const [statusFilter, setStatusFilter] = useState("Todos")
   const [filtersOpen, setFiltersOpen] = useState(false)
 
-  useEffect(() => {
-    console.log("Dashboard: Tickets atualizados no contexto:", tickets.length)
-  }, [tickets])
-
   const filteredTickets = useMemo(() => tickets.filter((ticket) => {
     const matchesSector = sectorFilter === "Todos" || ticket.sector === sectorFilter
     const matchesCategory = categoryFilter === "Todas" || ticket.category === categoryFilter

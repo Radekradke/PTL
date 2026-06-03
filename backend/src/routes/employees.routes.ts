@@ -3,6 +3,7 @@ import { prisma } from "../lib/prisma"
 import { hashPassword, signToken, verifyPassword } from "../lib/auth"
 import { requireTechnical } from "../middlewares/auth.middleware"
 import { validateId, validateName, validatePassword, validateUsername } from "../lib/validation"
+import { loginLimiter } from "../lib/rateLimiter"
 
 export const employeesRoutes = Router()
 
@@ -55,7 +56,7 @@ employeesRoutes.get("/", requireTechnical(["Admin", "TI"]), async (_req, res) =>
   }
 })
 
-employeesRoutes.post("/login", async (req, res) => {
+employeesRoutes.post("/login", loginLimiter, async (req, res) => {
   const { username, password } = req.body
   const usernameValidation = validateUsername(username)
 

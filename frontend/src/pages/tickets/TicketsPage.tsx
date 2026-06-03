@@ -5,6 +5,7 @@ import { TicketsTable } from "@/components/tickets/TicketsTable"
 import { Skeleton } from "@/components/ui/skeleton"
 import { apiFetch } from "@/services/api"
 import { useNotifications } from "@/contexts/NotificationContext"
+import { TICKETS_CHANGED_EVENT } from "@/contexts/NotificationContext"
 
 export function TicketsPage() {
   const [tickets, setTickets] = useState<any[]>([])
@@ -14,8 +15,9 @@ export function TicketsPage() {
 
   useEffect(() => {
     loadTickets()
-    const interval = setInterval(loadTickets, 15000)
-    return () => clearInterval(interval)
+    const handler = () => loadTickets()
+    window.addEventListener(TICKETS_CHANGED_EVENT, handler)
+    return () => window.removeEventListener(TICKETS_CHANGED_EVENT, handler)
   }, [])
 
   async function loadTickets() {

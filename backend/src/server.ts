@@ -7,6 +7,7 @@ import { employeesRoutes } from "./routes/employees.routes"
 import { ticketsRoutes } from "./routes/tickets.routes"
 import { authRoutes } from "./routes/auth.routes"
 import { assertAuthConfig } from "./lib/auth"
+import { addSseClient } from "./lib/eventBus"
 
 dotenv.config()
 assertAuthConfig()
@@ -41,6 +42,15 @@ app.use(express.json())
 
 app.get("/", (_req, res) => {
   res.json({ message: "Lifting Support API online" })
+})
+
+app.get("/events", (_req, res) => {
+  res.setHeader("Content-Type", "text/event-stream")
+  res.setHeader("Cache-Control", "no-cache")
+  res.setHeader("Connection", "keep-alive")
+  res.flushHeaders()
+  res.write(": connected\n\n")
+  addSseClient(res)
 })
 
 app.use("/auth", authRoutes)

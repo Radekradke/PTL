@@ -14,6 +14,7 @@ import {
   validateTicketStatus,
 } from "../lib/validation"
 import { sendAutoReply } from "../services/autoReply"
+import { broadcastTicketChange } from "../lib/eventBus"
 
 export const ticketsRoutes = Router()
 
@@ -196,6 +197,7 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
     console.error("Falha ao enviar resposta automática:", err)
   })
 
+  broadcastTicketChange()
   res.status(201).json(ticket)
 })
 
@@ -287,6 +289,7 @@ ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI"]), a
     },
   })
 
+  broadcastTicketChange()
   res.status(201).json(createdMessage)
 })
 
@@ -318,6 +321,7 @@ ticketsRoutes.patch("/:id/status", requireTechnical(["Admin", "TI"]), async (req
     include: ticketInclude,
   })
 
+  broadcastTicketChange()
   res.json(ticket)
 })
 
@@ -357,6 +361,7 @@ ticketsRoutes.patch("/:id/response", requireTechnical(["Admin", "TI"]), async (r
     include: ticketInclude,
   })
 
+  broadcastTicketChange()
   res.json(ticket)
 })
 
@@ -437,5 +442,6 @@ ticketsRoutes.patch("/:id/finish", requireTicketParticipant(["Admin", "TI"]), as
     include: ticketInclude,
   })
 
+  broadcastTicketChange()
   res.json(ticket)
 })

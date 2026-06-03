@@ -1,7 +1,9 @@
 import { createContext, useContext, useState, useEffect, useRef } from "react"
 import type { ReactNode } from "react"
 import toast from "react-hot-toast"
-import { AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY, apiFetch, getTechnicalToken } from "@/services/api"
+import { API_URL, AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY, apiFetch, getTechnicalToken } from "@/services/api"
+
+export const TICKETS_CHANGED_EVENT = "tickets:changed"
 
 interface NotificationContextType {
   tickets: any[]
@@ -63,11 +65,23 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     loadTickets()
-    const interval = setInterval(loadTickets, 30000)
+
+    // SSE — tempo real
+    const source = new EventSource(`${API_URL}/events`)
+
+    source.addEventListener("ticket:changed", () => {
+      loadTickets()
+      window.dispatchEvent(new Event(TICKETS_CHANGED_EVENT))
+    })
+
+    // Fallback polling a cada 60s caso SSE caia
+    const fallback = setInterval(loadTickets, 60_000)
+
     window.addEventListener(AUTH_CHANGED_EVENT, loadTickets)
 
     return () => {
-      clearInterval(interval)
+      source.close()
+      clearInterval(fallback)
       window.removeEventListener(AUTH_CHANGED_EVENT, loadTickets)
     }
   }, [])
@@ -75,11 +89,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const currentOpenCount = tickets.filter(ticket => ticket.status === "Aberto" && !ticket.archived).length
 
-    // Se há mais tickets abertos que antes, mostrar notificação
     if (currentOpenCount > previousTicketCount.current && previousTicketCount.current > 0) {
       const newTickets = currentOpenCount - previousTicketCount.current
-      toast.success(`🔔 ${newTickets} novo${newTickets > 1 ? 's' : ''} chamado${newTickets > 1 ? 's' : ''} ${newTickets > 1 ? 'recebido' : 'recebido'}!`, {
-        icon: '🔔',
+      toast.success(`${newTickets} novo${newTickets > 1 ? "s" : ""} chamado${newTickets > 1 ? "s" : ""} recebido${newTickets > 1 ? "s" : ""}!`, {
+        icon: "🔔",
         duration: 5000,
       })
     }
@@ -97,7 +110,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 export function useNotifications() {
   const context = useContext(NotificationContext)
   if (context === undefined) {
-    throw new Error('useNotifications must be used within a NotificationProvider')
+    throw new Error("useNotifications must be used within a NotificationProvider")
   }
   return context
 }

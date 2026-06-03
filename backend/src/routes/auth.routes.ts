@@ -1,10 +1,11 @@
 import { Router } from "express"
 import { getTechnicalCredentials, signToken } from "../lib/auth"
 import { validatePin } from "../lib/validation"
+import { loginLimiter } from "../lib/rateLimiter"
 
 export const authRoutes = Router()
 
-authRoutes.post("/technical", (req, res) => {
+authRoutes.post("/technical", loginLimiter, (req, res) => {
   const { sector, pin } = req.body
   const normalizedSector = String(sector || "").trim()
   const pinValidation = validatePin(pin)

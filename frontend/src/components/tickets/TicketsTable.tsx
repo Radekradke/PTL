@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import toast from "react-hot-toast"
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -90,7 +91,9 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   const [sectorFilter, setSectorFilter] = useState("Todos")
   const [selectedTicket, setSelectedTicket] = useState<any>(null)
   const [ticketMessages, setTicketMessages] = useState<any[]>([])
+  const [showFinishConfirm, setShowFinishConfirm] = useState(false)
   const [technicalResponse, setTechnicalResponse] = useState("")
+  const messagesEndRef = useRef<HTMLDivElement>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [highlightedTicketIds, setHighlightedTicketIds] = useState<Set<number>>(new Set())
@@ -186,7 +189,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
   async function handleCreateTicket() {
     if (!employeeId || !sectorId || !description) {
-      alert("Selecione o funcionário e descreva o problema.")
+      toast.error("Selecione o funcionário e descreva o problema.")
       return
     }
 
@@ -208,7 +211,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       })
 
       if (!response.ok) {
-        alert("Erro ao criar chamado.")
+        toast.error("Erro ao criar chamado.")
         return
       }
 
@@ -227,7 +230,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       onTicketsChange()
     } catch (error) {
       console.error("Erro ao criar chamado:", error)
-      alert("Erro ao criar chamado.")
+      toast.error("Erro ao criar chamado.")
     } finally {
       setIsSubmitting(false)
     }
@@ -261,7 +264,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       })
       .catch((error) => {
         console.error("Erro ao alterar status:", error)
-        alert("Erro ao alterar status do chamado")
+        toast.error("Erro ao alterar status do chamado")
       })
   }
 
@@ -284,6 +287,10 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
     return "bg-[#EAF0ED] text-[#516070] ring-1 ring-[#DDE7E2]"
   }
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [ticketMessages])
 
   async function loadMessages(ticketId: number) {
     try {
@@ -333,7 +340,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       })
       .catch((error) => {
         console.error("Erro ao adicionar resposta:", error)
-        alert("Erro ao adicionar resposta técnica")
+        toast.error("Erro ao adicionar resposta técnica")
       })
   }
 
@@ -355,7 +362,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       })
       .catch((error) => {
         console.error("Erro ao finalizar chamado:", error)
-        alert("Erro ao finalizar chamado")
+        toast.error("Erro ao finalizar chamado")
       })
   }
 
@@ -709,163 +716,115 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
         )}
       </div>
 
-    <Dialog open={!!selectedTicket} onOpenChange={() => { setSelectedTicket(null); setTicketMessages([]) }}>
-        <DialogContent className="max-h-[calc(100vh-1.5rem)] w-[calc(100vw-1.5rem)] overflow-hidden rounded-[1.35rem] border border-[#DDE7E2] bg-[#F7FAF8] p-0 text-[#111827] shadow-[0_30px_90px_rgba(7,59,42,0.18)] sm:max-w-4xl sm:rounded-3xl xl:max-w-[1080px]">
-          <DialogHeader className="border-b border-[#DDE7E2] bg-white px-4 py-4 pr-12 sm:px-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">
-                  Chamado #{selectedTicket?.id}
-                </p>
-                <DialogTitle className="mt-1 text-lg font-black tracking-[-0.03em] text-[#073B2A] sm:text-xl">
-                  Atendimento técnico
-                </DialogTitle>
-                <p className="mt-1 text-sm text-[#64748B]">
-                  Leia o problema, responda o usuário e consulte os detalhes se necessário.
-                </p>
-              </div>
-
-              {selectedTicket && (
-                <span className={`status-badge-animated w-fit rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(selectedTicket.status)}`}>
-                  {selectedTicket.status}
-                </span>
+    <Dialog open={!!selectedTicket} onOpenChange={() => { setSelectedTicket(null); setTicketMessages([]); setShowFinishConfirm(false) }}>
+      <DialogContent className="w-[calc(100vw-1rem)] max-h-[calc(100vh-1rem)] overflow-hidden rounded-[1.35rem] border border-[#DDE7E2] bg-[#F7FAF8] p-0 text-[#111827] shadow-[0_30px_90px_rgba(7,59,42,0.18)] sm:max-w-4xl sm:rounded-3xl xl:max-w-[1080px]">
+        <DialogHeader className="shrink-0 border-b border-[#DDE7E2] bg-white px-4 py-3 pr-12 sm:px-5">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">Chamado #{selectedTicket?.id}</p>
+              <DialogTitle className="mt-0.5 text-base font-black tracking-[-0.03em] text-[#073B2A] sm:text-lg">
+                {selectedTicket?.category} · {selectedTicket?.user}
+              </DialogTitle>
+              {selectedTicket?.description && (
+                <p className="mt-0.5 max-w-xl truncate text-xs text-[#64748B]">{selectedTicket.description}</p>
               )}
             </div>
-          </DialogHeader>
+            {selectedTicket && (
+              <span className={`status-badge-animated w-fit shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${getStatusStyle(selectedTicket.status)}`}>
+                {selectedTicket.status}
+              </span>
+            )}
+          </div>
+        </DialogHeader>
 
-          {selectedTicket && (
-            <div className="max-h-[calc(100vh-7.5rem)] overflow-y-auto p-3 sm:p-5">
-              <div className="grid gap-3 sm:gap-4 lg:grid-cols-[1fr_340px]">
-                <section className="space-y-3 sm:space-y-4">
-                  <DetailsSection title="Descrição do problema">
-                    <div className="max-h-52 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-white p-4 text-sm leading-6 text-[#102A43] ring-1 ring-[#DDE7E2]">
-                      {selectedTicket.description || "Sem descrição."}
+        {selectedTicket && (
+          <div className="flex h-[calc(100vh-10rem)] max-h-[640px] overflow-hidden lg:grid lg:grid-cols-[1fr_260px]">
+
+            {/* Coluna chat */}
+            <div className="flex min-h-0 flex-col overflow-hidden">
+              {/* Mensagens */}
+              <div className="flex-1 space-y-3 overflow-y-auto bg-[#F8FCFA] p-4">
+                {ticketMessages.length === 0 && (
+                  <div className="flex h-32 items-center justify-center">
+                    <p className="text-sm text-slate-400">Nenhuma mensagem ainda.</p>
+                  </div>
+                )}
+                {ticketMessages.map((msg: any) => {
+                  const isEmployee = msg.senderType === "employee"
+                  const isBot = msg.senderType === "bot"
+                  return (
+                    <div key={msg.id} className={`flex ${isEmployee ? "justify-end" : "justify-start"}`}>
+                      <div className={`max-w-[82%] rounded-3xl border p-3 text-sm shadow-sm ${
+                        isEmployee
+                          ? "border-[#00A859]/20 bg-[#00A859]/10 text-[#073B2A]"
+                          : isBot
+                          ? "border-blue-200 bg-blue-50 text-[#111827]"
+                          : "border-[#DDE7E2] bg-white text-[#111827]"
+                      }`}>
+                        <p className={`mb-1 text-[11px] font-black uppercase tracking-[0.1em] ${isBot ? "text-blue-600" : isEmployee ? "text-[#00A859]" : "text-slate-500"}`}>
+                          {isBot ? "🤖 Atendimento Automático" : isEmployee ? msg.senderName : "Técnico"}
+                        </p>
+                        <p className="whitespace-pre-wrap break-words leading-5">{msg.message}</p>
+                        <p className="mt-1.5 text-[10px] text-slate-400">{new Date(msg.createdAt).toLocaleString("pt-BR")}</p>
+                      </div>
                     </div>
-                  </DetailsSection>
+                  )
+                })}
+                <div ref={messagesEndRef} />
+              </div>
 
-                  <div className="rounded-2xl border border-[#BFEFD7] bg-white p-3 shadow-[0_14px_34px_rgba(7,59,42,0.08)] sm:rounded-3xl sm:p-4">
-                    <div className="mb-3">
-                      <p className="text-sm font-black text-[#073B2A]">
-                        Responder ao usuário
-                      </p>
-                      <p className="mt-1 text-xs text-[#64748B]">
-                        Informe orientação, diagnóstico ou próximo passo do atendimento.
-                      </p>
-                    </div>
-
-                    <Textarea
-                      placeholder="Ex: Verificamos a solicitação e o próximo passo será..."
-                      value={technicalResponse}
-                      onChange={(e) => setTechnicalResponse(e.target.value)}
-                      className="min-h-[130px] rounded-2xl border-[#DDE7E2] bg-[#F7FAF8] text-[#111827] focus-visible:ring-[#00A859]/30 sm:min-h-[150px]"
-                    />
-
-                    <div className="mt-3 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-                      <Button
-                        variant="outline"
-                        className="h-11 rounded-2xl border-[#DDE7E2] bg-white text-[#102A43] hover:bg-[#EAF0ED]"
-                        onClick={handleFinishTicket}
-                      >
+              {/* Área de resposta */}
+              <div className="shrink-0 border-t border-[#DDE7E2] bg-white p-3 sm:p-4">
+                <Textarea
+                  placeholder="Responda com orientação, diagnóstico ou próximo passo..."
+                  value={technicalResponse}
+                  onChange={(e) => setTechnicalResponse(e.target.value)}
+                  className="min-h-[90px] rounded-2xl border-[#DDE7E2] bg-[#F7FAF8] text-[#111827] focus-visible:ring-[#00A859]/30"
+                />
+                <div className="mt-3 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                  {showFinishConfirm ? (
+                    <>
+                      <span className="flex items-center text-sm font-semibold text-slate-600">Confirmar finalização?</span>
+                      <Button variant="outline" className="h-10 rounded-2xl border-[#DDE7E2]" onClick={() => setShowFinishConfirm(false)}>
+                        Cancelar
+                      </Button>
+                      <Button className="h-10 rounded-2xl bg-slate-700 text-white hover:bg-slate-800" onClick={handleFinishTicket}>
+                        Confirmar
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button variant="outline" className="h-10 rounded-2xl border-[#DDE7E2] bg-white text-[#102A43] hover:bg-[#EAF0ED]" onClick={() => setShowFinishConfirm(true)}>
                         Finalizar chamado
                       </Button>
-
                       <Button
-                        className="h-11 rounded-2xl bg-[#00A859] px-6 text-white shadow-[0_12px_30px_rgba(0,168,89,0.22)] hover:bg-[#078C4D] disabled:opacity-50"
+                        className="h-10 rounded-2xl bg-[#00A859] px-6 text-white shadow-[0_12px_30px_rgba(0,168,89,0.22)] hover:bg-[#078C4D] disabled:opacity-50"
                         onClick={handleAddResponse}
                         disabled={!technicalResponse.trim()}
                       >
                         Enviar resposta
                       </Button>
-                    </div>
-                  </div>
-
-                  {selectedTicket.technicalResponse && (
-                    <DetailsSection title="Última resposta técnica">
-                      <div className="max-h-40 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-white p-4 text-sm leading-6 text-[#102A43] ring-1 ring-[#DDE7E2]">
-                        {selectedTicket.technicalResponse}
-                      </div>
-                    </DetailsSection>
+                    </>
                   )}
-
-                  {ticketMessages.length > 0 && (
-                    <DetailsSection title={`Mensagens (${ticketMessages.length})`} defaultOpen>
-                      <div className="max-h-72 space-y-3 overflow-y-auto pr-1">
-                        {ticketMessages.map((msg: any) => {
-                          const isBot = msg.senderType === "bot"
-                          const isTechnician = msg.senderType === "technician"
-                          return (
-                            <div
-                              key={msg.id}
-                              className={`rounded-2xl p-3 text-sm ${
-                                isBot
-                                  ? "border border-blue-100 bg-blue-50 ring-1 ring-blue-200"
-                                  : isTechnician
-                                  ? "border border-[#BFEFD7] bg-[#ECFBF3] ring-1 ring-[#BFEFD7]"
-                                  : "border border-[#DDE7E2] bg-white ring-1 ring-[#DDE7E2]"
-                              }`}
-                            >
-                              <p className={`mb-1 text-[11px] font-black uppercase tracking-[0.1em] ${isBot ? "text-blue-600" : isTechnician ? "text-[#00A859]" : "text-slate-500"}`}>
-                                {isBot ? "🤖 " : ""}{msg.senderName}
-                              </p>
-                              <p className="whitespace-pre-wrap break-words leading-5 text-[#102A43]">
-                                {msg.message}
-                              </p>
-                              <p className="mt-1.5 text-[10px] text-slate-400">
-                                {new Date(msg.createdAt).toLocaleString("pt-BR")}
-                              </p>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </DetailsSection>
-                  )}
-                </section>
-
-                <aside className="space-y-4">
-                  <DetailsSection title="Informações principais">
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                      <FieldCard label="Solicitante" value={selectedTicket.user} />
-                      <FieldCard label="Setor" value={selectedTicket.sector} />
-                      <FieldCard label="Categoria" value={selectedTicket.category} />
-                      <FieldCard label="Criado em" value={selectedTicket.createdAt} />
-                      <FieldCard label="Origem" value={selectedTicket.origin} />
-                    </div>
-                  </DetailsSection>
-
-                  <DetailsSection title="Histórico do chamado">
-                    <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
-                      {selectedTicket.timeline?.length ? (
-                        selectedTicket.timeline.map(
-                          (
-                            event: { date: string; action: string },
-                            index: number
-                          ) => (
-                            <div
-                              key={index}
-                              className="rounded-2xl bg-white p-3 text-sm ring-1 ring-[#DDE7E2]"
-                            >
-                              <p className="break-words text-[#102A43]">
-                                {event.action}
-                              </p>
-                              <p className="mt-1 text-xs text-[#64748B]">
-                                {event.date}
-                              </p>
-                            </div>
-                          )
-                        )
-                      ) : (
-                        <p className="rounded-2xl border border-dashed border-[#DDE7E2] bg-white p-4 text-sm text-[#64748B]">
-                          Nenhum evento registrado.
-                        </p>
-                      )}
-                    </div>
-                  </DetailsSection>
-                </aside>
+                </div>
               </div>
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
+
+            {/* Coluna info */}
+            <div className="hidden overflow-y-auto border-l border-[#DDE7E2] bg-white p-4 lg:block">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Informações</p>
+              <div className="space-y-2">
+                <FieldCard label="Solicitante" value={selectedTicket.user} />
+                <FieldCard label="Setor" value={selectedTicket.sector} />
+                <FieldCard label="Categoria" value={selectedTicket.category} />
+                <FieldCard label="Origem" value={selectedTicket.origin} />
+                <FieldCard label="Criado em" value={selectedTicket.createdAt} />
+              </div>
+            </div>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
     </div>
   )
 }

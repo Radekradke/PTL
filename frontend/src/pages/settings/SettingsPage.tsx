@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -74,8 +75,8 @@ export function SettingsPage() {
     const sectorName = newSectorName.trim()
     const sectorPin = newSectorPin.trim()
 
-    if (!sectorName) { alert("Preencha o nome do setor."); return }
-    if (!/^\d{4,8}$/.test(sectorPin)) { alert("PIN deve conter de 4 a 8 números."); return }
+    if (!sectorName) { toast.error("Preencha o nome do setor."); return }
+    if (!/^\d{4,8}$/.test(sectorPin)) { toast.error("PIN deve conter de 4 a 8 números."); return }
 
     setIsAddingSector(true)
 
@@ -83,17 +84,16 @@ export function SettingsPage() {
       const response = await apiFetch("/sectors", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sectorName, pin: sectorPin }) })
       if (!response.ok) {
         const data = await response.json().catch(() => null)
-        console.error("Erro ao criar setor:", response.status, data)
-        alert(data?.message || `Erro ao criar setor. Código ${response.status}.`)
+        toast.error(data?.message || `Erro ao criar setor.`)
         return
       }
 
       setNewSectorName("")
       setNewSectorPin("")
+      toast.success("Setor criado com sucesso.")
       await loadData()
     } catch (error) {
-      console.error("Erro ao criar setor:", error)
-      alert(error instanceof Error ? error.message : "Erro ao criar setor.")
+      toast.error(error instanceof Error ? error.message : "Erro ao criar setor.")
     } finally {
       setIsAddingSector(false)
     }
@@ -103,55 +103,64 @@ export function SettingsPage() {
     const sectorName = sector.name.trim()
     const sectorPin = String(sector.pin || "").trim()
 
-    if (!/^\d{4,8}$/.test(sectorPin)) { alert("PIN deve conter de 4 a 8 números."); return }
+    if (!/^\d{4,8}$/.test(sectorPin)) { toast.error("PIN deve conter de 4 a 8 números."); return }
 
     const response = await apiFetch(`/sectors/${sector.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sectorName, pin: sectorPin }) })
     if (!response.ok) {
       const data = await response.json().catch(() => null)
-      alert(data?.message || "Erro ao salvar setor.")
+      toast.error(data?.message || "Erro ao salvar setor.")
       return
     }
+    toast.success("Setor salvo.")
     loadData()
   }
 
   async function removeSector(id: number) {
     const hasEmployees = employees.some((employee) => employee.sectorId === id)
-    if (hasEmployees) { alert("Esse setor possui funcionários vinculados. Remaneje ou desative os funcionários antes."); return }
+    if (hasEmployees) { toast.error("Esse setor possui funcionários vinculados. Remaneje ou desative os funcionários antes."); return }
     if (!window.confirm("Excluir este setor?")) return
     await apiFetch(`/sectors/${id}`, { method: "DELETE" })
+    toast.success("Setor excluído.")
     loadData()
   }
 
   async function addEmployee() {
     if (!newEmployeeName || !newEmployeeSectorId || !newEmployeeUsername || !newEmployeePassword) {
-      alert("Preencha nome, usuário, senha e setor do funcionário.")
+      toast.error("Preencha nome, usuário, senha e setor do funcionário.")
       return
     }
     if (newEmployeePassword.length < 6) {
-      alert("A senha deve ter pelo menos 6 caracteres.")
+      toast.error("A senha deve ter pelo menos 6 caracteres.")
       return
     }
     const response = await apiFetch("/employees", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newEmployeeName, username: newEmployeeUsername, password: newEmployeePassword, sectorId: Number(newEmployeeSectorId) }) })
-    if (!response.ok) { alert("Erro ao criar funcionário. Verifique se o usuário já existe."); return }
+    if (!response.ok) {
+      const data = await response.json().catch(() => null)
+      toast.error(data?.message || "Erro ao criar funcionário.")
+      return
+    }
+    toast.success("Funcionário criado com sucesso.")
     setNewEmployeeName(""); setNewEmployeeUsername(""); setNewEmployeePassword(""); loadData()
   }
 
   async function updateEmployee(employee: Employee) {
-    if (!employee.name || !employee.sectorId || !employee.username) { alert("Nome, usuário e setor são obrigatórios."); return }
-    if (employee.password && employee.password.length < 6) { alert("A nova senha deve ter pelo menos 6 caracteres."); return }
+    if (!employee.name || !employee.sectorId || !employee.username) { toast.error("Nome, usuário e setor são obrigatórios."); return }
+    if (employee.password && employee.password.length < 6) { toast.error("A nova senha deve ter pelo menos 6 caracteres."); return }
     const response = await apiFetch(`/employees/${employee.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: employee.name, username: employee.username, password: employee.password || undefined, sectorId: employee.sectorId }) })
     if (!response.ok) {
       const data = await response.json().catch(() => null)
-      alert(data?.message || "Erro ao salvar funcionário.")
+      toast.error(data?.message || "Erro ao salvar funcionário.")
       return
     }
+    toast.success("Funcionário salvo.")
     loadData()
   }
 
   async function removeEmployee(id: number) {
     if (!window.confirm("Desativar este funcionário? Os chamados associados serão preservados.")) return
     const response = await apiFetch(`/employees/${id}`, { method: "DELETE" })
-    if (!response.ok) { alert("Erro ao excluir funcionário."); return }
+    if (!response.ok) { toast.error("Erro ao desativar funcionário."); return }
+    toast.success("Funcionário desativado.")
     loadData()
   }
 
