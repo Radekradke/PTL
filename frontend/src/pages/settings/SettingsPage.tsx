@@ -127,6 +127,10 @@ export function SettingsPage() {
       alert("Preencha nome, usuário, senha e setor do funcionário.")
       return
     }
+    if (newEmployeePassword.length < 6) {
+      alert("A senha deve ter pelo menos 6 caracteres.")
+      return
+    }
     const response = await apiFetch("/employees", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: newEmployeeName, username: newEmployeeUsername, password: newEmployeePassword, sectorId: Number(newEmployeeSectorId) }) })
     if (!response.ok) { alert("Erro ao criar funcionário. Verifique se o usuário já existe."); return }
     setNewEmployeeName(""); setNewEmployeeUsername(""); setNewEmployeePassword(""); loadData()
@@ -134,8 +138,13 @@ export function SettingsPage() {
 
   async function updateEmployee(employee: Employee) {
     if (!employee.name || !employee.sectorId || !employee.username) { alert("Nome, usuário e setor são obrigatórios."); return }
+    if (employee.password && employee.password.length < 6) { alert("A nova senha deve ter pelo menos 6 caracteres."); return }
     const response = await apiFetch(`/employees/${employee.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: employee.name, username: employee.username, password: employee.password || undefined, sectorId: employee.sectorId }) })
-    if (!response.ok) { alert("Erro ao salvar funcionário. Verifique se o usuário já existe."); return }
+    if (!response.ok) {
+      const data = await response.json().catch(() => null)
+      alert(data?.message || "Erro ao salvar funcionário.")
+      return
+    }
     loadData()
   }
 
