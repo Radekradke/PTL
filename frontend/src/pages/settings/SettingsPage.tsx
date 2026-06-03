@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
+import { UserCheck, UserX, KeyRound } from "lucide-react"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -199,9 +200,103 @@ export function SettingsPage() {
           </section>
 
           <section className="ls-card p-5 sm:p-6">
-            <div className="mb-5"><h2 className="ls-section-title text-2xl">Funcionários</h2><p className="mt-1 text-sm text-slate-500">Usuário, senha e setor definem o acesso ao portal.</p></div>
-            <div className="grid gap-3 xl:grid-cols-[1.2fr_1fr_1fr_1fr_auto]"><Input placeholder="Nome" value={newEmployeeName} onChange={(e) => setNewEmployeeName(e.target.value)} className="ls-input" /><Input placeholder="Usuário" value={newEmployeeUsername} onChange={(e) => setNewEmployeeUsername(e.target.value)} className="ls-input" /><Input type="password" placeholder="Senha" value={newEmployeePassword} onChange={(e) => setNewEmployeePassword(e.target.value)} className="ls-input" /><select value={newEmployeeSectorId} onChange={(e) => setNewEmployeeSectorId(e.target.value)} className="ls-input">{sectors.map((sector) => <option key={sector.id} value={sector.id}>{sector.name}</option>)}</select><Button className="ls-button-primary h-11 font-black" onClick={addEmployee}>Adicionar</Button></div>
-            <div className="mt-6 space-y-4">{isLoadingData ? Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-40 rounded-3xl bg-white/80" />) : employees.map((employee) => <div key={employee.id} className="rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(7,59,42,0.10)]"><div className="mb-3 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-sm font-black text-[#111827]">{employee.name}</p><p className="text-xs text-slate-500">Usuário: {employee.username || "não configurado"}</p></div><span className="status-badge-animated w-fit rounded-full bg-[#ECFBF3] px-3 py-1 text-xs font-black text-[#073B2A]">{sectors.find((sector) => sector.id === employee.sectorId)?.name || employee.sector?.name || "Sem setor"}</span></div><div className="grid gap-3 xl:grid-cols-[1.2fr_1fr_1fr_1fr]"><Input value={employee.name} onChange={(e) => updateEmployeeState(employee.id, "name", e.target.value)} className="ls-input" /><Input value={employee.username || ""} onChange={(e) => updateEmployeeState(employee.id, "username", e.target.value)} placeholder="usuário" className="ls-input" /><Input type="password" value={employee.password || ""} onChange={(e) => updateEmployeeState(employee.id, "password", e.target.value)} placeholder="Nova senha opcional" className="ls-input" /><select value={employee.sectorId} onChange={(e) => updateEmployeeState(employee.id, "sectorId", e.target.value)} className="ls-input">{sectors.map((sector) => <option key={sector.id} value={sector.id}>{sector.name}</option>)}</select></div><div className="mt-4 flex flex-wrap justify-end gap-3"><Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateEmployee(employee)}>Salvar</Button><Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeEmployee(employee.id)}>Excluir</Button></div></div>)}</div>
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <h2 className="ls-section-title text-2xl">Funcionários</h2>
+                <p className="mt-1 text-sm text-slate-500">Usuário e senha definem o acesso ao portal.</p>
+              </div>
+              {!isLoadingData && employees.length > 0 && (
+                <div className="flex gap-2 text-xs font-bold">
+                  <span className="flex items-center gap-1.5 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-emerald-700">
+                    <UserCheck size={13} />
+                    {employees.filter(e => e.username).length} com acesso
+                  </span>
+                  {employees.filter(e => !e.username).length > 0 && (
+                    <span className="flex items-center gap-1.5 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-amber-700">
+                      <UserX size={13} />
+                      {employees.filter(e => !e.username).length} sem acesso
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Formulário novo funcionário */}
+            <div className="rounded-2xl border border-dashed border-[#BFEFD7] bg-[#F8FCFA] p-4">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.12em] text-[#00A859]">Novo funcionário</p>
+              <div className="grid gap-3 xl:grid-cols-[1.2fr_1fr_1fr_1fr_auto]">
+                <Input placeholder="Nome completo" value={newEmployeeName} onChange={(e) => setNewEmployeeName(e.target.value)} className="ls-input" />
+                <Input placeholder="Usuário" value={newEmployeeUsername} onChange={(e) => setNewEmployeeUsername(e.target.value)} className="ls-input" />
+                <Input type="password" placeholder="Senha (mín. 6 caracteres)" value={newEmployeePassword} onChange={(e) => setNewEmployeePassword(e.target.value)} className="ls-input" />
+                <select value={newEmployeeSectorId} onChange={(e) => setNewEmployeeSectorId(e.target.value)} className="ls-input">
+                  {sectors.map((sector) => <option key={sector.id} value={sector.id}>{sector.name}</option>)}
+                </select>
+                <Button className="ls-button-primary h-11 font-black" onClick={addEmployee}>Adicionar</Button>
+              </div>
+            </div>
+
+            {/* Lista de funcionários */}
+            <div className="mt-5 space-y-3">
+              {isLoadingData
+                ? Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-40 rounded-3xl bg-white/80" />)
+                : employees.map((employee) => {
+                  const hasAccess = !!employee.username
+                  const sectorName = sectors.find((s) => s.id === employee.sectorId)?.name || employee.sector?.name || "Sem setor"
+                  const initials = employee.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()
+
+                  return (
+                    <div
+                      key={employee.id}
+                      className={`rounded-3xl border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(7,59,42,0.10)] ${
+                        hasAccess ? "border-[#DDE8E2]" : "border-amber-200 bg-amber-50/30"
+                      }`}
+                    >
+                      {/* Cabeçalho do card */}
+                      <div className="mb-4 flex items-center gap-3">
+                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-sm font-black ${
+                          hasAccess ? "bg-[#ECFBF3] text-[#073B2A]" : "bg-amber-100 text-amber-800"
+                        }`}>
+                          {initials}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-black text-[#111827]">{employee.name}</p>
+                          <p className="text-xs text-slate-500">{sectorName}</p>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-2">
+                          {hasAccess ? (
+                            <span className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700">
+                              <UserCheck size={11} /> Acesso ativo
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-black text-amber-700">
+                              <UserX size={11} /> Sem acesso ao portal
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Campos de edição */}
+                      <div className="grid gap-3 xl:grid-cols-[1.2fr_1fr_1fr_1fr]">
+                        <Input value={employee.name} onChange={(e) => updateEmployeeState(employee.id, "name", e.target.value)} placeholder="Nome" className="ls-input" />
+                        <Input value={employee.username || ""} onChange={(e) => updateEmployeeState(employee.id, "username", e.target.value)} placeholder="usuário" className="ls-input" />
+                        <div className="relative">
+                          <KeyRound size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                          <Input type="password" value={employee.password || ""} onChange={(e) => updateEmployeeState(employee.id, "password", e.target.value)} placeholder="Nova senha opcional" className="ls-input pl-8" />
+                        </div>
+                        <select value={employee.sectorId} onChange={(e) => updateEmployeeState(employee.id, "sectorId", e.target.value)} className="ls-input">
+                          {sectors.map((sector) => <option key={sector.id} value={sector.id}>{sector.name}</option>)}
+                        </select>
+                      </div>
+
+                      <div className="mt-4 flex flex-wrap justify-end gap-3">
+                        <Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateEmployee(employee)}>Salvar</Button>
+                        <Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeEmployee(employee.id)}>Desativar</Button>
+                      </div>
+                    </div>
+                  )
+                })
+              }
+            </div>
           </section>
         </div>
       </div>
