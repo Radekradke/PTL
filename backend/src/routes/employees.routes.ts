@@ -208,17 +208,31 @@ employeesRoutes.put("/:id", requireTechnical(["Admin"]), async (req, res) => {
     data.passwordHash = passwordHash
   }
 
-  const employee = await prisma.employee.update({
-    where: {
-      id: idValidation.value,
-    },
-    data,
-    include: {
-      sector: { select: sectorPublicSelect },
-    },
-  })
+  try {
+    const employee = await prisma.employee.update({
+      where: {
+        id: idValidation.value,
+      },
+      data,
+      include: {
+        sector: { select: sectorPublicSelect },
+      },
+    })
 
-  res.json(publicEmployee(employee))
+    res.json(publicEmployee(employee))
+  } catch (error: any) {
+    console.error("Erro ao atualizar funcionário:", error)
+
+    if (error?.code === "P2002") {
+      return res.status(409).json({ message: "Já existe um funcionário com esse usuário." })
+    }
+
+    if (error?.code === "P2025") {
+      return res.status(404).json({ message: "Funcionário não encontrado." })
+    }
+
+    res.status(500).json({ message: "Erro ao atualizar funcionário." })
+  }
 })
 
 employeesRoutes.delete("/:id", requireTechnical(["Admin"]), async (req, res) => {

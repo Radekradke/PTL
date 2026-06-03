@@ -13,6 +13,7 @@ import {
   validateTicketOrigin,
   validateTicketStatus,
 } from "../lib/validation"
+import { sendAutoReply } from "../services/autoReply"
 
 export const ticketsRoutes = Router()
 
@@ -24,8 +25,18 @@ const sectorPublicSelect = {
   updatedAt: true,
 }
 
+const employeePublicSelect = {
+  id: true,
+  name: true,
+  username: true,
+  active: true,
+  sectorId: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 const ticketInclude = {
-  employee: true,
+  employee: { select: employeePublicSelect },
   sector: { select: sectorPublicSelect },
   timeline: {
     orderBy: { createdAt: "asc" as const },
@@ -36,7 +47,7 @@ const ticketInclude = {
 }
 
 const ticketListInclude = {
-  employee: true,
+  employee: { select: employeePublicSelect },
   sector: { select: sectorPublicSelect },
   timeline: {
     orderBy: { createdAt: "asc" as const },
@@ -45,7 +56,7 @@ const ticketListInclude = {
 
 const ticketSummarySelect = {
   id: true,
-  employee: true,
+  employee: { select: employeePublicSelect },
   sector: { select: sectorPublicSelect },
   category: true,
   status: true,
@@ -179,6 +190,10 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
       },
     },
     include: ticketInclude,
+  })
+
+  sendAutoReply(ticket.id, ticket.category).catch((err) => {
+    console.error("Falha ao enviar resposta automática:", err)
   })
 
   res.status(201).json(ticket)

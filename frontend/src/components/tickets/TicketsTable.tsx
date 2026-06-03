@@ -89,6 +89,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   const [originFilter, setOriginFilter] = useState("Todas")
   const [sectorFilter, setSectorFilter] = useState("Todos")
   const [selectedTicket, setSelectedTicket] = useState<any>(null)
+  const [ticketMessages, setTicketMessages] = useState<any[]>([])
   const [technicalResponse, setTechnicalResponse] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -284,6 +285,18 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
     return "bg-[#EAF0ED] text-[#516070] ring-1 ring-[#DDE7E2]"
   }
 
+  async function loadMessages(ticketId: number) {
+    try {
+      const response = await apiFetch(`/tickets/${ticketId}/messages`)
+      if (response.ok) {
+        const data = await response.json()
+        setTicketMessages(data)
+      }
+    } catch (error) {
+      console.error("Erro ao carregar mensagens:", error)
+    }
+  }
+
   function handleAddResponse() {
     if (!selectedTicket || !technicalResponse.trim()) return
 
@@ -298,6 +311,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
     })
       .then(() => {
         onTicketsChange()
+        loadMessages(selectedTicket.id)
         setSelectedTicket({
           ...selectedTicket,
           technicalResponse: technicalResponse.trim(),
@@ -621,7 +635,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     </select>
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">
-                    <Button variant="outline" size="sm" className="rounded-xl border-[#DDE7E2] bg-white text-[#334155] hover:bg-[#E9FFF3]" onClick={() => setSelectedTicket(ticket)}>
+                    <Button variant="outline" size="sm" className="rounded-xl border-[#DDE7E2] bg-white text-[#334155] hover:bg-[#E9FFF3]" onClick={() => { setSelectedTicket(ticket); loadMessages(ticket.id) }}>
                       Ver detalhes
                     </Button>
                   </td>
@@ -678,7 +692,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                   <option>Aguardando usuário</option>
                   <option>Finalizado</option>
                 </select>
-                <Button variant="outline" className="h-11 rounded-2xl border-[#BFEFD7] bg-[#E9FFF3] text-[#073B2A] hover:bg-[#D8FBE8]" onClick={() => setSelectedTicket(ticket)}>
+                <Button variant="outline" className="h-11 rounded-2xl border-[#BFEFD7] bg-[#E9FFF3] text-[#073B2A] hover:bg-[#D8FBE8]" onClick={() => { setSelectedTicket(ticket); loadMessages(ticket.id) }}>
                   Ver detalhes
                 </Button>
               </div>
@@ -695,7 +709,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
         )}
       </div>
 
-    <Dialog open={!!selectedTicket} onOpenChange={() => setSelectedTicket(null)}>
+    <Dialog open={!!selectedTicket} onOpenChange={() => { setSelectedTicket(null); setTicketMessages([]) }}>
         <DialogContent className="max-h-[calc(100vh-1.5rem)] w-[calc(100vw-1.5rem)] overflow-hidden rounded-[1.35rem] border border-[#DDE7E2] bg-[#F7FAF8] p-0 text-[#111827] shadow-[0_30px_90px_rgba(7,59,42,0.18)] sm:max-w-4xl sm:rounded-3xl xl:max-w-[1080px]">
           <DialogHeader className="border-b border-[#DDE7E2] bg-white px-4 py-4 pr-12 sm:px-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -769,6 +783,39 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     <DetailsSection title="Última resposta técnica">
                       <div className="max-h-40 overflow-y-auto whitespace-pre-wrap break-words rounded-2xl bg-white p-4 text-sm leading-6 text-[#102A43] ring-1 ring-[#DDE7E2]">
                         {selectedTicket.technicalResponse}
+                      </div>
+                    </DetailsSection>
+                  )}
+
+                  {ticketMessages.length > 0 && (
+                    <DetailsSection title={`Mensagens (${ticketMessages.length})`} defaultOpen>
+                      <div className="max-h-72 space-y-3 overflow-y-auto pr-1">
+                        {ticketMessages.map((msg: any) => {
+                          const isBot = msg.senderType === "bot"
+                          const isTechnician = msg.senderType === "technician"
+                          return (
+                            <div
+                              key={msg.id}
+                              className={`rounded-2xl p-3 text-sm ${
+                                isBot
+                                  ? "border border-blue-100 bg-blue-50 ring-1 ring-blue-200"
+                                  : isTechnician
+                                  ? "border border-[#BFEFD7] bg-[#ECFBF3] ring-1 ring-[#BFEFD7]"
+                                  : "border border-[#DDE7E2] bg-white ring-1 ring-[#DDE7E2]"
+                              }`}
+                            >
+                              <p className={`mb-1 text-[11px] font-black uppercase tracking-[0.1em] ${isBot ? "text-blue-600" : isTechnician ? "text-[#00A859]" : "text-slate-500"}`}>
+                                {isBot ? "🤖 " : ""}{msg.senderName}
+                              </p>
+                              <p className="whitespace-pre-wrap break-words leading-5 text-[#102A43]">
+                                {msg.message}
+                              </p>
+                              <p className="mt-1.5 text-[10px] text-slate-400">
+                                {new Date(msg.createdAt).toLocaleString("pt-BR")}
+                              </p>
+                            </div>
+                          )
+                        })}
                       </div>
                     </DetailsSection>
                   )}
