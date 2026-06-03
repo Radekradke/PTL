@@ -1,4 +1,4 @@
-import { FileText, LayoutDashboard, LogOut, Settings, Ticket } from "lucide-react"
+import { ExternalLink, FileText, LayoutDashboard, LogOut, Settings, Ticket } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY } from "@/services/api"
 import logoHorizontal from "@/assets/logo-lifting-horizontal.png";
@@ -71,6 +71,14 @@ export function Sidebar() {
             </button>
           )
         })}
+
+        <button
+          onClick={() => navigate("/portal")}
+          className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-black text-[#4B5B52] transition hover:bg-[#F4F9F6] hover:text-[#073B2A]"
+        >
+          <ExternalLink size={18} />
+          Portal do funcionário
+        </button>
 
         <button
           onClick={handleLogout}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -23,6 +24,7 @@ import {
   ClipboardList,
   Clock3,
   Send,
+  LayoutDashboard,
 } from "lucide-react"
 
 type Sector = {
@@ -188,6 +190,7 @@ function EmptyPortalState({
 }
 
 export function AdminPortal() {
+  const navigate = useNavigate()
   const [loggedEmployee, setLoggedEmployee] = useState<Employee | null>(null)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -784,6 +787,14 @@ export function AdminPortal() {
             </div>
 
             <div className="flex flex-col gap-2 sm:flex-row">
+              <Button
+                variant="outline"
+                className="h-10 rounded-2xl border border-[#DDE7E2] bg-white font-bold text-[#073B2A] transition hover:bg-[#ECFBF3] hover:border-[#00A859]/40"
+                onClick={() => navigate("/")}
+              >
+                <LayoutDashboard size={16} className="mr-2" />
+                Painel técnico
+              </Button>
               <Button
                 variant="outline"
                 className="h-10 rounded-2xl border border-[#DDE7E2] bg-white font-bold text-slate-700 transition hover:bg-red-50 hover:text-red-700"
