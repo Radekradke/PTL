@@ -6,6 +6,7 @@ import { sectorsRoutes } from "./routes/sectors.routes"
 import { employeesRoutes } from "./routes/employees.routes"
 import { ticketsRoutes } from "./routes/tickets.routes"
 import { authRoutes } from "./routes/auth.routes"
+import { ouvidoriaRoutes } from "./routes/ouvidoria.routes"
 import { assertAuthConfig } from "./lib/auth"
 import { addSseClient } from "./lib/eventBus"
 
@@ -57,6 +58,7 @@ app.use("/auth", authRoutes)
 app.use("/sectors", sectorsRoutes)
 app.use("/employees", employeesRoutes)
 app.use("/tickets", ticketsRoutes)
+app.use("/ouvidoria", ouvidoriaRoutes)
 
 const PORT = process.env.PORT || 3333
 

@@ -24,6 +24,7 @@ import {
   ClipboardList,
   Clock3,
   Send,
+  Megaphone,
 } from "lucide-react"
 
 type Sector = {
@@ -200,7 +201,12 @@ export function AdminPortal() {
   const [origin, setOrigin] = useState("Base")
   const [description, setDescription] = useState("")
 
-  const [activeTab, setActiveTab] = useState<"new" | "mine">("new")
+  const [activeTab, setActiveTab] = useState<"new" | "mine" | "ouvidoria">("new")
+  const [ouvidoriaName, setOuvidoriaName] = useState("")
+  const [ouvidoriaSector, setOuvidoriaSector] = useState("")
+  const [ouvidoriaComplaint, setOuvidoriaComplaint] = useState("")
+  const [isSubmittingOuvidoria, setIsSubmittingOuvidoria] = useState(false)
+  const [ouvidoriaSuccess, setOuvidoriaSuccess] = useState(false)
   const [showArchivedTickets, setShowArchivedTickets] = useState(false)
   const [myTickets, setMyTickets] = useState<PortalTicket[]>([])
   const [archivedTickets, setArchivedTickets] = useState<PortalTicket[]>([])
@@ -389,6 +395,53 @@ export function AdminPortal() {
     }
   }
 
+  async function handleOuvidoriaSubmit() {
+    if (isSubmittingOuvidoria) return
+
+    if (!ouvidoriaName.trim()) {
+      toast.error("Informe seu nome.")
+      return
+    }
+    if (!ouvidoriaSector.trim()) {
+      toast.error("Informe seu setor.")
+      return
+    }
+    if (ouvidoriaComplaint.trim().length < 10) {
+      toast.error("Descreva a denúncia com pelo menos 10 caracteres.")
+      return
+    }
+
+    setIsSubmittingOuvidoria(true)
+
+    try {
+      const response = await apiFetch("/ouvidoria", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: ouvidoriaName.trim(),
+          sector: ouvidoriaSector.trim(),
+          complaint: ouvidoriaComplaint.trim(),
+        }),
+      }, getPortalToken())
+
+      if (handleUnauthorizedPortalResponse(response)) return
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        toast.error(data.message || "Erro ao enviar denúncia.")
+        return
+      }
+
+      setOuvidoriaSuccess(true)
+      setOuvidoriaComplaint("")
+    } catch (error) {
+      console.error("Erro ao enviar ouvidoria:", error)
+      toast.error("Erro ao enviar denúncia. Verifique sua conexão.")
+    } finally {
+      setIsSubmittingOuvidoria(false)
+    }
+  }
+
   async function handleSubmit() {
     if (!loggedEmployee || !description) {
       toast.error("Descreva o problema antes de abrir o chamado.")
@@ -526,6 +579,17 @@ export function AdminPortal() {
     loadArchivedTickets(loggedEmployee?.id)
   }
 
+  function handleTabChange(tab: "new" | "mine" | "ouvidoria") {
+    setActiveTab(tab)
+    if (tab === "ouvidoria") {
+      setOuvidoriaSuccess(false)
+      if (loggedEmployee) {
+        setOuvidoriaName(loggedEmployee.name)
+        setOuvidoriaSector(loggedEmployee.sector?.name || "")
+      }
+    }
+  }
+
   function handleExit() {
     localStorage.removeItem(PORTAL_USER_KEY)
     hasShownExpiredSession.current = false
@@ -543,6 +607,10 @@ export function AdminPortal() {
     setMessages([])
     setSuccessState({ isVisible: false })
     setShowCredit(false)
+    setOuvidoriaName("")
+    setOuvidoriaSector("")
+    setOuvidoriaComplaint("")
+    setOuvidoriaSuccess(false)
   }
 
   function handleUnauthorizedPortalResponse(response: Response) {
@@ -769,9 +837,9 @@ export function AdminPortal() {
           </div>
 
           <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="grid grid-cols-2 gap-2 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1 lg:w-fit">
+            <div className="grid grid-cols-3 gap-2 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1 lg:w-fit">
               <button
-                onClick={() => setActiveTab("new")}
+                onClick={() => handleTabChange("new")}
                 className={`inline-flex h-11 items-center justify-center rounded-xl px-3 text-sm font-bold transition ${
                   activeTab === "new"
                     ? "bg-[#00A859] text-white shadow-sm"
@@ -782,7 +850,7 @@ export function AdminPortal() {
                 Novo Chamado
               </button>
               <button
-                onClick={() => setActiveTab("mine")}
+                onClick={() => handleTabChange("mine")}
                 className={`inline-flex h-11 items-center justify-center rounded-xl px-3 text-sm font-bold transition ${
                   activeTab === "mine"
                     ? "bg-[#00A859] text-white shadow-sm"
@@ -791,6 +859,17 @@ export function AdminPortal() {
               >
                 <MessageSquareText size={16} className="mr-2" />
                 Meus chamados
+              </button>
+              <button
+                onClick={() => handleTabChange("ouvidoria")}
+                className={`inline-flex h-11 items-center justify-center rounded-xl px-3 text-sm font-bold transition ${
+                  activeTab === "ouvidoria"
+                    ? "bg-[#073B2A] text-white shadow-sm"
+                    : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
+                }`}
+              >
+                <Megaphone size={16} className="mr-2" />
+                Ouvidoria
               </button>
             </div>
 
@@ -807,7 +886,94 @@ export function AdminPortal() {
           </div>
         </header>
 
-        {activeTab === "new" ? (
+        {activeTab === "ouvidoria" ? (
+          <GlassCard className="p-4 sm:p-6">
+            {ouvidoriaSuccess ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full bg-[#39D98A]/25 blur-2xl" />
+                  <CheckCircle2 className="relative h-16 w-16 text-[#00A859]" />
+                </div>
+                <h2 className="mt-6 text-2xl font-black tracking-[-0.04em] text-[#111827]">Denúncia enviada!</h2>
+                <p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">
+                  Sua denúncia foi registrada e encaminhada com sigilo para o setor responsável.
+                </p>
+                <Button
+                  className={`mt-8 h-11 px-8 ${styles.primary}`}
+                  onClick={() => {
+                    setOuvidoriaSuccess(false)
+                    setOuvidoriaComplaint("")
+                  }}
+                >
+                  Enviar nova denúncia
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="mb-5">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#073B2A]">Canal confidencial</p>
+                  <h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[#111827]">Ouvidoria</h2>
+                  <p className="mt-1 text-sm leading-6 text-slate-500">
+                    Registre denúncias, irregularidades ou sugestões de forma sigilosa. O conteúdo será enviado por e-mail ao setor responsável.
+                  </p>
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+                  <div className="space-y-4 rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Seu nome</label>
+                      <Input
+                        value={ouvidoriaName}
+                        onChange={(e) => setOuvidoriaName(e.target.value)}
+                        placeholder="Nome completo"
+                        className={`mt-2 ${styles.input}`}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Setor</label>
+                      <Input
+                        value={ouvidoriaSector}
+                        onChange={(e) => setOuvidoriaSector(e.target.value)}
+                        placeholder="Seu setor"
+                        className={`mt-2 ${styles.input}`}
+                      />
+                    </div>
+                    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs leading-5 text-amber-800">
+                      <p className="font-black">Confidencialidade</p>
+                      <p className="mt-1">
+                        Sua denúncia será enviada diretamente para o responsável pela ouvidoria. Seja claro e objetivo para facilitar a apuração.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-3 shadow-sm sm:rounded-[1.5rem] sm:p-4">
+                    <div>
+                      <label className="text-sm font-bold text-[#102A43]">Descrição da denúncia</label>
+                      <Textarea
+                        value={ouvidoriaComplaint}
+                        onChange={(e) => setOuvidoriaComplaint(e.target.value)}
+                        placeholder="Descreva a situação com o máximo de detalhes possível: o que aconteceu, quando, onde e quem está envolvido..."
+                        className="mt-2 min-h-[220px] rounded-2xl border-[#DDE7E2] bg-white/95 px-4 py-3 text-slate-950 focus:border-[#073B2A]"
+                      />
+                      <p className="mt-2 text-xs font-semibold leading-5 text-slate-500">
+                        Mínimo de 10 caracteres. Quanto mais detalhes, mais fácil será a apuração.
+                      </p>
+                    </div>
+
+                    <Button
+                      className="h-12 w-full rounded-2xl bg-[linear-gradient(135deg,#073B2A,#102A43)] font-bold text-white shadow-[0_14px_30px_rgba(7,59,42,0.22)] transition hover:-translate-y-0.5 hover:brightness-105 disabled:opacity-50 disabled:hover:translate-y-0"
+                      onClick={handleOuvidoriaSubmit}
+                      disabled={isSubmittingOuvidoria || ouvidoriaComplaint.trim().length < 10}
+                    >
+                      {isSubmittingOuvidoria ? "Enviando..." : "Enviar denúncia"}
+                      <Send size={16} className="ml-2" />
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </GlassCard>
+        ) : activeTab === "new" ? (
           <GlassCard className="p-4 sm:p-6">
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
