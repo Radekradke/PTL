@@ -17,13 +17,12 @@
   "type": "commonjs",
   "dependencies": {
     "@prisma/client": "^6.19.3",
-    "@types/nodemailer": "^8.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
-    "nodemailer": "^8.0.10",
     "prisma": "^6.19.3",
+    "resend": "^6.12.4",
     "winston": "^3.19.0"
   },
   "devDependencies": {
