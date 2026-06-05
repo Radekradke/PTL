@@ -24,7 +24,6 @@ import {
   ClipboardList,
   Clock3,
   Send,
-  Megaphone,
   Activity,
   CheckCheck,
   Layers,
