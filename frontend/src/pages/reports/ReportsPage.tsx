@@ -6,7 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout"
 import { StatsCard } from "@/components/dashboard/StatsCard"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+import { PageLoader } from "@/components/ui/PageLoader"
 import { FileSpreadsheet, Download, RotateCcw, Search, Calendar, FileText } from "lucide-react"
 import { apiFetch } from "@/services/api"
 
@@ -143,27 +143,10 @@ export function ReportsPage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="ls-page-shell py-2">
-          <section className="ls-hero-clean p-6 sm:p-8">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-              <div className="w-full max-w-2xl space-y-3">
-                <Skeleton className="h-4 w-44 rounded-full bg-white/80" />
-                <Skeleton className="h-12 w-64 rounded-2xl bg-white/80" />
-                <Skeleton className="h-5 w-full max-w-xl rounded-full bg-white/80" />
-              </div>
-              <div className="grid w-full gap-3 sm:w-auto sm:grid-cols-2">
-                <Skeleton className="h-12 w-full rounded-2xl bg-white/80 sm:w-36" />
-                <Skeleton className="h-12 w-full rounded-2xl bg-white/80 sm:w-36" />
-              </div>
-            </div>
-          </section>
-          <Skeleton className="h-56 rounded-3xl bg-white/80" />
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <Skeleton key={index} className="h-32 rounded-[1.5rem] bg-white/80" />
-            ))}
+        <div className="ls-page-shell">
+          <div className="rounded-3xl border border-[#DDE8E2] bg-white/90 shadow-sm">
+            <PageLoader message="Carregando relatórios..." />
           </div>
-          <Skeleton className="h-72 rounded-3xl bg-white/80" />
         </div>
       </AppLayout>
     )
