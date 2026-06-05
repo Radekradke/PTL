@@ -132,7 +132,7 @@ function getStatusStyle(status: string) {
 
 function getStatusAccent(status: string) {
   if (status === "Finalizado") return "#00A859"
-  if (status === "Em andamento") return "#2563EB"
+  if (status === "Em andamento") return "#F59E0B"
   if (status === "Aguardando usuário") return "#F97316"
   return "#0EA5E9"
 }
@@ -873,7 +873,7 @@ export function AdminPortal() {
                 [
                   { key: "new", label: "Novo Chamado", Icon: PlusCircle, activeColor: "bg-[#00A859]" },
                   { key: "mine", label: "Meus Chamados", Icon: MessageSquareText, activeColor: "bg-[#00A859]" },
-                  { key: "ouvidoria", label: "Ouvidoria", Icon: ShieldAlert, activeColor: "bg-[#073B2A]" },
+                  { key: "ouvidoria", label: "Ouvidoria", Icon: ShieldAlert, activeColor: "bg-[#00A859]" },
                 ] as const
               ).map(({ key, label, Icon, activeColor }) => (
                 <button
@@ -953,18 +953,16 @@ export function AdminPortal() {
                           <label className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Nome</label>
                           <Input
                             value={ouvidoriaName}
-                            onChange={(e) => setOuvidoriaName(e.target.value)}
-                            placeholder="Seu nome completo"
-                            className={`mt-1.5 ${styles.input}`}
+                            readOnly
+                            className={`mt-1.5 cursor-default select-none bg-[#F3F6F4] text-slate-500 ${styles.input}`}
                           />
                         </div>
                         <div>
                           <label className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Setor</label>
                           <Input
                             value={ouvidoriaSector}
-                            onChange={(e) => setOuvidoriaSector(e.target.value)}
-                            placeholder="Seu setor"
-                            className={`mt-1.5 ${styles.input}`}
+                            readOnly
+                            className={`mt-1.5 cursor-default select-none bg-[#F3F6F4] text-slate-500 ${styles.input}`}
                           />
                         </div>
                       </div>
@@ -1309,7 +1307,7 @@ export function AdminPortal() {
                             {isSendingReply ? "Enviando..." : "Responder"}
                           </Button>
                           <Button
-                            className="px-6 h-11 rounded-2xl bg-slate-600 font-bold text-white transition hover:bg-slate-700 disabled:opacity-50"
+                            className="px-6 h-11 rounded-2xl border border-[#00A859]/40 bg-[#00A859]/10 font-bold text-[#073B2A] transition hover:bg-[#00A859]/20 disabled:opacity-50"
                             onClick={handleFinishTicket}
                             disabled={isFinishingTicket}
                           >
