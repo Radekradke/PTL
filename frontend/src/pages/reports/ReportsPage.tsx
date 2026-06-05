@@ -47,7 +47,7 @@ export function ReportsPage() {
         sector: ticket.sector?.name || "Sem setor",
         category: ticket.category || "Sem categoria",
         status: ticket.status || "Aberto",
-        origin: ticket.origin || "Base",
+        origin: ticket.origin || "Administrativo",
         description: ticket.description || "",
         technicalResponse: ticket.technicalResponse || "",
         archived: ticket.archived || false,

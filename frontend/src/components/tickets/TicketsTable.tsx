@@ -69,7 +69,7 @@ function SortableHeader({
   return (
     <th
       onClick={() => onClick(sortK)}
-      className="cursor-pointer select-none whitespace-nowrap px-3 py-3 hover:bg-[#E9FFF3]/70 transition-colors"
+      className="cursor-pointer select-none whitespace-nowrap px-2 py-2 hover:bg-[#E9FFF3]/70 transition-colors"
     >
       <span className="flex items-center gap-1.5">
         {label}
@@ -317,31 +317,31 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       <tr
         className={`border-t border-slate-100 transition-all hover:bg-[#E9FFF3]/50 ${highlightedTicketIds.has(ticket.id) ? "ticket-row-new" : ""} ${dimmed ? "opacity-60" : ""}`}
       >
-        <td className="px-3 py-3 text-[#111827] whitespace-nowrap">#{ticket.id}</td>
-        <td className="px-3 py-3 text-[#102A43] whitespace-nowrap">{ticket.user}</td>
-        <td className="px-3 py-3 text-[#334155] whitespace-nowrap">{ticket.sector}</td>
-        <td className="px-3 py-3 text-[#334155] whitespace-nowrap">{ticket.category}</td>
-        <td className="px-3 py-3 whitespace-nowrap">
-          <span className={`status-badge-animated inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${ticket.origin === "Operacional" ? "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]" : "bg-[#EAF0ED] text-[#334155] ring-1 ring-[#DDE7E2]"}`}>
+        <td className="px-2 py-2 text-[#111827] whitespace-nowrap">#{ticket.id}</td>
+        <td className="px-2 py-2 max-w-[120px] truncate text-[#102A43]">{ticket.user}</td>
+        <td className="px-2 py-2 max-w-[100px] truncate text-[#334155]">{ticket.sector}</td>
+        <td className="px-2 py-2 text-[#334155] whitespace-nowrap">{ticket.category}</td>
+        <td className="px-2 py-2 whitespace-nowrap">
+          <span className={`status-badge-animated inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${ticket.origin === "Operacional" ? "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]" : "bg-[#EAF0ED] text-[#334155] ring-1 ring-[#DDE7E2]"}`}>
             {ticket.origin}
           </span>
         </td>
-        <td className="px-3 py-3 whitespace-nowrap">
-          <span className={`status-badge-animated inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getSlaStatus(ticket).className}`}>
+        <td className="px-2 py-2 whitespace-nowrap">
+          <span className={`status-badge-animated inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${getSlaStatus(ticket).className}`}>
             {getSlaStatus(ticket).label}
           </span>
         </td>
-        <td className="px-3 py-3 whitespace-nowrap">
-          <span className={`status-badge-animated inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getStatusStyle(ticket.status)}`}>
+        <td className="px-2 py-2 whitespace-nowrap">
+          <span className={`status-badge-animated inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${getStatusStyle(ticket.status)}`}>
             {ticket.status}
           </span>
         </td>
-        <td className="px-3 py-3 text-xs text-[#64748B] whitespace-nowrap">{ticket.createdAt}</td>
-        <td className="px-3 py-3 whitespace-nowrap">
+        <td className="px-2 py-2 text-xs text-[#64748B] whitespace-nowrap">{ticket.createdAt}</td>
+        <td className="px-2 py-2 whitespace-nowrap">
           <select
             value={ticket.status}
             onChange={(e) => handleChangeStatus(ticket.id, e.target.value)}
-            className="w-full min-w-[138px] rounded-xl border border-[#DDE7E2] bg-white px-3 py-2 text-[#102A43] outline-none focus:border-[#00A859]"
+            className="w-full rounded-xl border border-[#DDE7E2] bg-white px-2 py-1.5 text-xs text-[#102A43] outline-none focus:border-[#00A859]"
           >
             <option>Aberto</option>
             <option>Em andamento</option>
@@ -349,14 +349,14 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             <option>Finalizado</option>
           </select>
         </td>
-        <td className="px-3 py-3 whitespace-nowrap">
+        <td className="px-2 py-2 whitespace-nowrap">
           <Button
             variant="outline"
             size="sm"
-            className="rounded-xl border-[#DDE7E2] bg-white text-[#334155] hover:bg-[#E9FFF3]"
+            className="rounded-xl border-[#DDE7E2] bg-white px-3 text-xs text-[#334155] hover:bg-[#E9FFF3]"
             onClick={() => { setSelectedTicket(ticket); loadMessages(ticket.id) }}
           >
-            Ver detalhes
+            Ver
           </Button>
         </td>
       </tr>
@@ -532,8 +532,8 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       {/* ── Tabela principal (ativos) ── */}
       <div className="rounded-3xl border border-[#DDE7E2] bg-white/90 p-3 shadow-[0_18px_48px_rgba(7,59,42,0.08)] backdrop-blur sm:p-4">
         {/* Desktop */}
-        <div className="hidden overflow-x-auto rounded-2xl border border-[#DDE7E2] bg-white lg:block">
-          <table className="min-w-[1020px] w-full text-left text-[13px]">
+        <div className="hidden rounded-2xl border border-[#DDE7E2] bg-white lg:block">
+          <table className="w-full text-left text-xs">
             <thead className={theadClass}>
               <tr>
                 <SortableHeader label="ID"         sortK="id"        {...sortProps} />
@@ -541,11 +541,11 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 <SortableHeader label="Setor"       sortK="sector"    {...sortProps} />
                 <SortableHeader label="Categoria"   sortK="category"  {...sortProps} />
                 <SortableHeader label="Origem"      sortK="origin"    {...sortProps} />
-                <th className="px-3 py-3 whitespace-nowrap">SLA</th>
+                <th className="px-2 py-2 whitespace-nowrap">SLA</th>
                 <SortableHeader label="Status"      sortK="status"    {...sortProps} />
                 <SortableHeader label="Aberto em"   sortK="createdAt" {...sortProps} />
-                <th className="px-3 py-3 whitespace-nowrap">Atualizar</th>
-                <th className="px-3 py-3 whitespace-nowrap">Ações</th>
+                <th className="px-2 py-2 whitespace-nowrap">Alterar</th>
+                <th className="px-2 py-2 whitespace-nowrap">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -589,8 +589,8 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           {showArchived && (
             <div className="mt-3 animate-in fade-in-0 slide-in-from-top-1 duration-200">
               {/* Desktop */}
-              <div className="hidden overflow-x-auto rounded-2xl border border-[#DDE7E2] bg-white lg:block">
-                <table className="min-w-[1020px] w-full text-left text-[13px]">
+              <div className="hidden rounded-2xl border border-[#DDE7E2] bg-white lg:block">
+                <table className="w-full text-left text-xs">
                   <thead className={theadClass}>
                     <tr>
                       <SortableHeader label="ID"         sortK="id"        {...sortProps} />
@@ -598,11 +598,11 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                       <SortableHeader label="Setor"       sortK="sector"    {...sortProps} />
                       <SortableHeader label="Categoria"   sortK="category"  {...sortProps} />
                       <SortableHeader label="Origem"      sortK="origin"    {...sortProps} />
-                      <th className="px-3 py-3 whitespace-nowrap">SLA</th>
+                      <th className="px-2 py-2 whitespace-nowrap">SLA</th>
                       <SortableHeader label="Status"      sortK="status"    {...sortProps} />
                       <SortableHeader label="Aberto em"   sortK="createdAt" {...sortProps} />
-                      <th className="px-3 py-3 whitespace-nowrap">Atualizar</th>
-                      <th className="px-3 py-3 whitespace-nowrap">Ações</th>
+                      <th className="px-2 py-2 whitespace-nowrap">Alterar</th>
+                      <th className="px-2 py-2 whitespace-nowrap">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
