@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
+import { ClipboardList } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -358,9 +359,9 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   function getTicketAccentColor(ticket: any) {
     if (ticket.status === "Finalizado") return "#00A859"
     if (ticket.status === "Aguardando usuário") return "#F97316"
-    if (ticket.status === "Em andamento") return "#2563EB"
+    if (ticket.status === "Em andamento") return "#F59E0B"
     if (ticket.origin === "Offshore") return "#E11D48"
-    return "#F59E0B"
+    return "#0EA5E9"
   }
 
   const filteredTickets = tableTickets.filter((ticket) => {
@@ -566,6 +567,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 <th className="px-3 py-3 whitespace-nowrap">Origem</th>
                 <th className="px-3 py-3 whitespace-nowrap">SLA</th>
                 <th className="px-3 py-3 whitespace-nowrap">Status</th>
+                <th className="px-3 py-3 whitespace-nowrap">Aberto em</th>
                 <th className="px-3 py-3 whitespace-nowrap">Atualizar</th>
                 <th className="px-3 py-3 whitespace-nowrap">Ações</th>
               </tr>
@@ -596,6 +598,9 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                         Arquivado
                       </span>
                     )}
+                  </td>
+                  <td className="px-3 py-3 text-xs text-[#64748B] whitespace-nowrap">
+                    {ticket.createdAt}
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">
                     <select
@@ -647,7 +652,9 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 {ticket.description || "Sem descrição."}
               </p>
 
-              <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+              <p className="mt-2 text-[11px] text-slate-400">{ticket.createdAt}</p>
+
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
                 <span className={`status-badge-animated rounded-full px-3 py-1.5 font-semibold ${getSlaStatus(ticket).className}`}>
                   {getSlaStatus(ticket).label}
                 </span>
@@ -676,10 +683,12 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
         </div>
 
         {filteredTickets.length === 0 && (
-          <div className="rounded-2xl border border-dashed border-[#CFE2D8] bg-[#F8FCFA] p-8 text-center">
-            <div className="mx-auto mb-3 h-9 w-9 rounded-2xl bg-white ring-1 ring-[#DDE7E2]" />
+          <div className="rounded-2xl border border-dashed border-[#CFE2D8] bg-gradient-to-b from-[#F8FCFA] to-white p-10 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[#00A859] shadow-sm ring-1 ring-[#DDE7E2]">
+              <ClipboardList size={22} />
+            </div>
             <p className="text-sm font-black text-[#073B2A]">Nenhum chamado encontrado</p>
-            <p className="mt-1 text-xs font-semibold leading-5 text-[#64748B]">Limpe os filtros ou tente outro termo de busca.</p>
+            <p className="mt-1.5 text-xs font-medium leading-5 text-[#64748B]">Limpe os filtros ou tente outro termo de busca.</p>
           </div>
         )}
       </div>
@@ -753,10 +762,10 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                   {showFinishConfirm ? (
                     <>
                       <span className="flex items-center text-sm font-semibold text-slate-600">Confirmar finalização?</span>
-                      <Button variant="outline" className="h-10 rounded-2xl border-[#DDE7E2]" onClick={() => setShowFinishConfirm(false)}>
+                      <Button variant="outline" className="h-10 rounded-2xl border-[#DDE7E2] bg-white text-[#102A43] hover:bg-[#EAF0ED]" onClick={() => setShowFinishConfirm(false)}>
                         Cancelar
                       </Button>
-                      <Button className="h-10 rounded-2xl bg-slate-700 text-white hover:bg-slate-800" onClick={handleFinishTicket}>
+                      <Button className="h-10 rounded-2xl border border-[#00A859]/40 bg-[#00A859]/10 font-bold text-[#073B2A] hover:bg-[#00A859]/20" onClick={handleFinishTicket}>
                         Confirmar
                       </Button>
                     </>

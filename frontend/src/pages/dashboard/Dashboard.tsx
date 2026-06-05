@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react"
 import { useMemo, useState } from "react"
+import { BarChart2 } from "lucide-react"
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { StatsCard } from "@/components/dashboard/StatsCard"
@@ -19,7 +20,9 @@ function EmptyChartState() {
   return (
     <div className="flex h-full min-h-[180px] items-center justify-center rounded-2xl border border-dashed border-[#CFE2D8] bg-[#F8FCFA] px-5 text-center sm:min-h-[220px] sm:rounded-3xl">
       <div>
-        <div className="mx-auto mb-3 h-8 w-8 rounded-2xl bg-[#ECFBF3] ring-1 ring-[#BFEFD7]" />
+        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-[#ECFBF3] text-[#00A859] ring-1 ring-[#BFEFD7]">
+          <BarChart2 size={18} />
+        </div>
         <p className="text-sm font-black text-[#073B2A]">Sem dados para exibir</p>
         <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">Ajuste os filtros ou aguarde novos chamados entrarem.</p>
       </div>
