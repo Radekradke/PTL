@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png"
 import { Skeleton } from "@/components/ui/skeleton"
-import loadingLogo from "../../assets/lifting-loading-logo.png"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -141,21 +140,6 @@ function PortalShell({ children }: { children: React.ReactNode }) {
   return <div className={styles.page}>{children}</div>
 }
 
-function CreditOverlay() {
-  return (
-    <div
-      className="login-credit-overlay"
-      role="status"
-      aria-live="polite"
-    >
-      <div className="login-credit-content">
-        <img src={loadingLogo} alt="" className="login-credit-logo" />
-        <p className="login-credit-text">Criado por André Gomes</p>
-      </div>
-    </div>
-  )
-}
-
 function GlassCard({
   children,
   className = "",
@@ -225,8 +209,6 @@ export function AdminPortal() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [isLoggingIn, setIsLoggingIn] = useState(false)
-  const [showCredit, setShowCredit] = useState(false)
-
   const [category, setCategory] = useState("PC")
   const [origin, setOrigin] = useState("Base")
   const [description, setDescription] = useState("")
@@ -310,11 +292,7 @@ export function AdminPortal() {
       localStorage.setItem(PORTAL_USER_KEY, JSON.stringify(employee))
       setUsername("")
       setPassword("")
-      setShowCredit(true)
-      window.setTimeout(() => {
-        setLoggedEmployee(employee)
-        setShowCredit(false)
-      }, 1900)
+      setLoggedEmployee(employee)
     } catch (error) {
       console.error("Erro ao acessar portal:", error)
       toast.error("Erro ao acessar portal.")
@@ -637,7 +615,6 @@ export function AdminPortal() {
     setSelectedTicket(null)
     setMessages([])
     setSuccessState({ isVisible: false })
-    setShowCredit(false)
     setOuvidoriaName("")
     setOuvidoriaSector("")
     setOuvidoriaComplaint("")
@@ -672,8 +649,6 @@ export function AdminPortal() {
   if (!loggedEmployee) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.20),transparent_30%),linear-gradient(180deg,#F7FAF8,#EAF0ED)] px-4 py-8 text-[#111827]">
-        {showCredit && <CreditOverlay />}
-
         <div className="grid w-full max-w-5xl overflow-hidden rounded-[1.5rem] border border-white/80 bg-white shadow-[0_28px_90px_rgba(7,59,42,0.14)] sm:rounded-[2rem] lg:grid-cols-[1.05fr_0.95fr]">
           <section className="relative hidden min-h-[620px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.28),transparent_32%),linear-gradient(135deg,#073B2A,#102A43)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
             <div className="relative">
@@ -845,8 +820,6 @@ export function AdminPortal() {
 
   return (
     <PortalShell>
-      {showCredit && <CreditOverlay />}
-
       <div className={styles.shell}>
         <header className={`${styles.glass} p-4 sm:p-5`}>
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

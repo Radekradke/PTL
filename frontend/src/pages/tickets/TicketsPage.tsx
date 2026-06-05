@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { StatsCard } from "@/components/dashboard/StatsCard"
 import { TicketsTable } from "@/components/tickets/TicketsTable"
-import { Skeleton } from "@/components/ui/skeleton"
+import { PageLoader } from "@/components/ui/PageLoader"
 import { apiFetch } from "@/services/api"
 import { useNotifications } from "@/contexts/NotificationContext"
 import { TICKETS_CHANGED_EVENT } from "@/contexts/NotificationContext"
@@ -94,17 +94,9 @@ export function TicketsPage() {
         </section>
 
         {isLoadingTickets ? (
-          <>
-            <section className="space-y-3 sm:space-y-4 lg:space-y-4">
-              <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Status</h3>
-              <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <Skeleton key={index} className="h-28 rounded-[1.15rem] bg-white/80 sm:h-32 sm:rounded-[1.5rem]" />
-                ))}
-              </div>
-            </section>
-            <Skeleton className="h-[420px] rounded-3xl bg-white/80" />
-          </>
+          <div className="rounded-3xl border border-[#DDE8E2] bg-white/90 shadow-sm">
+            <PageLoader message="Carregando chamados..." />
+          </div>
         ) : (
           <>
             <section className="space-y-3 sm:space-y-4 lg:space-y-4">

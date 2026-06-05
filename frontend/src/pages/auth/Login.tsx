@@ -2,7 +2,6 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { LockKeyhole, ShieldCheck, UserRound, ArrowRight } from "lucide-react"
 import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png";
-import loadingLogo from "../../assets/lifting-loading-logo.png"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { API_URL, AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY } from "@/services/api"
@@ -14,8 +13,6 @@ export function Login() {
   const [sector, setSector] = useState("Admin")
   const [pin, setPin] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [showCredit, setShowCredit] = useState(false)
-
   async function handleLogin() {
     if (isLoading) return
 
@@ -50,10 +47,7 @@ export function Login() {
       )
 
       window.dispatchEvent(new Event(AUTH_CHANGED_EVENT))
-      setShowCredit(true)
-      window.setTimeout(() => {
-        navigate("/dashboard")
-      }, 1900)
+      navigate("/dashboard")
     } catch (error) {
       console.error("Erro ao acessar painel:", error)
       alert("Erro ao acessar painel.")
@@ -63,18 +57,6 @@ export function Login() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#EAF0ED] px-4 py-8 text-[#111827]">
-      {showCredit && (
-        <div
-          className="login-credit-overlay"
-          role="status"
-          aria-live="polite"
-        >
-          <div className="login-credit-content">
-            <img src={loadingLogo} alt="" className="login-credit-logo" />
-            <p className="login-credit-text">Criado por André Gomes</p>
-          </div>
-        </div>
-      )}
 
       <div className="grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_28px_90px_rgba(7,59,42,0.16)] lg:grid-cols-[1.05fr_0.95fr]">
         <section className="relative hidden min-h-[620px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.28),transparent_32%),linear-gradient(135deg,#073B2A,#102A43)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
