@@ -13,7 +13,7 @@ interface Props {
 const toneStyles: Record<StatsCardTone, { label: string; value: string; accent: string; icon: string }> = {
   neutral: { label: "text-slate-500", value: "text-[#111827]", accent: "bg-[#073B2A]", icon: "bg-slate-100 text-slate-500" },
   warning: { label: "text-amber-700", value: "text-amber-700", accent: "bg-[#F59E0B]", icon: "bg-amber-100 text-amber-600" },
-  info: { label: "text-amber-700", value: "text-amber-700", accent: "bg-[#F59E0B]", icon: "bg-amber-100 text-amber-600" },
+  info: { label: "text-blue-700", value: "text-blue-700", accent: "bg-[#2563EB]", icon: "bg-blue-100 text-blue-700" },
   success: { label: "text-[#073B2A]", value: "text-[#00A859]", accent: "bg-[#00A859]", icon: "bg-emerald-100 text-emerald-700" },
   danger: { label: "text-rose-700", value: "text-rose-700", accent: "bg-rose-500", icon: "bg-rose-100 text-rose-600" },
   base: { label: "text-cyan-700", value: "text-cyan-700", accent: "bg-cyan-500", icon: "bg-cyan-100 text-cyan-700" },
