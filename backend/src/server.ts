@@ -9,6 +9,7 @@ import { authRoutes } from "./routes/auth.routes"
 import { ouvidoriaRoutes } from "./routes/ouvidoria.routes"
 import { assertAuthConfig } from "./lib/auth"
 import { addSseClient } from "./lib/eventBus"
+import { requireAuth } from "./middlewares/auth.middleware"
 
 dotenv.config()
 assertAuthConfig()
@@ -39,13 +40,13 @@ app.use(
     credentials: true,
   })
 )
-app.use(express.json())
+app.use(express.json({ limit: "20kb" }))
 
 app.get("/", (_req, res) => {
   res.json({ message: "Lifting Support API online" })
 })
 
-app.get("/events", (_req, res) => {
+app.get("/events", requireAuth, (_req, res) => {
   res.setHeader("Content-Type", "text/event-stream")
   res.setHeader("Cache-Control", "no-cache")
   res.setHeader("Connection", "keep-alive")
