@@ -469,7 +469,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                   <div className="grid gap-2">
                     <label className="text-sm font-medium text-[#334155]">Origem</label>
                     <select value={origin} onChange={(e) => setOrigin(e.target.value)} className="w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]">
-                      <option>Base</option>
+                      <option>Administrativo</option>
                       <option>Operacional</option>
                     </select>
                   </div>
