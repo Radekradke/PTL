@@ -327,11 +327,6 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           </span>
         </td>
         <td className="px-2 py-2 whitespace-nowrap">
-          <span className={`status-badge-animated inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${getSlaStatus(ticket).className}`}>
-            {getSlaStatus(ticket).label}
-          </span>
-        </td>
-        <td className="px-2 py-2 whitespace-nowrap">
           <span className={`status-badge-animated inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${getStatusStyle(ticket.status)}`}>
             {ticket.status}
           </span>
@@ -356,7 +351,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             className="rounded-xl border-[#DDE7E2] bg-white px-3 text-xs text-[#334155] hover:bg-[#E9FFF3]"
             onClick={() => { setSelectedTicket(ticket); loadMessages(ticket.id) }}
           >
-            Ver
+            Responder
           </Button>
         </td>
       </tr>
@@ -541,7 +536,6 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 <SortableHeader label="Setor"       sortK="sector"    {...sortProps} />
                 <SortableHeader label="Categoria"   sortK="category"  {...sortProps} />
                 <SortableHeader label="Origem"      sortK="origin"    {...sortProps} />
-                <th className="px-2 py-2 whitespace-nowrap">SLA</th>
                 <SortableHeader label="Status"      sortK="status"    {...sortProps} />
                 <SortableHeader label="Aberto em"   sortK="createdAt" {...sortProps} />
                 <th className="px-2 py-2 whitespace-nowrap">Alterar</th>
