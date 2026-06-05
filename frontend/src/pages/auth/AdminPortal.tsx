@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, type ElementType } from "react"
 import { useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png"
@@ -25,6 +25,11 @@ import {
   Clock3,
   Send,
   Megaphone,
+  Activity,
+  CheckCheck,
+  Layers,
+  ShieldAlert,
+  Bot,
 } from "lucide-react"
 
 type Sector = {
@@ -162,11 +167,37 @@ function GlassCard({
   return <div className={`${styles.glass} ${className}`}>{children}</div>
 }
 
-function MiniMetric({ label, value }: { label: string; value: string | number }) {
+function MiniMetric({
+  label,
+  value,
+  icon: Icon,
+  accent,
+}: {
+  label: string
+  value: string | number
+  icon?: ElementType
+  accent?: string
+}) {
   return (
-    <div className="rounded-2xl border border-[#DDE7E2] bg-white/82 px-3 py-3 shadow-sm sm:px-4">
-      <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500 sm:text-[11px] sm:tracking-[0.14em]">{label}</p>
-      <p className="mt-1 text-xl font-black text-[#073B2A] sm:text-lg">{value}</p>
+    <div className="group relative overflow-hidden rounded-2xl border border-[#DDE7E2] bg-white/90 px-3 py-3 shadow-sm transition hover:shadow-md sm:px-4">
+      {accent && (
+        <span
+          className="absolute left-0 top-0 h-full w-1 rounded-l-2xl"
+          style={{ background: accent }}
+        />
+      )}
+      <div className="flex items-center gap-2">
+        {Icon && (
+          <span
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl"
+            style={{ background: accent ? `${accent}18` : "#F1F5F9", color: accent ?? "#64748b" }}
+          >
+            <Icon size={14} />
+          </span>
+        )}
+        <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500 sm:text-[11px]">{label}</p>
+      </div>
+      <p className="mt-1.5 pl-0.5 text-2xl font-black tracking-tight text-[#073B2A] sm:text-xl">{value}</p>
     </div>
   )
 }
@@ -179,12 +210,12 @@ function EmptyPortalState({
   description: string
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-[#CFE2D8] bg-[#F8FCFA] p-6 text-center">
-      <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[#00A859] ring-1 ring-[#DDE7E2]">
-        <ClipboardList size={20} />
+    <div className="rounded-2xl border border-dashed border-[#CFE2D8] bg-gradient-to-b from-[#F8FCFA] to-white p-8 text-center">
+      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[#00A859] shadow-sm ring-1 ring-[#DDE7E2]">
+        <ClipboardList size={22} />
       </div>
       <p className="text-sm font-black text-[#073B2A]">{title}</p>
-      <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">{description}</p>
+      <p className="mt-1.5 text-xs font-medium leading-5 text-slate-400">{description}</p>
     </div>
   )
 }
@@ -831,57 +862,45 @@ export function AdminPortal() {
             </div>
 
             <div className="grid grid-cols-3 gap-2">
-              <MiniMetric label="Ativos" value={activeTickets} />
-              <MiniMetric label="Finalizados" value={finishedTickets} />
-              <MiniMetric label="Total" value={allTickets.length} />
+              <MiniMetric label="Ativos" value={activeTickets} icon={Activity} accent="#0EA5E9" />
+              <MiniMetric label="Finalizados" value={finishedTickets} icon={CheckCheck} accent="#00A859" />
+              <MiniMetric label="Total" value={allTickets.length} icon={Layers} accent="#8B5CF6" />
             </div>
           </div>
 
           <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="grid grid-cols-3 gap-2 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1 lg:w-fit">
-              <button
-                onClick={() => handleTabChange("new")}
-                className={`inline-flex h-11 items-center justify-center rounded-xl px-3 text-sm font-bold transition ${
-                  activeTab === "new"
-                    ? "bg-[#00A859] text-white shadow-sm"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
-                }`}
-              >
-                <PlusCircle size={16} className="mr-2" />
-                Novo Chamado
-              </button>
-              <button
-                onClick={() => handleTabChange("mine")}
-                className={`inline-flex h-11 items-center justify-center rounded-xl px-3 text-sm font-bold transition ${
-                  activeTab === "mine"
-                    ? "bg-[#00A859] text-white shadow-sm"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
-                }`}
-              >
-                <MessageSquareText size={16} className="mr-2" />
-                Meus chamados
-              </button>
-              <button
-                onClick={() => handleTabChange("ouvidoria")}
-                className={`inline-flex h-11 items-center justify-center rounded-xl px-3 text-sm font-bold transition ${
-                  activeTab === "ouvidoria"
-                    ? "bg-[#073B2A] text-white shadow-sm"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
-                }`}
-              >
-                <Megaphone size={16} className="mr-2" />
-                Ouvidoria
-              </button>
+            <div className="flex gap-1 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1 lg:w-fit">
+              {(
+                [
+                  { key: "new", label: "Novo Chamado", Icon: PlusCircle, activeColor: "bg-[#00A859]" },
+                  { key: "mine", label: "Meus Chamados", Icon: MessageSquareText, activeColor: "bg-[#00A859]" },
+                  { key: "ouvidoria", label: "Ouvidoria", Icon: ShieldAlert, activeColor: "bg-[#073B2A]" },
+                ] as const
+              ).map(({ key, label, Icon, activeColor }) => (
+                <button
+                  key={key}
+                  onClick={() => handleTabChange(key)}
+                  className={`inline-flex h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold transition-all duration-200 ${
+                    activeTab === key
+                      ? `${activeColor} text-white shadow-md scale-[1.01]`
+                      : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
+                  }`}
+                >
+                  <Icon size={15} className={activeTab === key ? "opacity-100" : "opacity-60"} />
+                  <span className="hidden sm:inline">{label}</span>
+                  <span className="sm:hidden">{key === "new" ? "Novo" : key === "mine" ? "Meus" : "Ouvidoria"}</span>
+                </button>
+              ))}
             </div>
 
             <div className="flex flex-col gap-2 sm:flex-row">
               <Button
                 variant="outline"
-                className="h-10 rounded-2xl border border-[#DDE7E2] bg-white font-bold text-slate-700 transition hover:bg-red-50 hover:text-red-700"
+                className="h-10 rounded-2xl border border-[#DDE7E2] bg-white/80 font-bold text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
                 onClick={handleExit}
               >
-                <LogOut size={16} className="mr-2" />
-                Sair
+                <LogOut size={15} className="mr-2 opacity-70" />
+                Sair do portal
               </Button>
             </div>
           </div>
@@ -909,18 +928,21 @@ export function AdminPortal() {
             ) : (
               <>
                 <div className="mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#073B2A]/10 text-[#073B2A]">
-                      <Megaphone size={20} />
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#073B2A] to-[#102A43] text-white shadow-lg shadow-[#073B2A]/20">
+                      <ShieldAlert size={22} />
                     </div>
-                    <div>
-                      <p className="text-xs font-black uppercase tracking-[0.16em] text-[#073B2A]">Canal confidencial</p>
-                      <h2 className="text-xl font-black tracking-[-0.03em] text-[#111827]">Ouvidoria</h2>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs font-black uppercase tracking-[0.18em] text-[#073B2A]">Canal confidencial</p>
+                        <span className="rounded-full bg-[#073B2A]/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#073B2A]">Sigiloso</span>
+                      </div>
+                      <h2 className="mt-0.5 text-2xl font-black tracking-[-0.04em] text-[#111827]">Ouvidoria</h2>
+                      <p className="mt-1.5 text-sm leading-6 text-slate-500">
+                        Registre denúncias ou irregularidades de forma sigilosa. Após o envio, a mensagem é encaminhada diretamente ao responsável por e-mail.
+                      </p>
                     </div>
                   </div>
-                  <p className="mt-3 text-sm leading-6 text-slate-500">
-                    Registre denúncias ou irregularidades de forma sigilosa. Após o envio, a mensagem é encaminhada diretamente ao responsável por e-mail.
-                  </p>
                 </div>
 
                 <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
@@ -972,7 +994,7 @@ export function AdminPortal() {
                     </div>
 
                     <Button
-                      className="h-12 w-full rounded-2xl bg-[linear-gradient(135deg,#073B2A,#102A43)] font-bold text-white shadow-[0_10px_28px_rgba(7,59,42,0.2)] transition hover:-translate-y-0.5 hover:brightness-105 disabled:opacity-50 disabled:hover:translate-y-0"
+                      className={`h-12 w-full ${styles.primary}`}
                       onClick={handleOuvidoriaSubmit}
                       disabled={isSubmittingOuvidoria || ouvidoriaComplaint.trim().length < 10 || !ouvidoriaName.trim() || !ouvidoriaSector.trim()}
                     >
@@ -1107,26 +1129,33 @@ export function AdminPortal() {
                   <button
                     key={ticket.id}
                     onClick={() => loadTicketMessages(ticket)}
-                    className={`w-full rounded-2xl border border-l-4 p-4 text-left shadow-sm transition hover:border-[#00A859]/35 hover:bg-white ${
+                    className={`group w-full overflow-hidden rounded-2xl border text-left shadow-sm transition-all duration-150 hover:shadow-md ${
                       selectedTicket?.id === ticket.id
-                        ? "border-[#00A859]/40 bg-[#00A859]/10"
-                        : "border-[#DDE7E2] bg-white/70"
+                        ? "border-[#00A859]/40 bg-[#00A859]/8 ring-1 ring-[#00A859]/20"
+                        : "border-[#DDE7E2] bg-white/80 hover:bg-white"
                     }`}
-                    style={{ borderLeftColor: getStatusAccent(ticket.status) }}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="text-xs font-black uppercase tracking-[0.14em] text-[#00A859]">#{ticket.id}</p>
-                        <h3 className="mt-1 truncate text-sm font-black text-[#111827]">{ticket.category}</h3>
+                    <div
+                      className="h-1 w-full rounded-t-2xl"
+                      style={{ background: getStatusAccent(ticket.status) }}
+                    />
+                    <div className="p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-[10px] font-black uppercase tracking-[0.16em]" style={{ color: getStatusAccent(ticket.status) }}>
+                            #{ticket.id}
+                          </p>
+                          <h3 className="mt-0.5 truncate text-sm font-black text-[#111827]">{ticket.category}</h3>
+                        </div>
+                        <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold ${getStatusStyle(ticket.status)}`}>
+                          {ticket.status}
+                        </span>
                       </div>
-                      <span className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-bold ${getStatusStyle(ticket.status)}`}>
-                        {ticket.status}
-                      </span>
-                    </div>
-                    <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500">{ticket.description}</p>
-                    <div className="mt-3 flex items-center gap-1.5 text-[11px] text-slate-400">
-                      <Clock3 size={12} />
-                      <span>{ticket.createdAt}</span>
+                      <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500">{ticket.description}</p>
+                      <div className="mt-3 flex items-center gap-1.5 text-[11px] text-slate-400">
+                        <Clock3 size={11} />
+                        <span>{ticket.createdAt}</span>
+                      </div>
                     </div>
                   </button>
                 ))}
@@ -1203,27 +1232,45 @@ export function AdminPortal() {
                     </div>
                   </div>
 
-                  <div className="flex-1 space-y-4 overflow-y-auto bg-[#F8FCFA] p-4 sm:p-5">
+                  <div className="flex-1 space-y-5 overflow-y-auto bg-[#F8FCFA] p-4 sm:p-5">
                     {messages.map((message) => {
                       const isEmployee = message.senderType === "employee"
                       const isBot = message.senderType === "bot"
+                      const senderLabel = isEmployee ? "Você" : isBot ? "Bot" : (message.senderName || "Técnico")
+                      const initials = senderLabel
+                        .split(" ")
+                        .slice(0, 2)
+                        .map((w: string) => w[0])
+                        .join("")
+                        .toUpperCase()
 
                       return (
-                        <div key={message.id} className={`flex ${isEmployee ? "justify-end" : "justify-start"}`}>
+                        <div key={message.id} className={`flex items-end gap-2.5 ${isEmployee ? "flex-row-reverse" : "flex-row"}`}>
                           <div
-                            className={`max-w-[88%] rounded-3xl border p-4 shadow-sm ${
+                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-black shadow-sm ${
                               isEmployee
-                                ? "border-[#00A859]/20 bg-[#00A859]/12 text-[#073B2A]"
+                                ? "bg-[#00A859] text-white"
                                 : isBot
-                                ? "border-blue-200 bg-blue-50 text-[#111827]"
-                                : "border-[#DDE7E2] bg-white text-[#111827]"
+                                ? "bg-blue-500 text-white"
+                                : "bg-[#073B2A] text-white"
                             }`}
                           >
-                            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                              <p className={`text-xs font-black uppercase tracking-[0.12em] ${isBot ? "text-blue-600" : "text-slate-500"}`}>
-                                {isEmployee ? "Você" : isBot ? "🤖 Atendimento Automático" : message.senderName || "Técnico"}
+                            {isBot ? <Bot size={14} /> : initials}
+                          </div>
+                          <div
+                            className={`max-w-[80%] rounded-3xl border px-4 py-3 shadow-sm ${
+                              isEmployee
+                                ? "rounded-br-md border-[#00A859]/25 bg-gradient-to-br from-[#00A859]/15 to-[#00A859]/8 text-[#073B2A]"
+                                : isBot
+                                ? "rounded-bl-md border-blue-200 bg-blue-50 text-[#111827]"
+                                : "rounded-bl-md border-[#DDE7E2] bg-white text-[#111827]"
+                            }`}
+                          >
+                            <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                              <p className={`text-[11px] font-black uppercase tracking-[0.1em] ${isBot ? "text-blue-600" : isEmployee ? "text-[#00A859]" : "text-slate-500"}`}>
+                                {isEmployee ? "Você" : isBot ? "Atendimento Automático" : message.senderName || "Técnico"}
                               </p>
-                              <p className="text-[11px] text-slate-400">
+                              <p className="text-[10px] text-slate-400">
                                 {new Date(message.createdAt).toLocaleString("pt-BR")}
                               </p>
                             </div>
@@ -1275,15 +1322,23 @@ export function AdminPortal() {
                   </div>
                 </div>
               ) : (
-                <div className="flex h-full min-h-[520px] items-center justify-center p-8 text-center">
-                  <div className="max-w-md">
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-3xl bg-[#ECFBF3] text-[#00A859] ring-1 ring-[#BFEFD7]">
-                      <MessageSquareText size={28} />
+                <div className="flex h-full min-h-[520px] items-center justify-center bg-[#F8FCFA] p-8 text-center">
+                  <div className="max-w-sm">
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-[#ECFBF3] to-white text-[#00A859] shadow-sm ring-1 ring-[#BFEFD7]">
+                      <MessageSquareText size={30} />
                     </div>
-                    <h2 className="mt-4 text-2xl font-black tracking-[-0.04em] text-[#111827]">Selecione um chamado</h2>
+                    <h2 className="mt-5 text-2xl font-black tracking-[-0.04em] text-[#111827]">Selecione um chamado</h2>
                     <p className="mt-2 text-sm leading-6 text-slate-500">
-                      Clique em um chamado para acompanhar a conversa com a equipe técnica.
+                      Clique em qualquer chamado da lista ao lado para ver a conversa com a equipe técnica.
                     </p>
+                    <div className="mx-auto mt-5 flex max-w-[200px] flex-col gap-1.5">
+                      {["Aberto", "Em andamento", "Finalizado"].map((s) => (
+                        <div key={s} className={`flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-bold ${getStatusStyle(s)}`}>
+                          <span className="h-2 w-2 rounded-full" style={{ background: getStatusAccent(s) }} />
+                          {s}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
