@@ -1,4 +1,4 @@
 export const origins = [
-  "Base",
-  "Offshore",
+  "Administrativo",
+  "Operacional",
 ]

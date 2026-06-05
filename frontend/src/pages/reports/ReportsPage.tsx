@@ -86,8 +86,8 @@ export function ReportsPage() {
   const progressFilteredTickets = filteredTickets.filter((ticket) => ticket.status === "Em andamento").length
   const waitingUserFilteredTickets = filteredTickets.filter((ticket) => ticket.status === "Aguardando usuário").length
   const finishedFilteredTickets = filteredTickets.filter((ticket) => ticket.status === "Finalizado").length
-  const offshoreFilteredTickets = filteredTickets.filter((ticket) => ticket.origin === "Offshore").length
-  const baseFilteredTickets = filteredTickets.filter((ticket) => ticket.origin === "Base").length
+  const offshoreFilteredTickets = filteredTickets.filter((ticket) => ticket.origin === "Operacional").length
+  const baseFilteredTickets = filteredTickets.filter((ticket) => ticket.origin === "Administrativo").length
 
   function getFiltersSummary() {
     const filters = []
@@ -178,7 +178,7 @@ export function ReportsPage() {
             <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Search size={14}/>Buscar</span><Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Nome, descrição ou categoria" className="ls-input" /></label>
             <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Setor</span><select value={sectorFilter} onChange={(e) => setSectorFilter(e.target.value)} className="ls-input"><option value="Todos">Todos</option>{sectors.map((sector) => <option key={sector}>{sector}</option>)}</select></label>
             <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Categoria</span><select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="ls-input"><option value="Todas">Todas</option>{categories.map((category) => <option key={category}>{category}</option>)}</select></label>
-            <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Origem</span><select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="ls-input"><option value="Todas">Todas</option><option>Base</option><option>Offshore</option></select></label>
+            <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Origem</span><select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="ls-input"><option value="Todas">Todas</option><option>Administrativo</option><option>Operacional</option></select></label>
             <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Status</span><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="ls-input"><option value="Todos">Todos</option><option>Aberto</option><option>Em andamento</option><option>Aguardando usuário</option><option>Finalizado</option></select></label>
             <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Calendar size={14}/>Data Inicial</span><Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="ls-input" /></label>
             <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Calendar size={14}/>Data Final</span><Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="ls-input" /></label>
@@ -190,7 +190,7 @@ export function ReportsPage() {
         </section>
 
         <section className="space-y-4"><h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Resumo por status</h3><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5"><StatsCard title="Total filtrado" value={String(totalFilteredTickets)} tone="neutral" /><StatsCard title="Abertos" value={String(openFilteredTickets)} tone="warning" /><StatsCard title="Em andamento" value={String(progressFilteredTickets)} tone="info" /><StatsCard title="Aguardando usuário" value={String(waitingUserFilteredTickets)} tone="danger" /><StatsCard title="Finalizados" value={String(finishedFilteredTickets)} tone="success" /></div></section>
-        <section className="space-y-4"><h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Resumo por origem</h3><div className="grid gap-4 sm:grid-cols-2"><StatsCard title="Offshore" value={String(offshoreFilteredTickets)} tone="danger" /><StatsCard title="Base" value={String(baseFilteredTickets)} tone="base" /></div></section>
+        <section className="space-y-4"><h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Resumo por origem</h3><div className="grid gap-4 sm:grid-cols-2"><StatsCard title="Operacional" value={String(offshoreFilteredTickets)} tone="danger" /><StatsCard title="Administrativo" value={String(baseFilteredTickets)} tone="base" /></div></section>
 
         <section className="ls-card p-4 sm:p-6">
           <h2 className="ls-section-title text-xl">Preview dos dados</h2>

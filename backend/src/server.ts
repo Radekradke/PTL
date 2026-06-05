@@ -10,6 +10,7 @@ import { ouvidoriaRoutes } from "./routes/ouvidoria.routes"
 import { assertAuthConfig } from "./lib/auth"
 import { addSseClient } from "./lib/eventBus"
 import { requireAuth } from "./middlewares/auth.middleware"
+import { startTicketAutoClose } from "./services/ticketAutoClose"
 
 dotenv.config()
 assertAuthConfig()
@@ -65,4 +66,5 @@ const PORT = process.env.PORT || 3333
 
 app.listen(PORT, () => {
   console.log(`API rodando em http://localhost:${PORT}`)
+  startTicketAutoClose()
 })

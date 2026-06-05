@@ -204,8 +204,8 @@ export function Dashboard() {
   const progressTickets = filteredTickets.filter((ticket) => ticket.status === "Em andamento").length
   const waitingUserTickets = filteredTickets.filter((ticket) => ticket.status === "Aguardando usuário").length
   const finishedTickets = filteredTickets.filter((ticket) => ticket.status === "Finalizado").length
-  const offshoreTickets = filteredTickets.filter((ticket) => ticket.origin === "Offshore").length
-  const baseTickets = filteredTickets.filter((ticket) => ticket.origin === "Base").length
+  const offshoreTickets = filteredTickets.filter((ticket) => ticket.origin === "Operacional").length
+  const baseTickets = filteredTickets.filter((ticket) => ticket.origin === "Administrativo").length
 
   const uniqueSectors = useMemo(() => Array.from(new Set(tickets.map((t) => t.sector))).filter(Boolean), [tickets])
   const uniqueCategories = useMemo(() => Array.from(new Set(tickets.map((t) => t.category))).filter(Boolean), [tickets])
@@ -228,8 +228,8 @@ export function Dashboard() {
   ]
 
   const ticketsByOrigin = [
-    { name: "Base", total: baseTickets },
-    { name: "Offshore", total: offshoreTickets },
+    { name: "Administrativo", total: baseTickets },
+    { name: "Operacional", total: offshoreTickets },
   ]
 
   const tooltipStyle = {
@@ -302,7 +302,7 @@ export function Dashboard() {
           <div className={`${filtersOpen ? "grid animate-in fade-in-0 slide-in-from-top-1 duration-200" : "hidden"} mt-3 gap-2 sm:mt-4 sm:grid sm:gap-3 sm:grid-cols-2 lg:mt-4 lg:grid-cols-4`}>
             <select value={sectorFilter} onChange={(e) => setSectorFilter(e.target.value)} className="ls-input text-sm"><option value="Todos">Todos setores</option>{uniqueSectors.map((sector) => <option key={sector} value={sector}>{sector}</option>)}</select>
             <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="ls-input text-sm"><option value="Todas">Todas categorias</option>{uniqueCategories.map((category) => <option key={category} value={category}>{category}</option>)}</select>
-            <select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="ls-input text-sm"><option value="Todas">Todas origens</option><option value="Base">Base</option><option value="Offshore">Offshore</option></select>
+            <select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="ls-input text-sm"><option value="Todas">Todas origens</option><option value="Administrativo">Administrativo</option><option value="Operacional">Operacional</option></select>
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="ls-input text-sm"><option value="Todos">Todos status</option><option value="Aberto">Aberto</option><option value="Em andamento">Em andamento</option><option value="Aguardando usuário">Aguardando usuário</option><option value="Finalizado">Finalizado</option></select>
           </div>
         </section>
@@ -324,17 +324,17 @@ export function Dashboard() {
           <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Origem</h3>
           <div className="grid grid-cols-2 gap-2 sm:hidden">
             <div className="rounded-2xl border border-[#DDE8E2] bg-white px-3 py-3 shadow-sm">
-              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Base</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Administrativo</p>
               <p className="mt-1 text-2xl font-black text-cyan-700">{baseTickets}</p>
             </div>
             <div className="rounded-2xl border border-rose-100 bg-[#FFF7F8] px-3 py-3 shadow-sm">
-              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-rose-600">Offshore</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-rose-600">Operacional</p>
               <p className="mt-1 text-2xl font-black text-rose-700">{offshoreTickets}</p>
             </div>
           </div>
           <div className="hidden gap-2 sm:grid sm:gap-3 lg:gap-4 sm:grid-cols-2 lg:grid-cols-2">
-            <StatsCard title="Offshore" value={String(offshoreTickets)} tone="danger" />
-            <StatsCard title="Base" value={String(baseTickets)} tone="base" />
+            <StatsCard title="Operacional" value={String(offshoreTickets)} tone="danger" />
+            <StatsCard title="Administrativo" value={String(baseTickets)} tone="base" />
           </div>
         </section>
 
@@ -355,7 +355,7 @@ export function Dashboard() {
             <MobilePieChart data={ticketsByStatus} colors={["#4F93D2", "#F59E0B", "#F97316", "#00A859"]} tooltipStyle={tooltipStyle} />
           </div>
           <div className="ls-card p-3 sm:p-4 lg:p-6">
-            <h2 className="ls-section-title text-lg sm:text-xl">Base x Offshore</h2>
+            <h2 className="ls-section-title text-lg sm:text-xl">Administrativo x Operacional</h2>
             <p className="text-xs sm:text-sm text-slate-500">Origem dos chamados.</p>
             <MobilePieChart data={ticketsByOrigin} colors={["#102A43", "#E11D48"]} tooltipStyle={tooltipStyle} />
           </div>

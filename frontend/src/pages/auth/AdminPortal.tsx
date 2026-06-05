@@ -98,7 +98,7 @@ function formatTicket(ticket: any): PortalTicket {
     sector: ticket.sector?.name || "Sem setor",
     category: ticket.category || "Sem categoria",
     status: ticket.status || "Aberto",
-    origin: ticket.origin || "Base",
+    origin: ticket.origin || "Administrativo",
     description: ticket.description || "",
     technicalResponse: ticket.technicalResponse || "",
     archived: ticket.archived || false,
@@ -210,7 +210,7 @@ export function AdminPortal() {
   const [password, setPassword] = useState("")
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const [category, setCategory] = useState("PC")
-  const [origin, setOrigin] = useState("Base")
+  const [origin, setOrigin] = useState("Administrativo")
   const [description, setDescription] = useState("")
 
   const [activeTab, setActiveTab] = useState<"new" | "mine" | "ouvidoria">("new")
@@ -491,7 +491,7 @@ export function AdminPortal() {
       })
 
       setCategory("PC")
-      setOrigin("Base")
+      setOrigin("Administrativo")
       setDescription("")
       loadMyTickets(loggedEmployee.id)
     } catch (error) {
@@ -606,7 +606,7 @@ export function AdminPortal() {
     setUsername("")
     setPassword("")
     setCategory("PC")
-    setOrigin("Base")
+    setOrigin("Administrativo")
     setDescription("")
     setActiveTab("new")
     setShowArchivedTickets(false)
@@ -1013,7 +1013,7 @@ export function AdminPortal() {
                     <div>
                       <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Origem</label>
                       <div className="mt-2 grid grid-cols-2 gap-2 rounded-2xl border border-[#DDE7E2] bg-[#F8FAF9] p-1">
-                        {["Base", "Offshore"].map((originOption) => (
+                        {["Administrativo", "Operacional"].map((originOption) => (
                           <button
                             key={originOption}
                             type="button"

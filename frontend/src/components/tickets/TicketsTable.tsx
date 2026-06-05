@@ -92,7 +92,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   const [employeeId, setEmployeeId] = useState("")
   const [category, setCategory] = useState("PC")
   const [sectorId, setSectorId] = useState("")
-  const [origin, setOrigin] = useState("Base")
+  const [origin, setOrigin] = useState("Administrativo")
   const [description, setDescription] = useState("")
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState("Todos")
@@ -214,7 +214,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
         setEmployeeId(String(first.id))
         setSectorId(String(first.sectorId || first.sector?.id || ""))
       } else { setEmployeeId(""); setSectorId("") }
-      setCategory("PC"); setOrigin("Base"); setDescription("")
+      setCategory("PC"); setOrigin("Administrativo"); setDescription("")
       onTicketsChange()
     } catch (error) {
       console.error("Erro ao criar chamado:", error)
@@ -283,7 +283,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
   function getSlaStatus(ticket: any) {
     if (ticket.status === "Finalizado") return { label: "Concluído", className: "bg-[#E9FFF3] text-[#073B2A] ring-1 ring-emerald-200" }
-    if (ticket.origin === "Offshore") return { label: "Offshore", className: "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]" }
+    if (ticket.origin === "Operacional") return { label: "Operacional", className: "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]" }
     return { label: "No prazo", className: "bg-[#EAF0ED] text-[#334155] ring-1 ring-[#DDE7E2]" }
   }
 
@@ -291,7 +291,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
     if (ticket.status === "Finalizado") return "#00A859"
     if (ticket.status === "Aguardando usuário") return "#F97316"
     if (ticket.status === "Em andamento") return "#2563EB"
-    if (ticket.origin === "Offshore") return "#E11D48"
+    if (ticket.origin === "Operacional") return "#E11D48"
     return "#F59E0B"
   }
 
@@ -322,7 +322,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
         <td className="px-3 py-3 text-[#334155] whitespace-nowrap">{ticket.sector}</td>
         <td className="px-3 py-3 text-[#334155] whitespace-nowrap">{ticket.category}</td>
         <td className="px-3 py-3 whitespace-nowrap">
-          <span className={`status-badge-animated inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${ticket.origin === "Offshore" ? "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]" : "bg-[#EAF0ED] text-[#334155] ring-1 ring-[#DDE7E2]"}`}>
+          <span className={`status-badge-animated inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${ticket.origin === "Operacional" ? "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]" : "bg-[#EAF0ED] text-[#334155] ring-1 ring-[#DDE7E2]"}`}>
             {ticket.origin}
           </span>
         </td>
@@ -470,7 +470,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     <label className="text-sm font-medium text-[#334155]">Origem</label>
                     <select value={origin} onChange={(e) => setOrigin(e.target.value)} className="w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]">
                       <option>Base</option>
-                      <option>Offshore</option>
+                      <option>Operacional</option>
                     </select>
                   </div>
 
@@ -507,8 +507,8 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           </select>
           <select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="h-11 w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]">
             <option value="Todas">Todas origens</option>
-            <option value="Offshore">Offshore</option>
-            <option value="Base">Base</option>
+            <option value="Operacional">Operacional</option>
+            <option value="Administrativo">Administrativo</option>
           </select>
           <select value={sectorFilter} onChange={(e) => setSectorFilter(e.target.value)} className="h-11 w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]">
             <option value="Todos">Todos setores</option>

@@ -59,8 +59,8 @@ export function TicketsPage() {
   const progressTickets = activeTickets.filter((ticket) => ticket.status === "Em andamento").length
   const waitingUserTickets = activeTickets.filter((ticket) => ticket.status === "Aguardando usuário").length
   const finishedTickets = tickets.filter((ticket) => ticket.status === "Finalizado").length
-  const offshoreTickets = tickets.filter((ticket) => ticket.origin === "Offshore").length
-  const baseTickets = tickets.filter((ticket) => ticket.origin === "Base").length
+  const offshoreTickets = tickets.filter((ticket) => ticket.origin === "Operacional").length
+  const baseTickets = tickets.filter((ticket) => ticket.origin === "Administrativo").length
   const totalTickets = tickets.length
 
   return (
@@ -116,17 +116,17 @@ export function TicketsPage() {
               <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Origem</h3>
               <div className="grid grid-cols-2 gap-2 sm:hidden">
                 <div className="rounded-2xl border border-[#DDE8E2] bg-white px-3 py-3 shadow-sm">
-                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Base</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Administrativo</p>
                   <p className="mt-1 text-2xl font-black text-cyan-700">{baseTickets}</p>
                 </div>
                 <div className="rounded-2xl border border-rose-100 bg-[#FFF7F8] px-3 py-3 shadow-sm">
-                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-rose-600">Offshore</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-rose-600">Operacional</p>
                   <p className="mt-1 text-2xl font-black text-rose-700">{offshoreTickets}</p>
                 </div>
               </div>
               <div className="hidden gap-2 sm:grid sm:gap-3 lg:gap-4 sm:grid-cols-2">
-                <StatsCard title="Offshore" value={String(offshoreTickets)} tone="danger" />
-                <StatsCard title="Base" value={String(baseTickets)} tone="base" />
+                <StatsCard title="Operacional" value={String(offshoreTickets)} tone="danger" />
+                <StatsCard title="Administrativo" value={String(baseTickets)} tone="base" />
               </div>
             </section>
 
