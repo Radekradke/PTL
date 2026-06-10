@@ -197,12 +197,13 @@ export function Login() {
         <section className="flex min-h-[620px] items-center justify-center overflow-hidden bg-white px-6 py-10 sm:px-12">
           <div className={`w-full max-w-[360px] ${animClass}`}>
 
-            {/* ── Logo uniforme em ambas as telas ── */}
-            <div className="mb-7 flex justify-center">
-              <div className="ls-logo-pulse flex h-[72px] w-[72px] items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#073B2A,#00A859)] shadow-[0_14px_36px_rgba(0,168,89,0.32)]">
-                <img src={logoLifting} alt="Lifting" className="h-11 w-11 object-contain" />
+            {!selectedDept && (
+              <div className="mb-7 flex justify-center">
+                <div className="ls-logo-pulse flex h-[72px] w-[72px] items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#073B2A,#00A859)] shadow-[0_14px_36px_rgba(0,168,89,0.32)]">
+                  <img src={logoLifting} alt="Lifting" className="h-11 w-11 object-contain" />
+                </div>
               </div>
-            </div>
+            )}
 
             {!selectedDept ? (
               /* ── Tela 1: seleção de setor ── */
