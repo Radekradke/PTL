@@ -29,10 +29,18 @@ if (isProduction && allowedOrigins.length === 0) {
   throw new Error("FRONTEND_URL deve ser configurado em produção.")
 }
 
+// Permite qualquer subdomínio *.vercel.app para facilitar previews do Vercel
+function isAllowedOrigin(origin: string) {
+  if (allowedOrigins.includes(origin)) return true
+  if (/^https:\/\/[\w-]+-andres-projects-[\w]+\.vercel\.app$/.test(origin)) return true
+  if (/^https:\/\/lifting[\w-]*\.vercel\.app$/.test(origin)) return true
+  return false
+}
+
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || isAllowedOrigin(origin)) {
         return callback(null, true)
       }
 
