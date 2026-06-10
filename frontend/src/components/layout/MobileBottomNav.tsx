@@ -3,10 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY } from "@/services/api"
 
 const access = {
-  dashboard: ["Admin", "TI", "Diretoria"],
-  tickets: ["Admin", "TI"],
-  reports: ["Admin", "TI", "Diretoria"],
-  settings: ["Admin"],
+  dashboard: ["Admin", "TI", "RH", "Infraestrutura"],
+  tickets:   ["Admin", "TI", "RH", "Infraestrutura"],
+  reports:   ["Admin", "TI", "RH", "Infraestrutura"],
+  settings:  ["Admin"],
 }
 
 export function MobileBottomNav() {
