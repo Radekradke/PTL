@@ -156,12 +156,56 @@ export function Login() {
             {/* Step 1: Department selection */}
             {!selectedDept ? (
               <>
+                <style>{`
+                  @keyframes ls-fade-up {
+                    from { opacity: 0; transform: translateY(18px); }
+                    to   { opacity: 1; transform: translateY(0); }
+                  }
+                  @keyframes ls-shimmer {
+                    0%   { background-position: -200% center; }
+                    100% { background-position: 200% center; }
+                  }
+                  @keyframes ls-pulse-ring {
+                    0%, 100% { box-shadow: 0 0 0 0 rgba(0,168,89,0.35); }
+                    50%      { box-shadow: 0 0 0 8px rgba(0,168,89,0); }
+                  }
+                  @keyframes ls-icon-bounce {
+                    0%, 100% { transform: translateY(0) scale(1); }
+                    40%      { transform: translateY(-4px) scale(1.12); }
+                    70%      { transform: translateY(1px) scale(0.97); }
+                  }
+                  .ls-sector-btn {
+                    animation: ls-fade-up 0.38s cubic-bezier(.22,.68,0,1.2) both;
+                  }
+                  .ls-sector-btn:nth-child(1) { animation-delay: 0.05s; }
+                  .ls-sector-btn:nth-child(2) { animation-delay: 0.13s; }
+                  .ls-sector-btn:nth-child(3) { animation-delay: 0.21s; }
+                  .ls-sector-btn:hover .ls-sector-icon {
+                    animation: ls-icon-bounce 0.55s ease forwards;
+                  }
+                  .ls-sector-btn:hover {
+                    animation: ls-pulse-ring 1.4s ease infinite;
+                  }
+                  .ls-shimmer-text {
+                    background: linear-gradient(
+                      90deg,
+                      #073B2A 0%, #00A859 30%, #39D98A 50%, #00A859 70%, #073B2A 100%
+                    );
+                    background-size: 200% auto;
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    animation: ls-shimmer 3.5s linear infinite;
+                  }
+                `}</style>
+
                 <div className="mb-8 text-center">
-                  <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00A859]/10 text-[#00A859] ring-1 ring-[#00A859]/20">
-                    <Building2 size={24} />
+                  <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#073B2A,#00A859)] text-white shadow-[0_12px_32px_rgba(0,168,89,0.35)] ring-2 ring-[#39D98A]/30"
+                    style={{ animation: "ls-pulse-ring 2s ease infinite" }}>
+                    <Building2 size={28} />
                   </div>
-                  <h2 className="text-3xl font-black tracking-[-0.05em] text-[#111827]">
-                    Selecione o setor
+                  <h2 className="text-3xl font-black tracking-[-0.05em]">
+                    <span className="ls-shimmer-text">Selecione o setor</span>
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-slate-500">
                     Escolha o setor para continuar o acesso ao painel.
@@ -169,34 +213,38 @@ export function Login() {
                 </div>
 
                 <div className="space-y-3">
-                  {departmentOptions.map((dept) => {
+                  {departmentOptions.map((dept, i) => {
                     const Icon = dept.icon
                     return (
                       <button
                         key={dept.id}
                         onClick={() => setSelectedDept(dept.id)}
-                        className="group flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md"
-                        style={{
-                          borderColor: dept.border,
-                          backgroundColor: dept.bg,
-                        }}
+                        className="ls-sector-btn group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl p-[1.5px] text-left"
+                        style={{ background: "linear-gradient(135deg,#073B2A,#00A859,#39D98A,#00A859,#073B2A)", backgroundSize: "300% 300%", animation: `ls-fade-up 0.38s cubic-bezier(.22,.68,0,1.2) ${0.05 + i * 0.08}s both` }}
                       >
-                        <span
-                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                          style={{ background: `${dept.color}18`, color: dept.color }}
-                        >
-                          <Icon size={20} />
+                        {/* inner card */}
+                        <span className="flex w-full items-center gap-4 rounded-[14px] bg-[linear-gradient(135deg,#073B2A_0%,#0a4f35_50%,#073B2A_100%)] px-4 py-4 transition-all duration-200 group-hover:bg-[linear-gradient(135deg,#0a5c3e,#00A859,#0a5c3e)]">
+                          {/* icon */}
+                          <span className="ls-sector-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white ring-1 ring-white/20 transition-all duration-200 group-hover:bg-[#39D98A]/20 group-hover:ring-[#39D98A]/50">
+                            <Icon size={22} />
+                          </span>
+
+                          {/* text */}
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-base font-black tracking-[-0.02em] text-white">
+                              {dept.label}
+                            </span>
+                            <span className="mt-0.5 block text-xs font-medium leading-4 text-emerald-200/70">
+                              {dept.description}
+                            </span>
+                          </span>
+
+                          {/* arrow */}
+                          <ChevronRight
+                            size={18}
+                            className="shrink-0 text-white/40 transition-all duration-200 group-hover:translate-x-1 group-hover:text-[#39D98A]"
+                          />
                         </span>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-black text-[#111827]">{dept.label}</p>
-                          <p className="mt-0.5 text-xs font-medium leading-4 text-slate-500">
-                            {dept.description}
-                          </p>
-                        </div>
-                        <ChevronRight
-                          size={16}
-                          className="shrink-0 text-slate-400 transition group-hover:text-slate-600"
-                        />
                       </button>
                     )
                   })}
