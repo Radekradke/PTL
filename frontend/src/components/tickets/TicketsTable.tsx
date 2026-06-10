@@ -5,7 +5,7 @@ import { ClipboardList, ChevronDown, ArrowUpDown, ArrowUp, ArrowDown } from "luc
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { categories } from "@/lib/categories"
+import { categoriesByDepartment, type TicketDepartment } from "@/lib/categories"
 import { apiFetch } from "@/services/api"
 
 import {
@@ -90,6 +90,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   const [employees, setEmployees] = useState<Employee[]>([])
   const [sectors, setSectors] = useState<Sector[]>([])
   const [employeeId, setEmployeeId] = useState("")
+  const [department, setDepartment] = useState<TicketDepartment>("TI")
   const [category, setCategory] = useState("PC")
   const [sectorId, setSectorId] = useState("")
   const [origin, setOrigin] = useState("Administrativo")
@@ -206,7 +207,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       const response = await apiFetch("/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ employeeId: Number(employeeId), sectorId: Number(sectorId), category, origin, description }),
+        body: JSON.stringify({ employeeId: Number(employeeId), sectorId: Number(sectorId), department, category, origin, description }),
       })
       if (!response.ok) { toast.error("Erro ao criar chamado."); return }
       if (employees.length > 0) {
@@ -214,7 +215,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
         setEmployeeId(String(first.id))
         setSectorId(String(first.sectorId || first.sector?.id || ""))
       } else { setEmployeeId(""); setSectorId("") }
-      setCategory("PC"); setOrigin("Administrativo"); setDescription("")
+      setDepartment("TI"); setCategory("PC"); setOrigin("Administrativo"); setDescription("")
       onTicketsChange()
     } catch (error) {
       console.error("Erro ao criar chamado:", error)
@@ -445,6 +446,29 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     </select>
                   </div>
 
+                  <div className="grid gap-2">
+                    <label className="text-sm font-medium text-[#334155]">Departamento responsável</label>
+                    <div className="grid grid-cols-3 gap-2 rounded-2xl border border-[#DDE7E2] bg-[#F8FAF9] p-1">
+                      {(["TI", "RH", "Infraestrutura"] as TicketDepartment[]).map((dept) => (
+                        <button
+                          key={dept}
+                          type="button"
+                          onClick={() => {
+                            setDepartment(dept)
+                            setCategory(categoriesByDepartment[dept][0])
+                          }}
+                          className={`h-10 rounded-xl text-sm font-black transition ${
+                            department === dept
+                              ? "bg-[#00A859] text-white shadow-sm"
+                              : "text-slate-600 hover:bg-white"
+                          }`}
+                        >
+                          {dept}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div className="grid gap-2">
                       <label className="text-sm font-medium text-[#334155]">Setor vinculado</label>
@@ -456,7 +480,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     <div className="grid gap-2">
                       <label className="text-sm font-medium text-[#334155]">Categoria</label>
                       <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]">
-                        {categories.map((c) => <option key={c}>{c}</option>)}
+                        {categoriesByDepartment[department].map((c) => <option key={c}>{c}</option>)}
                       </select>
                     </div>
                   </div>
