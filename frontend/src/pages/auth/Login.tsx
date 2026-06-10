@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { API_URL, AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY } from "@/services/api"
 
-const technicalSectors = ["Admin", "TI", "Diretoria"]
+const technicalSectors = ["Admin", "TI", "RH", "Infraestrutura"]
 
 type DepartmentOption = {
   id: string
@@ -136,7 +136,7 @@ export function Login() {
                 <ShieldCheck className="text-[#39D98A]" size={22} />
                 <div>
                   <p className="text-sm font-bold !text-white">Acesso restrito</p>
-                  <p className="text-xs text-emerald-50/65">Admin, TI e Diretoria</p>
+                  <p className="text-xs text-emerald-50/65">Admin, TI, RH e Infraestrutura</p>
                 </div>
               </div>
             </div>

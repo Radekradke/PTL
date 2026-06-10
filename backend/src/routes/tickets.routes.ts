@@ -10,6 +10,7 @@ import {
   validateId,
   validateLongText,
   validateTicketCategory,
+  validateTicketDepartment,
   validateTicketOrigin,
   validateTicketStatus,
 } from "../lib/validation"
@@ -80,13 +81,20 @@ function shouldArchiveStatus(status: string) {
   return status === "Finalizado"
 }
 
-ticketsRoutes.get("/", requireTechnical(["Admin", "TI", "Diretoria"]), async (req, res) => {
+ticketsRoutes.get("/", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { archived, includeArchived, summary } = req.query
+  const auth = (req as any).auth
   const showArchived = archived === "true"
   const shouldIncludeArchived = includeArchived === "true" || archived === "all"
 
+  // Admin vê tudo; demais setores só veem os tickets do próprio department
+  const departmentFilter = auth.sector !== "Admin" ? { department: auth.sector } : {}
+
   const query: any = {
-    where: shouldIncludeArchived ? undefined : { archived: showArchived },
+    where: {
+      ...departmentFilter,
+      ...(shouldIncludeArchived ? {} : { archived: showArchived }),
+    },
     orderBy: { createdAt: "desc" },
   }
 
@@ -103,7 +111,7 @@ ticketsRoutes.get("/", requireTechnical(["Admin", "TI", "Diretoria"]), async (re
 
 ticketsRoutes.get(
   "/employee/:employeeId",
-  requireEmployeeOwnerOrTechnical("employeeId", ["Admin", "TI", "Diretoria"]),
+  requireEmployeeOwnerOrTechnical("employeeId", ["Admin", "TI", "RH", "Infraestrutura"]),
   async (req, res) => {
     const { employeeId } = req.params
     const { archived, includeArchived, summary } = req.query
@@ -131,12 +139,17 @@ ticketsRoutes.get(
 )
 
 ticketsRoutes.post("/", requireAuth, async (req, res) => {
-  const { employeeId, category, origin, description } = req.body
+  const { employeeId, category, origin, description, department } = req.body
   const auth = (req as any).auth
 
   const employeeIdValidation = validateId(employeeId, "Funcionário")
   if (!employeeIdValidation.ok) {
     return res.status(400).json({ message: employeeIdValidation.message })
+  }
+
+  const departmentValidation = validateTicketDepartment(department)
+  if (!departmentValidation.ok) {
+    return res.status(400).json({ message: departmentValidation.message })
   }
 
   const categoryValidation = validateTicketCategory(category)
@@ -174,6 +187,7 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
     data: {
       employeeId: employee.id,
       sectorId: employee.sectorId,
+      department: departmentValidation.value,
       category: categoryValidation.value,
       origin: originValidation.value,
       description: descriptionValidation.value,
@@ -201,7 +215,7 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
   res.status(201).json(ticket)
 })
 
-ticketsRoutes.get("/:id/messages", requireTicketParticipant(["Admin", "TI", "Diretoria"]), async (req, res) => {
+ticketsRoutes.get("/:id/messages", requireTicketParticipant(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
   const idValidation = validateId(id, "Chamado")
 
@@ -221,7 +235,7 @@ ticketsRoutes.get("/:id/messages", requireTicketParticipant(["Admin", "TI", "Dir
   res.json(messages)
 })
 
-ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI"]), async (req, res) => {
+ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
   const { senderType, senderName, employeeId, message } = req.body
   const auth = (req as any).auth
@@ -293,7 +307,7 @@ ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI"]), a
   res.status(201).json(createdMessage)
 })
 
-ticketsRoutes.patch("/:id/status", requireTechnical(["Admin", "TI"]), async (req, res) => {
+ticketsRoutes.patch("/:id/status", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
   const { status } = req.body
   const idValidation = validateId(id, "Chamado")
@@ -325,7 +339,7 @@ ticketsRoutes.patch("/:id/status", requireTechnical(["Admin", "TI"]), async (req
   res.json(ticket)
 })
 
-ticketsRoutes.patch("/:id/response", requireTechnical(["Admin", "TI"]), async (req, res) => {
+ticketsRoutes.patch("/:id/response", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
   const { technicalResponse } = req.body
   const idValidation = validateId(id, "Chamado")
@@ -365,7 +379,7 @@ ticketsRoutes.patch("/:id/response", requireTechnical(["Admin", "TI"]), async (r
   res.json(ticket)
 })
 
-ticketsRoutes.patch("/:id", requireTechnical(["Admin", "TI"]), async (req, res) => {
+ticketsRoutes.patch("/:id", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
   const { status } = req.body
   const idValidation = validateId(id, "Chamado")
@@ -396,7 +410,7 @@ ticketsRoutes.patch("/:id", requireTechnical(["Admin", "TI"]), async (req, res) 
   res.json(ticket)
 })
 
-ticketsRoutes.patch("/:id/archive", requireTechnical(["Admin", "TI"]), async (req, res) => {
+ticketsRoutes.patch("/:id/archive", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
   const idValidation = validateId(id, "Chamado")
 

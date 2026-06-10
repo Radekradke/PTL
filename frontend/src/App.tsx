@@ -60,7 +60,7 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute allowed={["Admin", "TI", "Diretoria"]}>
+              <ProtectedRoute allowed={["Admin", "TI", "RH", "Infraestrutura"]}>
                 <Dashboard />
               </ProtectedRoute>
             }
@@ -69,7 +69,7 @@ function App() {
           <Route
             path="/tickets"
             element={
-              <ProtectedRoute allowed={["Admin", "TI"]}>
+              <ProtectedRoute allowed={["Admin", "TI", "RH", "Infraestrutura"]}>
                 <TicketsPage />
               </ProtectedRoute>
             }
@@ -78,7 +78,7 @@ function App() {
           <Route
             path="/reports"
             element={
-              <ProtectedRoute allowed={["Admin", "TI", "Diretoria"]}>
+              <ProtectedRoute allowed={["Admin", "TI", "RH", "Infraestrutura"]}>
                 <ReportsPage />
               </ProtectedRoute>
             }

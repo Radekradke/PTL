@@ -13,7 +13,7 @@ export type AuthPayload = {
 const TOKEN_TTL_SECONDS = 60 * 60 * 12
 const PASSWORD_PREFIX = "scrypt"
 const DEV_AUTH_SECRET = "lifting-support-dev-secret-change-me"
-const REQUIRED_TECHNICAL_SECTORS = ["Admin", "TI", "Diretoria"]
+const REQUIRED_TECHNICAL_SECTORS = ["Admin", "TI", "RH", "Infraestrutura"]
 
 function isProduction() {
   return process.env.NODE_ENV === "production"
@@ -144,7 +144,8 @@ export function getTechnicalCredentials() {
   const envCredentials = {
     Admin: process.env.ADMIN_PIN,
     TI: process.env.TI_PIN,
-    Diretoria: process.env.DIRETORIA_PIN,
+    RH: process.env.RH_PIN,
+    Infraestrutura: process.env.INFRAESTRUTURA_PIN,
   }
 
   const hasAllEnvPins = REQUIRED_TECHNICAL_SECTORS.every((sector) => String(envCredentials[sector as keyof typeof envCredentials] || "").trim())
@@ -160,7 +161,8 @@ export function getTechnicalCredentials() {
   return {
     Admin: process.env.ADMIN_PIN || "2614",
     TI: process.env.TI_PIN || "1564",
-    Diretoria: process.env.DIRETORIA_PIN || "0000",
+    RH: process.env.RH_PIN || "3344",
+    Infraestrutura: process.env.INFRAESTRUTURA_PIN || "5566",
   }
 }
 

@@ -473,6 +473,7 @@ export function AdminPortal() {
         },
         body: JSON.stringify({
           employeeId: loggedEmployee.id,
+          department: ticketDepartment,
           category,
           origin,
           description,

@@ -37,6 +37,7 @@ model Ticket {
   category          String
   origin            String
   description       String
+  department        String   @default("TI")
   status            String   @default("Aberto")
   priority          String   @default("Normal")
   technicalResponse String?
