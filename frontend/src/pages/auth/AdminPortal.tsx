@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { categories } from "@/lib/categories"
+import { categoriesByDepartment, type TicketDepartment } from "@/lib/categories"
 import { API_URL, PORTAL_USER_KEY, apiFetch, getPortalToken } from "@/services/api"
 import {
   CheckCircle2,
@@ -28,6 +28,11 @@ import {
   Layers,
   ShieldAlert,
   Bot,
+  Monitor,
+  Users,
+  Building2,
+  ChevronRight,
+  ChevronLeft,
 } from "lucide-react"
 
 type Sector = {
@@ -209,6 +214,7 @@ export function AdminPortal() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const [ticketDepartment, setTicketDepartment] = useState<TicketDepartment | null>(null)
   const [category, setCategory] = useState("PC")
   const [origin, setOrigin] = useState("Administrativo")
   const [description, setDescription] = useState("")
@@ -490,6 +496,7 @@ export function AdminPortal() {
         employeeName: loggedEmployee.name,
       })
 
+      setTicketDepartment(null)
       setCategory("PC")
       setOrigin("Administrativo")
       setDescription("")
@@ -978,92 +985,174 @@ export function AdminPortal() {
           </GlassCard>
         ) : activeTab === "new" ? (
           <GlassCard className="p-4 sm:p-6">
-            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">Novo atendimento</p>
-                <h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[#111827]">Qual é o problema?</h2>
-                <p className="mt-1 text-sm leading-6 text-slate-500">Descreva o que está acontecendo para a equipe técnica começar com contexto.</p>
-              </div>
-              <div className="hidden rounded-2xl border border-[#BFEFD7] bg-[#ECFBF3] px-4 py-3 text-sm font-bold text-[#073B2A] sm:block">
-                Resposta pelo portal
-              </div>
-            </div>
+            {!ticketDepartment ? (
+              /* Step 1: choose department */
+              <>
+                <div className="mb-6 text-center">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">Novo chamado</p>
+                  <h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[#111827]">Para qual setor é o chamado?</h2>
+                  <p className="mt-1 text-sm leading-6 text-slate-500">Selecione o setor responsável pelo atendimento.</p>
+                </div>
 
-            <div className="grid gap-4 lg:grid-cols-[0.72fr_1.28fr]">
-              <div className="space-y-3">
-                <div className="rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
-                  <div className="mb-4">
-                    <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">Classificação</p>
-                    <p className="mt-1 text-sm font-semibold leading-5 text-slate-500">Escolha o tipo e a origem do chamado.</p>
-                  </div>
-
-                  <div className="grid gap-4">
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Categoria</label>
-                      <select
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                        className={`mt-2 ${styles.select}`}
+                <div className="mx-auto max-w-sm space-y-3">
+                  {(
+                    [
+                      {
+                        id: "TI" as TicketDepartment,
+                        label: "Setor TI",
+                        description: "Suporte a sistemas, equipamentos e redes",
+                        icon: Monitor,
+                        color: "#0EA5E9",
+                        bg: "#F0F9FF",
+                        border: "#BAE6FD",
+                      },
+                      {
+                        id: "RH" as TicketDepartment,
+                        label: "Setor RH",
+                        description: "Salário, benefícios, férias e gestão de pessoas",
+                        icon: Users,
+                        color: "#8B5CF6",
+                        bg: "#F5F3FF",
+                        border: "#DDD6FE",
+                      },
+                      {
+                        id: "Infraestrutura" as TicketDepartment,
+                        label: "Infraestrutura",
+                        description: "Instalações, manutenção e infraestrutura predial",
+                        icon: Building2,
+                        color: "#F59E0B",
+                        bg: "#FFFBEB",
+                        border: "#FDE68A",
+                      },
+                    ] as const
+                  ).map((dept) => {
+                    const Icon = dept.icon
+                    return (
+                      <button
+                        key={dept.id}
+                        onClick={() => {
+                          setTicketDepartment(dept.id)
+                          setCategory(categoriesByDepartment[dept.id][0])
+                        }}
+                        className="group flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md"
+                        style={{ borderColor: dept.border, backgroundColor: dept.bg }}
                       >
-                        {categories.map((category) => (
-                          <option key={category}>{category}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Origem</label>
-                      <div className="mt-2 grid grid-cols-2 gap-2 rounded-2xl border border-[#DDE7E2] bg-[#F8FAF9] p-1">
-                        {["Administrativo", "Operacional"].map((originOption) => (
-                          <button
-                            key={originOption}
-                            type="button"
-                            onClick={() => setOrigin(originOption)}
-                            className={`h-10 rounded-xl text-sm font-black transition ${
-                              origin === originOption
-                                ? "bg-[#00A859] text-white shadow-sm"
-                                : "text-slate-600 hover:bg-white"
-                            }`}
+                        <span
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                          style={{ background: `${dept.color}18`, color: dept.color }}
+                        >
+                          <Icon size={20} />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-black text-[#111827]">{dept.label}</p>
+                          <p className="mt-0.5 text-xs font-medium leading-4 text-slate-500">{dept.description}</p>
+                        </div>
+                        <ChevronRight size={16} className="shrink-0 text-slate-400 transition group-hover:text-slate-600" />
+                      </button>
+                    )
+                  })}
+                </div>
+              </>
+            ) : (
+              /* Step 2: form with department-specific categories */
+              <>
+                <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <button
+                      onClick={() => { setTicketDepartment(null); setCategory("PC"); setDescription("") }}
+                      className="mb-2 flex items-center gap-1 text-xs font-semibold text-slate-400 transition hover:text-slate-600"
+                    >
+                      <ChevronLeft size={14} />
+                      Trocar setor
+                    </button>
+                    <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">
+                      Novo atendimento · {ticketDepartment === "Infraestrutura" ? "Infraestrutura" : `Setor ${ticketDepartment}`}
+                    </p>
+                    <h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[#111827]">Qual é o problema?</h2>
+                    <p className="mt-1 text-sm leading-6 text-slate-500">Descreva o que está acontecendo para a equipe técnica começar com contexto.</p>
+                  </div>
+                  <div className="hidden rounded-2xl border border-[#BFEFD7] bg-[#ECFBF3] px-4 py-3 text-sm font-bold text-[#073B2A] sm:block">
+                    Resposta pelo portal
+                  </div>
+                </div>
+
+                <div className="grid gap-4 lg:grid-cols-[0.72fr_1.28fr]">
+                  <div className="space-y-3">
+                    <div className="rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
+                      <div className="mb-4">
+                        <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">Classificação</p>
+                        <p className="mt-1 text-sm font-semibold leading-5 text-slate-500">Escolha o tipo e a origem do chamado.</p>
+                      </div>
+
+                      <div className="grid gap-4">
+                        <div>
+                          <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Categoria</label>
+                          <select
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            className={`mt-2 ${styles.select}`}
                           >
-                            {originOption}
-                          </button>
-                        ))}
+                            {categoriesByDepartment[ticketDepartment].map((cat) => (
+                              <option key={cat}>{cat}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Origem</label>
+                          <div className="mt-2 grid grid-cols-2 gap-2 rounded-2xl border border-[#DDE7E2] bg-[#F8FAF9] p-1">
+                            {["Administrativo", "Operacional"].map((originOption) => (
+                              <button
+                                key={originOption}
+                                type="button"
+                                onClick={() => setOrigin(originOption)}
+                                className={`h-10 rounded-xl text-sm font-black transition ${
+                                  origin === originOption
+                                    ? "bg-[#00A859] text-white shadow-sm"
+                                    : "text-slate-600 hover:bg-white"
+                                }`}
+                              >
+                                {originOption}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
+
+                    <div className="rounded-[1.35rem] border border-[#BFEFD7] bg-[#ECFBF3] p-4 text-sm leading-6 text-[#073B2A] shadow-sm sm:rounded-[1.5rem]">
+                      <p className="font-black">Dica rápida</p>
+                      <p className="mt-1 text-xs font-semibold text-[#376B55]">
+                        Quanto mais claro for o contexto, mais rápido a equipe técnica consegue responder.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-3 shadow-sm sm:rounded-[1.5rem] sm:p-4">
+                    <div>
+                      <label className="text-sm font-bold text-[#102A43]">Descrição</label>
+                      <Textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Descreva o problema com contexto objetivo..."
+                        className="mt-2 min-h-[220px] rounded-2xl border-[#DDE7E2] bg-white/95 px-4 py-3 text-slate-950 focus:border-[#00A859]"
+                      />
+                      <p className="mt-2 text-xs font-semibold leading-5 text-slate-500">
+                        Inclua local, equipamento, mensagem de erro e urgência, se houver.
+                      </p>
+                    </div>
+
+                    <Button
+                      className={`h-12 w-full ${styles.primary}`}
+                      onClick={handleSubmit}
+                      disabled={isSubmitting || !description.trim()}
+                    >
+                      {isSubmitting ? "Enviando..." : "Abrir chamado"}
+                      <Send size={16} className="ml-2" />
+                    </Button>
                   </div>
                 </div>
-
-                <div className="rounded-[1.35rem] border border-[#BFEFD7] bg-[#ECFBF3] p-4 text-sm leading-6 text-[#073B2A] shadow-sm sm:rounded-[1.5rem]">
-                  <p className="font-black">Dica rápida</p>
-                  <p className="mt-1 text-xs font-semibold text-[#376B55]">
-                    Quanto mais claro for o contexto, mais rápido a equipe técnica consegue responder.
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-3 rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-3 shadow-sm sm:rounded-[1.5rem] sm:p-4">
-                <div>
-                  <label className="text-sm font-bold text-[#102A43]">Descrição</label>
-                  <Textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Descreva o problema com contexto objetivo..."
-                    className="mt-2 min-h-[220px] rounded-2xl border-[#DDE7E2] bg-white/95 px-4 py-3 text-slate-950 focus:border-[#00A859]"
-                  />
-                  <p className="mt-2 text-xs font-semibold leading-5 text-slate-500">
-                    Inclua local, equipamento, mensagem de erro e urgência, se houver.
-                  </p>
-                </div>
-
-                <Button
-                  className={`h-12 w-full ${styles.primary}`}
-                  onClick={handleSubmit}
-                  disabled={isSubmitting || !description.trim()}
-                >
-                  {isSubmitting ? "Enviando..." : "Abrir chamado"}
-                  <Send size={16} className="ml-2" />
-                </Button>
-              </div>
-            </div>
+              </>
+            )}
           </GlassCard>
         ) : (
           <div className="grid gap-4 xl:grid-cols-[360px_1fr]">
