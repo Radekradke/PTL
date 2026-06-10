@@ -234,7 +234,6 @@ export function Login() {
                         style={{
                           background: dept.bg,
                           color: dept.color,
-                          ringColor: dept.border,
                         }}
                       >
                         <Icon size={24} />
