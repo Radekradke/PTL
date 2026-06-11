@@ -16,6 +16,7 @@ import {
 } from "../lib/validation"
 import { sendAutoReply } from "../services/autoReply"
 import { broadcastTicketChange } from "../lib/eventBus"
+import { sendPushToSector } from "../services/pushNotification"
 
 export const ticketsRoutes = Router()
 
@@ -210,6 +211,13 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
   sendAutoReply(ticket.id, ticket.category).catch((err) => {
     console.error("Falha ao enviar resposta automática:", err)
   })
+
+  sendPushToSector(ticket.department, {
+    title: `Novo chamado · ${ticket.department}`,
+    body: `${employee.name} (${employee.sector.name}): ${ticket.category} — ${ticket.description.slice(0, 80)}`,
+    ticketId: ticket.id,
+    url: "/tickets",
+  }).catch((err) => console.error("Falha ao enviar push:", err))
 
   broadcastTicketChange()
   res.status(201).json(ticket)

@@ -15,6 +15,7 @@ import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { API_URL, AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY } from "@/services/api"
+import { subscribeToPush } from "@/pwa"
 
 const technicalSectors = ["Admin", "TI", "RH", "Infraestrutura"]
 
@@ -150,6 +151,7 @@ export function Login() {
         JSON.stringify({ ...data.user, token: data.token, department: selectedDept })
       )
       window.dispatchEvent(new Event(AUTH_CHANGED_EVENT))
+      subscribeToPush().catch(() => {})
       navigate("/dashboard")
     } catch (error) {
       console.error("Erro ao acessar painel:", error)

@@ -62,6 +62,15 @@ model TicketMessage {
   ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 }
 
+model PushSubscription {
+  id        Int      @id @default(autoincrement())
+  sector    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+}
+
 model Timeline {
   id        Int      @id @default(autoincrement())
   ticketId  Int
