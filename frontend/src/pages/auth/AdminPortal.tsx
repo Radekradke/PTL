@@ -1003,30 +1003,21 @@ export function AdminPortal() {
                         label: "Setor TI",
                         description: "Suporte a sistemas, equipamentos e redes",
                         icon: Monitor,
-                        color: "#0EA5E9",
-                        bg: "#F0F9FF",
-                        border: "#BAE6FD",
                       },
                       {
                         id: "RH" as TicketDepartment,
                         label: "Setor RH",
                         description: "Salário, benefícios, férias e gestão de pessoas",
                         icon: Users,
-                        color: "#8B5CF6",
-                        bg: "#F5F3FF",
-                        border: "#DDD6FE",
                       },
                       {
                         id: "Infraestrutura" as TicketDepartment,
                         label: "Infraestrutura",
                         description: "Instalações, manutenção e infraestrutura predial",
                         icon: Building2,
-                        color: "#F59E0B",
-                        bg: "#FFFBEB",
-                        border: "#FDE68A",
                       },
                     ] as const
-                  ).map((dept) => {
+                  ).map((dept, i) => {
                     const Icon = dept.icon
                     return (
                       <button
@@ -1035,24 +1026,31 @@ export function AdminPortal() {
                           setTicketDepartment(dept.id)
                           setCategory(categoriesByDepartment[dept.id][0])
                         }}
-                        className="group flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md"
-                        style={{ borderColor: dept.border, backgroundColor: dept.bg }}
+                        className="group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl p-[1.5px] text-left"
+                        style={{
+                          background: "linear-gradient(135deg,#00A859,#39D98A,#00A859)",
+                          animation: `ap-fade-up 0.38s cubic-bezier(.22,.68,0,1.2) ${0.06 + i * 0.09}s both`,
+                        }}
                       >
-                        <span
-                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                          style={{ background: `${dept.color}18`, color: dept.color }}
-                        >
-                          <Icon size={20} />
+                        <span className="flex w-full items-center gap-4 rounded-[14px] bg-white px-4 py-[14px] transition-all duration-200 group-hover:bg-[linear-gradient(135deg,#073B2A,#00A859)]">
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#00A859]/10 text-[#00A859] ring-1 ring-[#00A859]/20 transition-all duration-200 group-hover:bg-white/15 group-hover:text-white group-hover:ring-white/30">
+                            <Icon size={22} />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-[15px] font-black tracking-[-0.02em] text-[#073B2A] transition-colors duration-200 group-hover:text-white">
+                              {dept.label}
+                            </span>
+                            <span className="mt-0.5 block text-xs font-medium leading-4 text-slate-500 transition-colors duration-200 group-hover:text-emerald-100">
+                              {dept.description}
+                            </span>
+                          </span>
+                          <ChevronRight size={18} className="shrink-0 text-[#00A859] transition-all duration-200 group-hover:translate-x-1 group-hover:text-white" />
                         </span>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-black text-[#111827]">{dept.label}</p>
-                          <p className="mt-0.5 text-xs font-medium leading-4 text-slate-500">{dept.description}</p>
-                        </div>
-                        <ChevronRight size={16} className="shrink-0 text-slate-400 transition group-hover:text-slate-600" />
                       </button>
                     )
                   })}
                 </div>
+                <style>{`@keyframes ap-fade-up { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }`}</style>
               </>
             ) : (
               /* Step 2: form with department-specific categories */
