@@ -311,6 +311,16 @@ ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI", "RH
     },
   })
 
+  // Quando o funcionário responde, avisa a equipe técnica do setor (que é quem assina push)
+  if (normalizedSenderType === "employee") {
+    sendPushToSector(ticket.department, {
+      title: `Nova resposta · ${ticket.department}`,
+      body: `${ticket.employee.name} respondeu o chamado #${ticket.id} (${ticket.category}): ${messageValidation.value.slice(0, 80)}`,
+      ticketId: ticket.id,
+      url: "/tickets",
+    }).catch((err) => console.error("Falha ao enviar push:", err))
+  }
+
   broadcastTicketChange()
   res.status(201).json(createdMessage)
 })

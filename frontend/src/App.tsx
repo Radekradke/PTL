@@ -1,14 +1,24 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
-import type { ReactNode } from "react"
-import { TicketsPage } from "./pages/tickets/TicketsPage"
-import { Dashboard } from "./pages/dashboard/Dashboard"
-import { AdminPortal } from "./pages/auth/AdminPortal"
+import { lazy, Suspense, type ReactNode } from "react"
 import { Login } from "./pages/auth/Login"
-import { ReportsPage } from "@/pages/reports/ReportsPage"
-import { SettingsPage } from "./pages/settings/SettingsPage"
 import { NotificationProvider } from "./contexts/NotificationContext"
 import { Toaster } from "react-hot-toast"
 import { TECHNICAL_USER_KEY } from "@/services/api"
+
+// Páginas pesadas carregadas sob demanda (code-splitting) — reduz o bundle inicial.
+const TicketsPage = lazy(() => import("./pages/tickets/TicketsPage").then((m) => ({ default: m.TicketsPage })))
+const Dashboard = lazy(() => import("./pages/dashboard/Dashboard").then((m) => ({ default: m.Dashboard })))
+const AdminPortal = lazy(() => import("./pages/auth/AdminPortal").then((m) => ({ default: m.AdminPortal })))
+const ReportsPage = lazy(() => import("@/pages/reports/ReportsPage").then((m) => ({ default: m.ReportsPage })))
+const SettingsPage = lazy(() => import("./pages/settings/SettingsPage").then((m) => ({ default: m.SettingsPage })))
+
+function RouteFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[#EAF0ED]">
+      <div className="h-9 w-9 animate-spin rounded-full border-[3px] border-[#00A859]/25 border-t-[#00A859]" />
+    </div>
+  )
+}
 
 function getCurrentUser() {
   const stored = localStorage.getItem(TECHNICAL_USER_KEY)
@@ -54,47 +64,49 @@ function App() {
           }}
         />
 
-        <Routes>
-          <Route path="/" element={<Login />} />
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route path="/" element={<Login />} />
 
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute allowed={["Admin", "TI", "RH", "Infraestrutura"]}>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute allowed={["Admin", "TI", "RH", "Infraestrutura"]}>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/tickets"
-            element={
-              <ProtectedRoute allowed={["Admin", "TI", "RH", "Infraestrutura"]}>
-                <TicketsPage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/tickets"
+              element={
+                <ProtectedRoute allowed={["Admin", "TI", "RH", "Infraestrutura"]}>
+                  <TicketsPage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/reports"
-            element={
-              <ProtectedRoute allowed={["Admin", "TI", "RH", "Infraestrutura"]}>
-                <ReportsPage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute allowed={["Admin", "TI", "RH", "Infraestrutura"]}>
+                  <ReportsPage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute allowed={["Admin"]}>
-                <SettingsPage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute allowed={["Admin"]}>
+                  <SettingsPage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route path="/portal" element={<AdminPortal />} />
-        </Routes>
+            <Route path="/portal" element={<AdminPortal />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </NotificationProvider>
   )

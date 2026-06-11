@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
-    "prisma": "prisma studio"
+    "prisma": "prisma studio",
+    "backup": "tsx scripts/backup.ts",
+    "restore": "tsx scripts/restore.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
