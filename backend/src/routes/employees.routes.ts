@@ -28,7 +28,7 @@ function publicEmployee(employee: any) {
   }
 }
 
-employeesRoutes.get("/", requireTechnical(["Admin", "TI"]), async (_req, res) => {
+employeesRoutes.get("/", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (_req, res) => {
   try {
     const employees = await prisma.employee.findMany({
       where: {

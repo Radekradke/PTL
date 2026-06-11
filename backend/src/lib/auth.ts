@@ -128,7 +128,7 @@ export function getTechnicalCredentials() {
       const hasAllCredentials = REQUIRED_TECHNICAL_SECTORS.every((sector) => String(credentials[sector] || "").trim())
 
       if (!hasAllCredentials) {
-        throw new Error("TECHNICAL_CREDENTIALS deve conter Admin, TI e Diretoria.")
+        throw new Error("TECHNICAL_CREDENTIALS deve conter Admin, TI, RH e Infraestrutura.")
       }
 
       return credentials

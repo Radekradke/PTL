@@ -442,7 +442,7 @@ ticketsRoutes.patch("/:id/archive", requireTechnical(["Admin", "TI", "RH", "Infr
   res.json(ticket)
 })
 
-ticketsRoutes.patch("/:id/finish", requireTicketParticipant(["Admin", "TI"]), async (req, res) => {
+ticketsRoutes.patch("/:id/finish", requireTicketParticipant(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
   const idValidation = validateId(id, "Chamado")
 

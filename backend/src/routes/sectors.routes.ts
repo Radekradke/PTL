@@ -52,7 +52,7 @@ async function findSectorByName(name: string, includePin: boolean) {
   return sectors[0] || null
 }
 
-sectorsRoutes.get("/", requireTechnical(["Admin", "TI", "Diretoria"]), async (_req, res) => {
+sectorsRoutes.get("/", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (_req, res) => {
   try {
     const hasPin = await sectorPinColumnExists()
     const sectors = hasPin
