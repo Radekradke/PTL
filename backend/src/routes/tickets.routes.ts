@@ -10,9 +10,13 @@ import {
   validateId,
   validateLongText,
   validateTicketCategory,
+  validateTicketDepartment,
   validateTicketOrigin,
   validateTicketStatus,
 } from "../lib/validation"
+import { sendAutoReply } from "../services/autoReply"
+import { broadcastTicketChange } from "../lib/eventBus"
+import { sendPushToSector } from "../services/pushNotification"
 
 export const ticketsRoutes = Router()
 
@@ -24,8 +28,18 @@ const sectorPublicSelect = {
   updatedAt: true,
 }
 
+const employeePublicSelect = {
+  id: true,
+  name: true,
+  username: true,
+  active: true,
+  sectorId: true,
+  createdAt: true,
+  updatedAt: true,
+}
+
 const ticketInclude = {
-  employee: true,
+  employee: { select: employeePublicSelect },
   sector: { select: sectorPublicSelect },
   timeline: {
     orderBy: { createdAt: "asc" as const },
@@ -36,7 +50,7 @@ const ticketInclude = {
 }
 
 const ticketListInclude = {
-  employee: true,
+  employee: { select: employeePublicSelect },
   sector: { select: sectorPublicSelect },
   timeline: {
     orderBy: { createdAt: "asc" as const },
@@ -45,7 +59,7 @@ const ticketListInclude = {
 
 const ticketSummarySelect = {
   id: true,
-  employee: true,
+  employee: { select: employeePublicSelect },
   sector: { select: sectorPublicSelect },
   category: true,
   status: true,
@@ -68,13 +82,20 @@ function shouldArchiveStatus(status: string) {
   return status === "Finalizado"
 }
 
-ticketsRoutes.get("/", requireTechnical(["Admin", "TI", "Diretoria"]), async (req, res) => {
+ticketsRoutes.get("/", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { archived, includeArchived, summary } = req.query
+  const auth = (req as any).auth
   const showArchived = archived === "true"
   const shouldIncludeArchived = includeArchived === "true" || archived === "all"
 
+  // Admin vê tudo; demais setores só veem os tickets do próprio department
+  const departmentFilter = auth.sector !== "Admin" ? { department: auth.sector } : {}
+
   const query: any = {
-    where: shouldIncludeArchived ? undefined : { archived: showArchived },
+    where: {
+      ...departmentFilter,
+      ...(shouldIncludeArchived ? {} : { archived: showArchived }),
+    },
     orderBy: { createdAt: "desc" },
   }
 
@@ -91,7 +112,7 @@ ticketsRoutes.get("/", requireTechnical(["Admin", "TI", "Diretoria"]), async (re
 
 ticketsRoutes.get(
   "/employee/:employeeId",
-  requireEmployeeOwnerOrTechnical("employeeId", ["Admin", "TI", "Diretoria"]),
+  requireEmployeeOwnerOrTechnical("employeeId", ["Admin", "TI", "RH", "Infraestrutura"]),
   async (req, res) => {
     const { employeeId } = req.params
     const { archived, includeArchived, summary } = req.query
@@ -119,12 +140,17 @@ ticketsRoutes.get(
 )
 
 ticketsRoutes.post("/", requireAuth, async (req, res) => {
-  const { employeeId, category, origin, description } = req.body
+  const { employeeId, category, origin, description, department } = req.body
   const auth = (req as any).auth
 
   const employeeIdValidation = validateId(employeeId, "Funcionário")
   if (!employeeIdValidation.ok) {
     return res.status(400).json({ message: employeeIdValidation.message })
+  }
+
+  const departmentValidation = validateTicketDepartment(department)
+  if (!departmentValidation.ok) {
+    return res.status(400).json({ message: departmentValidation.message })
   }
 
   const categoryValidation = validateTicketCategory(category)
@@ -162,6 +188,7 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
     data: {
       employeeId: employee.id,
       sectorId: employee.sectorId,
+      department: departmentValidation.value,
       category: categoryValidation.value,
       origin: originValidation.value,
       description: descriptionValidation.value,
@@ -181,10 +208,22 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
     include: ticketInclude,
   })
 
+  sendAutoReply(ticket.id, ticket.category).catch((err) => {
+    console.error("Falha ao enviar resposta automática:", err)
+  })
+
+  sendPushToSector(ticket.department, {
+    title: `Novo chamado · ${ticket.department}`,
+    body: `${employee.name} (${employee.sector.name}): ${ticket.category} — ${ticket.description.slice(0, 80)}`,
+    ticketId: ticket.id,
+    url: "/tickets",
+  }).catch((err) => console.error("Falha ao enviar push:", err))
+
+  broadcastTicketChange()
   res.status(201).json(ticket)
 })
 
-ticketsRoutes.get("/:id/messages", requireTicketParticipant(["Admin", "TI", "Diretoria"]), async (req, res) => {
+ticketsRoutes.get("/:id/messages", requireTicketParticipant(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
   const idValidation = validateId(id, "Chamado")
 
@@ -204,7 +243,7 @@ ticketsRoutes.get("/:id/messages", requireTicketParticipant(["Admin", "TI", "Dir
   res.json(messages)
 })
 
-ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI"]), async (req, res) => {
+ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
   const { senderType, senderName, employeeId, message } = req.body
   const auth = (req as any).auth
@@ -272,10 +311,21 @@ ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI"]), a
     },
   })
 
+  // Quando o funcionário responde, avisa a equipe técnica do setor (que é quem assina push)
+  if (normalizedSenderType === "employee") {
+    sendPushToSector(ticket.department, {
+      title: `Nova resposta · ${ticket.department}`,
+      body: `${ticket.employee.name} respondeu o chamado #${ticket.id} (${ticket.category}): ${messageValidation.value.slice(0, 80)}`,
+      ticketId: ticket.id,
+      url: "/tickets",
+    }).catch((err) => console.error("Falha ao enviar push:", err))
+  }
+
+  broadcastTicketChange()
   res.status(201).json(createdMessage)
 })
 
-ticketsRoutes.patch("/:id/status", requireTechnical(["Admin", "TI"]), async (req, res) => {
+ticketsRoutes.patch("/:id/status", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
   const { status } = req.body
   const idValidation = validateId(id, "Chamado")
@@ -303,10 +353,11 @@ ticketsRoutes.patch("/:id/status", requireTechnical(["Admin", "TI"]), async (req
     include: ticketInclude,
   })
 
+  broadcastTicketChange()
   res.json(ticket)
 })
 
-ticketsRoutes.patch("/:id/response", requireTechnical(["Admin", "TI"]), async (req, res) => {
+ticketsRoutes.patch("/:id/response", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
   const { technicalResponse } = req.body
   const idValidation = validateId(id, "Chamado")
@@ -342,10 +393,11 @@ ticketsRoutes.patch("/:id/response", requireTechnical(["Admin", "TI"]), async (r
     include: ticketInclude,
   })
 
+  broadcastTicketChange()
   res.json(ticket)
 })
 
-ticketsRoutes.patch("/:id", requireTechnical(["Admin", "TI"]), async (req, res) => {
+ticketsRoutes.patch("/:id", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
   const { status } = req.body
   const idValidation = validateId(id, "Chamado")
@@ -376,7 +428,7 @@ ticketsRoutes.patch("/:id", requireTechnical(["Admin", "TI"]), async (req, res) 
   res.json(ticket)
 })
 
-ticketsRoutes.patch("/:id/archive", requireTechnical(["Admin", "TI"]), async (req, res) => {
+ticketsRoutes.patch("/:id/archive", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
   const idValidation = validateId(id, "Chamado")
 
@@ -400,7 +452,7 @@ ticketsRoutes.patch("/:id/archive", requireTechnical(["Admin", "TI"]), async (re
   res.json(ticket)
 })
 
-ticketsRoutes.patch("/:id/finish", requireTicketParticipant(["Admin", "TI"]), async (req, res) => {
+ticketsRoutes.patch("/:id/finish", requireTicketParticipant(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
   const idValidation = validateId(id, "Chamado")
 
@@ -422,5 +474,6 @@ ticketsRoutes.patch("/:id/finish", requireTicketParticipant(["Admin", "TI"]), as
     include: ticketInclude,
   })
 
+  broadcastTicketChange()
   res.json(ticket)
 })

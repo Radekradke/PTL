@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
+import { BarChart2 } from "lucide-react"
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { StatsCard } from "@/components/dashboard/StatsCard"
@@ -19,7 +20,9 @@ function EmptyChartState() {
   return (
     <div className="flex h-full min-h-[180px] items-center justify-center rounded-2xl border border-dashed border-[#CFE2D8] bg-[#F8FCFA] px-5 text-center sm:min-h-[220px] sm:rounded-3xl">
       <div>
-        <div className="mx-auto mb-3 h-8 w-8 rounded-2xl bg-[#ECFBF3] ring-1 ring-[#BFEFD7]" />
+        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-[#ECFBF3] text-[#00A859] ring-1 ring-[#BFEFD7]">
+          <BarChart2 size={18} />
+        </div>
         <p className="text-sm font-black text-[#073B2A]">Sem dados para exibir</p>
         <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">Ajuste os filtros ou aguarde novos chamados entrarem.</p>
       </div>
@@ -186,10 +189,7 @@ export function Dashboard() {
   const [originFilter, setOriginFilter] = useState("Todas")
   const [statusFilter, setStatusFilter] = useState("Todos")
   const [filtersOpen, setFiltersOpen] = useState(false)
-
-  useEffect(() => {
-    console.log("Dashboard: Tickets atualizados no contexto:", tickets.length)
-  }, [tickets])
+  const hasActiveFilters = sectorFilter !== "Todos" || categoryFilter !== "Todas" || originFilter !== "Todas" || statusFilter !== "Todos"
 
   const filteredTickets = useMemo(() => tickets.filter((ticket) => {
     const matchesSector = sectorFilter === "Todos" || ticket.sector === sectorFilter
@@ -204,8 +204,8 @@ export function Dashboard() {
   const progressTickets = filteredTickets.filter((ticket) => ticket.status === "Em andamento").length
   const waitingUserTickets = filteredTickets.filter((ticket) => ticket.status === "Aguardando usuário").length
   const finishedTickets = filteredTickets.filter((ticket) => ticket.status === "Finalizado").length
-  const offshoreTickets = filteredTickets.filter((ticket) => ticket.origin === "Offshore").length
-  const baseTickets = filteredTickets.filter((ticket) => ticket.origin === "Base").length
+  const offshoreTickets = filteredTickets.filter((ticket) => ticket.origin === "Operacional").length
+  const baseTickets = filteredTickets.filter((ticket) => ticket.origin === "Administrativo").length
 
   const uniqueSectors = useMemo(() => Array.from(new Set(tickets.map((t) => t.sector))).filter(Boolean), [tickets])
   const uniqueCategories = useMemo(() => Array.from(new Set(tickets.map((t) => t.category))).filter(Boolean), [tickets])
@@ -228,8 +228,8 @@ export function Dashboard() {
   ]
 
   const ticketsByOrigin = [
-    { name: "Base", total: baseTickets },
-    { name: "Offshore", total: offshoreTickets },
+    { name: "Administrativo", total: baseTickets },
+    { name: "Operacional", total: offshoreTickets },
   ]
 
   const tooltipStyle = {
@@ -273,17 +273,36 @@ export function Dashboard() {
               <h2 className="ls-section-title text-base sm:text-lg lg:text-xl">Filtros <span className="ls-help" title="Refina todos os cards e gráficos desta tela.">?</span></h2>
               <p className="text-xs sm:text-sm text-slate-500">Segmentação rápida dos indicadores.</p>
             </div>
-            <div className="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
-              <button onClick={() => setFiltersOpen((open) => !open)} className="ls-button-secondary h-10 px-4 text-xs font-bold sm:hidden">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setFiltersOpen((open) => !open)}
+                className="ls-button-secondary h-10 px-4 text-xs font-bold sm:hidden"
+              >
                 {filtersOpen ? "Ocultar" : "Filtros"}
               </button>
-              <button onClick={() => { setSectorFilter("Todos"); setCategoryFilter("Todas"); setOriginFilter("Todas"); setStatusFilter("Todos") }} className="ls-button-secondary h-10 sm:h-11 px-4 sm:px-5 text-xs sm:text-sm font-bold whitespace-nowrap">Limpar</button>
+              {hasActiveFilters && (
+                <button
+                  onClick={() => { setSectorFilter("Todos"); setCategoryFilter("Todas"); setOriginFilter("Todas"); setStatusFilter("Todos") }}
+                  className="ls-button-secondary h-10 px-4 text-xs font-bold text-rose-600 hover:bg-rose-50 hover:border-rose-200"
+                >
+                  Limpar filtros
+                </button>
+              )}
+              {!hasActiveFilters && (
+                <button
+                  onClick={() => { setSectorFilter("Todos"); setCategoryFilter("Todas"); setOriginFilter("Todas"); setStatusFilter("Todos") }}
+                  className="ls-button-secondary hidden h-10 px-4 text-xs font-bold sm:inline-flex"
+                >
+                  Limpar
+                </button>
+              )}
             </div>
           </div>
-          <div className={`${filtersOpen ? "grid animate-in fade-in-0 slide-in-from-top-1 duration-200" : "hidden"} mt-3 gap-2 sm:mt-4 sm:grid sm:gap-3 sm:grid-cols-2 lg:mt-5 lg:grid-cols-5`}>
+          {/* Mobile: toggle | Desktop: sempre visível */}
+          <div className={`${filtersOpen ? "grid animate-in fade-in-0 slide-in-from-top-1 duration-200" : "hidden"} mt-3 gap-2 sm:mt-4 sm:grid sm:gap-3 sm:grid-cols-2 lg:mt-4 lg:grid-cols-4`}>
             <select value={sectorFilter} onChange={(e) => setSectorFilter(e.target.value)} className="ls-input text-sm"><option value="Todos">Todos setores</option>{uniqueSectors.map((sector) => <option key={sector} value={sector}>{sector}</option>)}</select>
             <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="ls-input text-sm"><option value="Todas">Todas categorias</option>{uniqueCategories.map((category) => <option key={category} value={category}>{category}</option>)}</select>
-            <select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="ls-input text-sm"><option value="Todas">Todas origens</option><option value="Base">Base</option><option value="Offshore">Offshore</option></select>
+            <select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="ls-input text-sm"><option value="Todas">Todas origens</option><option value="Administrativo">Administrativo</option><option value="Operacional">Operacional</option></select>
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="ls-input text-sm"><option value="Todos">Todos status</option><option value="Aberto">Aberto</option><option value="Em andamento">Em andamento</option><option value="Aguardando usuário">Aguardando usuário</option><option value="Finalizado">Finalizado</option></select>
           </div>
         </section>
@@ -305,17 +324,17 @@ export function Dashboard() {
           <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Origem</h3>
           <div className="grid grid-cols-2 gap-2 sm:hidden">
             <div className="rounded-2xl border border-[#DDE8E2] bg-white px-3 py-3 shadow-sm">
-              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Base</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Administrativo</p>
               <p className="mt-1 text-2xl font-black text-cyan-700">{baseTickets}</p>
             </div>
             <div className="rounded-2xl border border-rose-100 bg-[#FFF7F8] px-3 py-3 shadow-sm">
-              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-rose-600">Offshore</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.12em] text-rose-600">Operacional</p>
               <p className="mt-1 text-2xl font-black text-rose-700">{offshoreTickets}</p>
             </div>
           </div>
           <div className="hidden gap-2 sm:grid sm:gap-3 lg:gap-4 sm:grid-cols-2 lg:grid-cols-2">
-            <StatsCard title="Offshore" value={String(offshoreTickets)} tone="danger" />
-            <StatsCard title="Base" value={String(baseTickets)} tone="base" />
+            <StatsCard title="Operacional" value={String(offshoreTickets)} tone="danger" />
+            <StatsCard title="Administrativo" value={String(baseTickets)} tone="base" />
           </div>
         </section>
 
@@ -336,7 +355,7 @@ export function Dashboard() {
             <MobilePieChart data={ticketsByStatus} colors={["#4F93D2", "#F59E0B", "#F97316", "#00A859"]} tooltipStyle={tooltipStyle} />
           </div>
           <div className="ls-card p-3 sm:p-4 lg:p-6">
-            <h2 className="ls-section-title text-lg sm:text-xl">Base x Offshore</h2>
+            <h2 className="ls-section-title text-lg sm:text-xl">Administrativo x Operacional</h2>
             <p className="text-xs sm:text-sm text-slate-500">Origem dos chamados.</p>
             <MobilePieChart data={ticketsByOrigin} colors={["#102A43", "#E11D48"]} tooltipStyle={tooltipStyle} />
           </div>

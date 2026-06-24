@@ -1,6 +1,16 @@
 export const TICKET_STATUSES = ["Aberto", "Em andamento", "Aguardando usuário", "Finalizado"] as const
-export const TICKET_ORIGINS = ["Base", "Offshore"] as const
-export const TICKET_CATEGORIES = ["PC", "Impressora", "Rede", "Sistema", "E-mail", "Câmera", "Outro"] as const
+export const TICKET_ORIGINS = ["Administrativo", "Operacional"] as const
+export const TICKET_DEPARTMENTS = ["TI", "RH", "Infraestrutura"] as const
+export const TICKET_CATEGORIES = [
+  // TI
+  "PC", "Impressora", "Rede", "Sistema", "E-mail", "Câmera",
+  // RH
+  "Plano de Saúde", "Salário", "Férias", "Benefícios", "Contratação", "Demissão", "Treinamento", "Ponto / Frequência",
+  // Infraestrutura
+  "Elétrica", "Hidráulica", "Ar Condicionado", "Segurança", "Limpeza", "Obras / Reformas", "Equipamentos",
+  // Geral
+  "Outro",
+] as const
 
 type ValidationResult<T> =
   | { ok: true; value: T }
@@ -76,6 +86,16 @@ export function validateTicketCategory(value: unknown): ValidationResult<string>
 
   if (!isOneOf(text, TICKET_CATEGORIES)) {
     return { ok: false, message: "Categoria inválida." }
+  }
+
+  return { ok: true, value: text }
+}
+
+export function validateTicketDepartment(value: unknown): ValidationResult<string> {
+  const text = cleanText(value)
+
+  if (!isOneOf(text, TICKET_DEPARTMENTS)) {
+    return { ok: false, message: "Departamento inválido. Use TI, RH ou Infraestrutura." }
   }
 
   return { ok: true, value: text }

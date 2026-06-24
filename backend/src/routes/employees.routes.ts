@@ -3,6 +3,7 @@ import { prisma } from "../lib/prisma"
 import { hashPassword, signToken, verifyPassword } from "../lib/auth"
 import { requireTechnical } from "../middlewares/auth.middleware"
 import { validateId, validateName, validatePassword, validateUsername } from "../lib/validation"
+import { loginLimiter } from "../lib/rateLimiter"
 
 export const employeesRoutes = Router()
 
@@ -27,7 +28,7 @@ function publicEmployee(employee: any) {
   }
 }
 
-employeesRoutes.get("/", requireTechnical(["Admin", "TI"]), async (_req, res) => {
+employeesRoutes.get("/", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (_req, res) => {
   try {
     const employees = await prisma.employee.findMany({
       where: {
@@ -55,7 +56,7 @@ employeesRoutes.get("/", requireTechnical(["Admin", "TI"]), async (_req, res) =>
   }
 })
 
-employeesRoutes.post("/login", async (req, res) => {
+employeesRoutes.post("/login", loginLimiter, async (req, res) => {
   const { username, password } = req.body
   const usernameValidation = validateUsername(username)
 
@@ -208,17 +209,31 @@ employeesRoutes.put("/:id", requireTechnical(["Admin"]), async (req, res) => {
     data.passwordHash = passwordHash
   }
 
-  const employee = await prisma.employee.update({
-    where: {
-      id: idValidation.value,
-    },
-    data,
-    include: {
-      sector: { select: sectorPublicSelect },
-    },
-  })
+  try {
+    const employee = await prisma.employee.update({
+      where: {
+        id: idValidation.value,
+      },
+      data,
+      include: {
+        sector: { select: sectorPublicSelect },
+      },
+    })
 
-  res.json(publicEmployee(employee))
+    res.json(publicEmployee(employee))
+  } catch (error: any) {
+    console.error("Erro ao atualizar funcionário:", error)
+
+    if (error?.code === "P2002") {
+      return res.status(409).json({ message: "Já existe um funcionário com esse usuário." })
+    }
+
+    if (error?.code === "P2025") {
+      return res.status(404).json({ message: "Funcionário não encontrado." })
+    }
+
+    res.status(500).json({ message: "Erro ao atualizar funcionário." })
+  }
 })
 
 employeesRoutes.delete("/:id", requireTechnical(["Admin"]), async (req, res) => {

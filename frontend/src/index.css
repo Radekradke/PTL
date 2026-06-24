@@ -58,6 +58,15 @@
   --radius: 0.95rem;
 }
 
+/* Label padronizada — texto de categoria/eyebrow */
+.ls-label {
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  line-height: 1.4;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -91,6 +100,12 @@
   }
 }
 
+/* ── PageLoader animations ── */
+@keyframes ptl-spin     { to { transform: rotate(360deg) } }
+@keyframes ptl-spin-rev { to { transform: rotate(-360deg) } }
+@keyframes ptl-pulse    { 0%,100% { opacity:1; transform:scale(1) } 50% { opacity:.6; transform:scale(.88) } }
+@keyframes ptl-bar      { 0% { width:0;margin-left:0 } 50% { width:70%;margin-left:0 } 100% { width:0;margin-left:100% } }
+
 .ls-page-shell {
   width: 100%;
   max-width: 80rem;
@@ -111,7 +126,6 @@
   border-radius: 1.5rem;
 }
 
-.ls-card::before,
 .ls-hero-clean::before {
   content: "";
   position: absolute;

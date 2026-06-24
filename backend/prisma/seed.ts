@@ -1,6 +1,11 @@
 import { PrismaClient } from "@prisma/client"
 import { hashPassword } from "../src/lib/auth"
 
+if (process.env.NODE_ENV === "production") {
+  console.error("ERRO: seed não deve ser executado em produção. Abortando.")
+  process.exit(1)
+}
+
 const prisma = new PrismaClient()
 
 async function createEmployeeIfNotExists(name: string, sectorId: number, username: string, password: string) {

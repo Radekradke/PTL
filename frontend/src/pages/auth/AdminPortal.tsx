@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from "react"
-import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png";
-import loadingLogo from "../../assets/lifting-loading-logo.png"
+import { useEffect, useRef, useState, type ElementType } from "react"
+import { useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
+import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { categories } from "@/lib/categories"
+import { categoriesByDepartment, type TicketDepartment } from "@/lib/categories"
 import { API_URL, PORTAL_USER_KEY, apiFetch, getPortalToken } from "@/services/api"
 import {
   CheckCircle2,
@@ -21,6 +23,16 @@ import {
   ClipboardList,
   Clock3,
   Send,
+  Activity,
+  CheckCheck,
+  Layers,
+  ShieldAlert,
+  Bot,
+  Monitor,
+  Users,
+  Building2,
+  ChevronRight,
+  ChevronLeft,
 } from "lucide-react"
 
 type Sector = {
@@ -69,7 +81,7 @@ type SuccessState = {
 const styles = {
   page:
     "min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.14),transparent_28%),linear-gradient(180deg,#F7FAF8_0%,#EEF6F2_52%,#EAF0ED_100%)] text-[#111827]",
-  shell: "mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-3 py-4 sm:gap-5 sm:px-5 sm:py-6",
+  shell: "mx-auto flex min-h-screen w-full min-w-0 max-w-6xl flex-col gap-4 px-3 py-4 sm:gap-5 sm:px-5 sm:py-6",
   glass:
     "overflow-hidden rounded-[1.35rem] border border-white/80 bg-white/82 shadow-[0_16px_46px_rgba(7,59,42,0.09)] backdrop-blur-2xl ring-1 ring-white/60 sm:rounded-[1.75rem]",
   card:
@@ -91,7 +103,7 @@ function formatTicket(ticket: any): PortalTicket {
     sector: ticket.sector?.name || "Sem setor",
     category: ticket.category || "Sem categoria",
     status: ticket.status || "Aberto",
-    origin: ticket.origin || "Base",
+    origin: ticket.origin || "Administrativo",
     description: ticket.description || "",
     technicalResponse: ticket.technicalResponse || "",
     archived: ticket.archived || false,
@@ -124,28 +136,13 @@ function getStatusStyle(status: string) {
 
 function getStatusAccent(status: string) {
   if (status === "Finalizado") return "#00A859"
-  if (status === "Em andamento") return "#2563EB"
+  if (status === "Em andamento") return "#F59E0B"
   if (status === "Aguardando usuário") return "#F97316"
   return "#0EA5E9"
 }
 
 function PortalShell({ children }: { children: React.ReactNode }) {
   return <div className={styles.page}>{children}</div>
-}
-
-function CreditOverlay() {
-  return (
-    <div
-      className="login-credit-overlay"
-      role="status"
-      aria-live="polite"
-    >
-      <div className="login-credit-content">
-        <img src={loadingLogo} alt="" className="login-credit-logo" />
-        <p className="login-credit-text">Criado por André Gomes</p>
-      </div>
-    </div>
-  )
 }
 
 function GlassCard({
@@ -158,11 +155,37 @@ function GlassCard({
   return <div className={`${styles.glass} ${className}`}>{children}</div>
 }
 
-function MiniMetric({ label, value }: { label: string; value: string | number }) {
+function MiniMetric({
+  label,
+  value,
+  icon: Icon,
+  accent,
+}: {
+  label: string
+  value: string | number
+  icon?: ElementType
+  accent?: string
+}) {
   return (
-    <div className="rounded-2xl border border-[#DDE7E2] bg-white/82 px-3 py-3 shadow-sm sm:px-4">
-      <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500 sm:text-[11px] sm:tracking-[0.14em]">{label}</p>
-      <p className="mt-1 text-xl font-black text-[#073B2A] sm:text-lg">{value}</p>
+    <div className="group relative overflow-hidden rounded-2xl border border-[#DDE7E2] bg-white/90 px-3 py-3 shadow-sm transition hover:shadow-md sm:px-4">
+      {accent && (
+        <span
+          className="absolute left-0 top-0 h-full w-1 rounded-l-2xl"
+          style={{ background: accent }}
+        />
+      )}
+      <div className="flex items-center gap-2">
+        {Icon && (
+          <span
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl"
+            style={{ background: accent ? `${accent}18` : "#F1F5F9", color: accent ?? "#64748b" }}
+          >
+            <Icon size={14} />
+          </span>
+        )}
+        <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500 sm:text-[11px]">{label}</p>
+      </div>
+      <p className="mt-1.5 pl-0.5 text-2xl font-black tracking-tight text-[#073B2A] sm:text-xl">{value}</p>
     </div>
   )
 }
@@ -175,28 +198,33 @@ function EmptyPortalState({
   description: string
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-[#CFE2D8] bg-[#F8FCFA] p-6 text-center">
-      <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-[#00A859] ring-1 ring-[#DDE7E2]">
-        <ClipboardList size={20} />
+    <div className="rounded-2xl border border-dashed border-[#CFE2D8] bg-gradient-to-b from-[#F8FCFA] to-white p-8 text-center">
+      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[#00A859] shadow-sm ring-1 ring-[#DDE7E2]">
+        <ClipboardList size={22} />
       </div>
       <p className="text-sm font-black text-[#073B2A]">{title}</p>
-      <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">{description}</p>
+      <p className="mt-1.5 text-xs font-medium leading-5 text-slate-400">{description}</p>
     </div>
   )
 }
 
 export function AdminPortal() {
+  const navigate = useNavigate()
   const [loggedEmployee, setLoggedEmployee] = useState<Employee | null>(null)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [isLoggingIn, setIsLoggingIn] = useState(false)
-  const [showCredit, setShowCredit] = useState(false)
-
+  const [ticketDepartment, setTicketDepartment] = useState<TicketDepartment | null>(null)
   const [category, setCategory] = useState("PC")
-  const [origin, setOrigin] = useState("Base")
+  const [origin, setOrigin] = useState("Administrativo")
   const [description, setDescription] = useState("")
 
-  const [activeTab, setActiveTab] = useState<"new" | "mine">("new")
+  const [activeTab, setActiveTab] = useState<"new" | "mine" | "ouvidoria">("new")
+  const [ouvidoriaName, setOuvidoriaName] = useState("")
+  const [ouvidoriaSector, setOuvidoriaSector] = useState("")
+  const [ouvidoriaComplaint, setOuvidoriaComplaint] = useState("")
+  const [isSubmittingOuvidoria, setIsSubmittingOuvidoria] = useState(false)
+  const [ouvidoriaSuccess, setOuvidoriaSuccess] = useState(false)
   const [showArchivedTickets, setShowArchivedTickets] = useState(false)
   const [myTickets, setMyTickets] = useState<PortalTicket[]>([])
   const [archivedTickets, setArchivedTickets] = useState<PortalTicket[]>([])
@@ -242,7 +270,7 @@ export function AdminPortal() {
     if (isLoggingIn) return
 
     if (!username || !password) {
-      alert("Digite seu usuário e senha.")
+      toast.error("Digite seu usuário e senha.")
       return
     }
 
@@ -261,7 +289,7 @@ export function AdminPortal() {
       })
 
       if (!response.ok) {
-        alert("Usuário ou senha inválidos.")
+        toast.error("Usuário ou senha inválidos.")
         return
       }
 
@@ -270,14 +298,10 @@ export function AdminPortal() {
       localStorage.setItem(PORTAL_USER_KEY, JSON.stringify(employee))
       setUsername("")
       setPassword("")
-      setShowCredit(true)
-      window.setTimeout(() => {
-        setLoggedEmployee(employee)
-        setShowCredit(false)
-      }, 1900)
+      setLoggedEmployee(employee)
     } catch (error) {
       console.error("Erro ao acessar portal:", error)
-      alert("Erro ao acessar portal.")
+      toast.error("Erro ao acessar portal.")
     } finally {
       setIsLoggingIn(false)
     }
@@ -385,9 +409,57 @@ export function AdminPortal() {
     }
   }
 
+  async function handleOuvidoriaSubmit() {
+    if (isSubmittingOuvidoria) return
+
+    const name = ouvidoriaName.trim()
+    const sector = ouvidoriaSector.trim()
+    const complaint = ouvidoriaComplaint.trim()
+
+    if (name.length < 2) { toast.error("Informe seu nome."); return }
+    if (sector.length < 1) { toast.error("Informe seu setor."); return }
+    if (complaint.length < 10) { toast.error("Descreva a denúncia com pelo menos 10 caracteres."); return }
+
+    setIsSubmittingOuvidoria(true)
+
+    try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 15000)
+
+      const response = await apiFetch("/ouvidoria", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, sector, complaint }),
+        signal: controller.signal,
+      }, getPortalToken())
+
+      clearTimeout(timeout)
+
+      if (handleUnauthorizedPortalResponse(response)) return
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        toast.error(data.message || "Erro ao enviar denúncia.")
+        return
+      }
+
+      setOuvidoriaSuccess(true)
+      setOuvidoriaComplaint("")
+    } catch (error: any) {
+      if (error?.name === "AbortError") {
+        toast.error("Tempo limite atingido. Tente novamente.")
+      } else {
+        console.error("Erro ao enviar ouvidoria:", error)
+        toast.error("Erro ao enviar denúncia. Verifique sua conexão.")
+      }
+    } finally {
+      setIsSubmittingOuvidoria(false)
+    }
+  }
+
   async function handleSubmit() {
     if (!loggedEmployee || !description) {
-      alert("Descreva o problema antes de abrir o chamado.")
+      toast.error("Descreva o problema antes de abrir o chamado.")
       return
     }
 
@@ -401,6 +473,7 @@ export function AdminPortal() {
         },
         body: JSON.stringify({
           employeeId: loggedEmployee.id,
+          department: ticketDepartment,
           category,
           origin,
           description,
@@ -412,7 +485,7 @@ export function AdminPortal() {
       }
 
       if (!response.ok) {
-        alert("Erro ao abrir chamado.")
+        toast.error("Erro ao abrir chamado.")
         return
       }
 
@@ -424,13 +497,14 @@ export function AdminPortal() {
         employeeName: loggedEmployee.name,
       })
 
+      setTicketDepartment(null)
       setCategory("PC")
-      setOrigin("Base")
+      setOrigin("Administrativo")
       setDescription("")
       loadMyTickets(loggedEmployee.id)
     } catch (error) {
       console.error(error)
-      alert("Erro ao abrir chamado.")
+      toast.error("Erro ao abrir chamado.")
     } finally {
       setIsSubmitting(false)
     }
@@ -459,7 +533,7 @@ export function AdminPortal() {
       }
 
       if (!response.ok) {
-        alert("Erro ao enviar resposta.")
+        toast.error("Erro ao enviar resposta.")
         return
       }
 
@@ -470,7 +544,7 @@ export function AdminPortal() {
       loadMyTickets(loggedEmployee.id)
     } catch (error) {
       console.error("Erro ao responder chamado:", error)
-      alert("Erro ao enviar resposta.")
+      toast.error("Erro ao enviar resposta.")
     } finally {
       setIsSendingReply(false)
     }
@@ -494,7 +568,7 @@ export function AdminPortal() {
       }
 
       if (!response.ok) {
-        alert("Erro ao finalizar chamado.")
+        toast.error("Erro ao finalizar chamado.")
         return
       }
 
@@ -504,7 +578,7 @@ export function AdminPortal() {
       loadArchivedTickets(loggedEmployee?.id)
     } catch (error) {
       console.error("Erro ao finalizar chamado:", error)
-      alert("Erro ao finalizar chamado.")
+      toast.error("Erro ao finalizar chamado.")
     } finally {
       setIsFinishingTicket(false)
     }
@@ -522,6 +596,17 @@ export function AdminPortal() {
     loadArchivedTickets(loggedEmployee?.id)
   }
 
+  function handleTabChange(tab: "new" | "mine" | "ouvidoria") {
+    setActiveTab(tab)
+    if (tab === "ouvidoria") {
+      setOuvidoriaSuccess(false)
+      if (loggedEmployee) {
+        setOuvidoriaName(loggedEmployee.name)
+        setOuvidoriaSector(loggedEmployee.sector?.name || "")
+      }
+    }
+  }
+
   function handleExit() {
     localStorage.removeItem(PORTAL_USER_KEY)
     hasShownExpiredSession.current = false
@@ -529,7 +614,7 @@ export function AdminPortal() {
     setUsername("")
     setPassword("")
     setCategory("PC")
-    setOrigin("Base")
+    setOrigin("Administrativo")
     setDescription("")
     setActiveTab("new")
     setShowArchivedTickets(false)
@@ -538,7 +623,10 @@ export function AdminPortal() {
     setSelectedTicket(null)
     setMessages([])
     setSuccessState({ isVisible: false })
-    setShowCredit(false)
+    setOuvidoriaName("")
+    setOuvidoriaSector("")
+    setOuvidoriaComplaint("")
+    setOuvidoriaSuccess(false)
   }
 
   function handleUnauthorizedPortalResponse(response: Response) {
@@ -548,7 +636,7 @@ export function AdminPortal() {
 
     if (!hasShownExpiredSession.current) {
       hasShownExpiredSession.current = true
-      alert("Sua sessão expirou. Entre novamente no portal para abrir ou acompanhar chamados.")
+      toast.error("Sua sessão expirou. Entre novamente no portal para abrir ou acompanhar chamados.")
     }
 
     setLoggedEmployee(null)
@@ -568,10 +656,8 @@ export function AdminPortal() {
 
   if (!loggedEmployee) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.20),transparent_30%),linear-gradient(180deg,#F7FAF8,#EAF0ED)] px-4 py-8 text-[#111827]">
-        {showCredit && <CreditOverlay />}
-
-        <div className="grid w-full max-w-5xl overflow-hidden rounded-[1.5rem] border border-white/80 bg-white shadow-[0_28px_90px_rgba(7,59,42,0.14)] sm:rounded-[2rem] lg:grid-cols-[1.05fr_0.95fr]">
+      <div className="ls-mobile-auth-shell flex items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.20),transparent_30%),linear-gradient(180deg,#F7FAF8,#EAF0ED)] px-3 py-4 text-[#111827] sm:px-4 sm:py-8">
+        <div className="grid w-full min-w-0 max-w-5xl overflow-hidden rounded-[1.35rem] border border-white/80 bg-white shadow-[0_24px_70px_rgba(7,59,42,0.14)] sm:rounded-[2rem] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:shadow-[0_28px_90px_rgba(7,59,42,0.14)]">
           <section className="relative hidden min-h-[620px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.28),transparent_32%),linear-gradient(135deg,#073B2A,#102A43)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
             <div className="relative">
            <img
@@ -680,6 +766,15 @@ export function AdminPortal() {
                 <p className="text-xs leading-5 text-slate-400">
                   Acesso restrito para funcionários autorizados.
                 </p>
+                <div className="mt-4 border-t border-slate-100 pt-4">
+                  <p className="text-xs text-slate-400">É técnico ou gestor?</p>
+                  <button
+                    onClick={() => navigate("/")}
+                    className="mt-2 text-sm font-bold text-[#00A859] transition hover:underline"
+                  >
+                    Acessar painel técnico →
+                  </button>
+                </div>
               </div>
             </div>
           </section>
@@ -733,8 +828,6 @@ export function AdminPortal() {
 
   return (
     <PortalShell>
-      {showCredit && <CreditOverlay />}
-
       <div className={styles.shell}>
         <header className={`${styles.glass} p-4 sm:p-5`}>
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -749,142 +842,319 @@ export function AdminPortal() {
             </div>
 
             <div className="grid grid-cols-3 gap-2">
-              <MiniMetric label="Ativos" value={activeTickets} />
-              <MiniMetric label="Finalizados" value={finishedTickets} />
-              <MiniMetric label="Total" value={allTickets.length} />
+              <MiniMetric label="Ativos" value={activeTickets} icon={Activity} accent="#0EA5E9" />
+              <MiniMetric label="Finalizados" value={finishedTickets} icon={CheckCheck} accent="#00A859" />
+              <MiniMetric label="Total" value={allTickets.length} icon={Layers} accent="#8B5CF6" />
             </div>
           </div>
 
           <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="grid grid-cols-2 gap-2 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1 lg:w-fit">
-              <button
-                onClick={() => setActiveTab("new")}
-                className={`inline-flex h-11 items-center justify-center rounded-xl px-3 text-sm font-bold transition ${
-                  activeTab === "new"
-                    ? "bg-[#00A859] text-white shadow-sm"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
-                }`}
-              >
-                <PlusCircle size={16} className="mr-2" />
-                Novo Chamado
-              </button>
-              <button
-                onClick={() => setActiveTab("mine")}
-                className={`inline-flex h-11 items-center justify-center rounded-xl px-3 text-sm font-bold transition ${
-                  activeTab === "mine"
-                    ? "bg-[#00A859] text-white shadow-sm"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
-                }`}
-              >
-                <MessageSquareText size={16} className="mr-2" />
-                Meus chamados
-              </button>
+            <div className="flex gap-1 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1 lg:w-fit">
+              {(
+                [
+                  { key: "new", label: "Novo Chamado", Icon: PlusCircle, activeColor: "bg-[#00A859]" },
+                  { key: "mine", label: "Meus Chamados", Icon: MessageSquareText, activeColor: "bg-[#00A859]" },
+                  { key: "ouvidoria", label: "Ouvidoria", Icon: ShieldAlert, activeColor: "bg-[#00A859]" },
+                ] as const
+              ).map(({ key, label, Icon, activeColor }) => (
+                <button
+                  key={key}
+                  onClick={() => handleTabChange(key)}
+                  className={`inline-flex h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold transition-all duration-200 ${
+                    activeTab === key
+                      ? `${activeColor} text-white shadow-md scale-[1.01]`
+                      : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
+                  }`}
+                >
+                  <Icon size={15} className={activeTab === key ? "opacity-100" : "opacity-60"} />
+                  <span className="hidden sm:inline">{label}</span>
+                  <span className="sm:hidden">{key === "new" ? "Novo" : key === "mine" ? "Meus" : "Ouvidoria"}</span>
+                </button>
+              ))}
             </div>
 
             <div className="flex flex-col gap-2 sm:flex-row">
               <Button
                 variant="outline"
-                className="h-10 rounded-2xl border border-[#DDE7E2] bg-white font-bold text-slate-700 transition hover:bg-red-50 hover:text-red-700"
+                className="h-10 rounded-2xl border border-[#DDE7E2] bg-white/80 font-bold text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
                 onClick={handleExit}
               >
-                <LogOut size={16} className="mr-2" />
-                Sair
+                <LogOut size={15} className="mr-2 opacity-70" />
+                Sair do portal
               </Button>
             </div>
           </div>
         </header>
 
-        {activeTab === "new" ? (
+        {activeTab === "ouvidoria" ? (
           <GlassCard className="p-4 sm:p-6">
-            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">Novo atendimento</p>
-                <h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[#111827]">Qual é o problema?</h2>
-                <p className="mt-1 text-sm leading-6 text-slate-500">Descreva o que está acontecendo para a equipe técnica começar com contexto.</p>
-              </div>
-              <div className="hidden rounded-2xl border border-[#BFEFD7] bg-[#ECFBF3] px-4 py-3 text-sm font-bold text-[#073B2A] sm:block">
-                Resposta pelo portal
-              </div>
-            </div>
-
-            <div className="grid gap-4 lg:grid-cols-[0.72fr_1.28fr]">
-              <div className="space-y-3">
-                <div className="rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
-                  <div className="mb-4">
-                    <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">Classificação</p>
-                    <p className="mt-1 text-sm font-semibold leading-5 text-slate-500">Escolha o tipo e a origem do chamado.</p>
-                  </div>
-
-                  <div className="grid gap-4">
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Categoria</label>
-                      <select
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}
-                        className={`mt-2 ${styles.select}`}
-                      >
-                        {categories.map((category) => (
-                          <option key={category}>{category}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Origem</label>
-                      <div className="mt-2 grid grid-cols-2 gap-2 rounded-2xl border border-[#DDE7E2] bg-[#F8FAF9] p-1">
-                        {["Base", "Offshore"].map((originOption) => (
-                          <button
-                            key={originOption}
-                            type="button"
-                            onClick={() => setOrigin(originOption)}
-                            className={`h-10 rounded-xl text-sm font-black transition ${
-                              origin === originOption
-                                ? "bg-[#00A859] text-white shadow-sm"
-                                : "text-slate-600 hover:bg-white"
-                            }`}
-                          >
-                            {originOption}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+            {ouvidoriaSuccess ? (
+              <div className="flex flex-col items-center justify-center py-14 text-center">
+                <div className="relative mb-2">
+                  <div className="absolute inset-0 rounded-full bg-[#39D98A]/20 blur-2xl" />
+                  <CheckCircle2 className="relative h-16 w-16 text-[#00A859]" />
                 </div>
-
-                <div className="rounded-[1.35rem] border border-[#BFEFD7] bg-[#ECFBF3] p-4 text-sm leading-6 text-[#073B2A] shadow-sm sm:rounded-[1.5rem]">
-                  <p className="font-black">Dica rápida</p>
-                  <p className="mt-1 text-xs font-semibold text-[#376B55]">
-                    Quanto mais claro for o contexto, mais rápido a equipe técnica consegue responder.
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-3 rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-3 shadow-sm sm:rounded-[1.5rem] sm:p-4">
-                <div>
-                  <label className="text-sm font-bold text-[#102A43]">Descrição</label>
-                  <Textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Descreva o problema com contexto objetivo..."
-                    className="mt-2 min-h-[220px] rounded-2xl border-[#DDE7E2] bg-white/95 px-4 py-3 text-slate-950 focus:border-[#00A859]"
-                  />
-                  <p className="mt-2 text-xs font-semibold leading-5 text-slate-500">
-                    Inclua local, equipamento, mensagem de erro e urgência, se houver.
-                  </p>
-                </div>
-
+                <h2 className="mt-5 text-2xl font-black tracking-[-0.04em] text-[#111827]">Denúncia registrada!</h2>
+                <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">
+                  Sua denúncia foi recebida e será encaminhada com sigilo ao responsável.
+                </p>
                 <Button
-                  className={`h-12 w-full ${styles.primary}`}
-                  onClick={handleSubmit}
-                  disabled={isSubmitting || !description.trim()}
+                  className="mt-8 h-11 px-8 rounded-2xl bg-[linear-gradient(135deg,#073B2A,#00A859)] font-bold text-white shadow-md transition hover:-translate-y-0.5"
+                  onClick={() => setOuvidoriaSuccess(false)}
                 >
-                  {isSubmitting ? "Enviando..." : "Abrir chamado"}
-                  <Send size={16} className="ml-2" />
+                  Enviar nova denúncia
                 </Button>
               </div>
-            </div>
+            ) : (
+              <>
+                <div className="mb-6">
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#073B2A] to-[#102A43] text-white shadow-lg shadow-[#073B2A]/20">
+                      <ShieldAlert size={22} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs font-black uppercase tracking-[0.18em] text-[#073B2A]">Canal confidencial</p>
+                        <span className="rounded-full bg-[#073B2A]/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#073B2A]">Sigiloso</span>
+                      </div>
+                      <h2 className="mt-0.5 text-2xl font-black tracking-[-0.04em] text-[#111827]">Ouvidoria</h2>
+                      <p className="mt-1.5 text-sm leading-6 text-slate-500">
+                        Registre denúncias ou irregularidades de forma sigilosa. Após o envio, a mensagem é encaminhada diretamente ao responsável por e-mail.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+                  <div className="space-y-4">
+                    <div className="rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
+                      <p className="mb-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Identificação</p>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Nome</label>
+                          <Input
+                            value={ouvidoriaName}
+                            readOnly
+                            className={`mt-1.5 cursor-default select-none bg-[#F3F6F4] text-slate-500 ${styles.input}`}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-bold uppercase tracking-[0.1em] text-slate-400">Setor</label>
+                          <Input
+                            value={ouvidoriaSector}
+                            readOnly
+                            className={`mt-1.5 cursor-default select-none bg-[#F3F6F4] text-slate-500 ${styles.input}`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                      <p className="text-xs font-black text-amber-800">Sigilo garantido</p>
+                      <p className="mt-1 text-xs leading-5 text-amber-700">
+                        O conteúdo desta denúncia é enviado diretamente ao responsável pela ouvidoria. Seja objetivo e inclua o máximo de detalhes possível.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3 rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
+                    <div className="flex-1">
+                      <label className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Descrição da denúncia</label>
+                      <Textarea
+                        value={ouvidoriaComplaint}
+                        onChange={(e) => setOuvidoriaComplaint(e.target.value)}
+                        placeholder="Descreva o que aconteceu, quando, onde e quem está envolvido..."
+                        className="mt-2 min-h-[240px] w-full rounded-2xl border-[#DDE7E2] bg-white px-4 py-3 text-sm text-slate-950 focus:border-[#073B2A] focus:outline-none focus:ring-2 focus:ring-[#073B2A]/10"
+                      />
+                      <p className="mt-1.5 text-xs text-slate-400">
+                        {ouvidoriaComplaint.trim().length} caracteres {ouvidoriaComplaint.trim().length < 10 && "(mínimo 10)"}
+                      </p>
+                    </div>
+
+                    <Button
+                      className={`h-12 w-full ${styles.primary}`}
+                      onClick={handleOuvidoriaSubmit}
+                      disabled={isSubmittingOuvidoria || ouvidoriaComplaint.trim().length < 10 || !ouvidoriaName.trim() || !ouvidoriaSector.trim()}
+                    >
+                      {isSubmittingOuvidoria ? "Registrando..." : "Enviar denúncia"}
+                      <Send size={16} className="ml-2" />
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </GlassCard>
+        ) : activeTab === "new" ? (
+          <GlassCard className="p-4 sm:p-6">
+            {!ticketDepartment ? (
+              /* Step 1: choose department */
+              <>
+                <div className="mb-6 text-center">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">Novo chamado</p>
+                  <h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[#111827]">Para qual setor é o chamado?</h2>
+                  <p className="mt-1 text-sm leading-6 text-slate-500">Selecione o setor responsável pelo atendimento.</p>
+                </div>
+
+                <div className="mx-auto max-w-sm space-y-3">
+                  {(
+                    [
+                      {
+                        id: "TI" as TicketDepartment,
+                        label: "Setor TI",
+                        description: "Suporte a sistemas, equipamentos e redes",
+                        icon: Monitor,
+                      },
+                      {
+                        id: "RH" as TicketDepartment,
+                        label: "Setor RH",
+                        description: "Salário, benefícios, férias e gestão de pessoas",
+                        icon: Users,
+                      },
+                      {
+                        id: "Infraestrutura" as TicketDepartment,
+                        label: "Infraestrutura",
+                        description: "Instalações, manutenção e infraestrutura predial",
+                        icon: Building2,
+                      },
+                    ] as const
+                  ).map((dept, i) => {
+                    const Icon = dept.icon
+                    return (
+                      <button
+                        key={dept.id}
+                        onClick={() => {
+                          setTicketDepartment(dept.id)
+                          setCategory(categoriesByDepartment[dept.id][0])
+                        }}
+                        className="group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl p-[1.5px] text-left"
+                        style={{
+                          background: "linear-gradient(135deg,#00A859,#39D98A,#00A859)",
+                          animation: `ap-fade-up 0.38s cubic-bezier(.22,.68,0,1.2) ${0.06 + i * 0.09}s both`,
+                        }}
+                      >
+                        <span className="flex w-full items-center gap-4 rounded-[14px] bg-white px-4 py-[14px] transition-all duration-200 group-hover:bg-[linear-gradient(135deg,#073B2A,#00A859)]">
+                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#00A859]/10 text-[#00A859] ring-1 ring-[#00A859]/20 transition-all duration-200 group-hover:bg-white/15 group-hover:text-white group-hover:ring-white/30">
+                            <Icon size={22} />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-[15px] font-black tracking-[-0.02em] text-[#073B2A] transition-colors duration-200 group-hover:text-white">
+                              {dept.label}
+                            </span>
+                            <span className="mt-0.5 block text-xs font-medium leading-4 text-slate-500 transition-colors duration-200 group-hover:text-emerald-100">
+                              {dept.description}
+                            </span>
+                          </span>
+                          <ChevronRight size={18} className="shrink-0 text-[#00A859] transition-all duration-200 group-hover:translate-x-1 group-hover:text-white" />
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+                <style>{`@keyframes ap-fade-up { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }`}</style>
+              </>
+            ) : (
+              /* Step 2: form with department-specific categories */
+              <>
+                <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <button
+                      onClick={() => { setTicketDepartment(null); setCategory("PC"); setDescription("") }}
+                      className="mb-2 flex items-center gap-1 text-xs font-semibold text-slate-400 transition hover:text-slate-600"
+                    >
+                      <ChevronLeft size={14} />
+                      Trocar setor
+                    </button>
+                    <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">
+                      Novo atendimento · {ticketDepartment === "Infraestrutura" ? "Infraestrutura" : `Setor ${ticketDepartment}`}
+                    </p>
+                    <h2 className="mt-1 text-2xl font-black tracking-[-0.04em] text-[#111827]">Qual é o problema?</h2>
+                    <p className="mt-1 text-sm leading-6 text-slate-500">Descreva o que está acontecendo para a equipe técnica começar com contexto.</p>
+                  </div>
+                  <div className="hidden rounded-2xl border border-[#BFEFD7] bg-[#ECFBF3] px-4 py-3 text-sm font-bold text-[#073B2A] sm:block">
+                    Resposta pelo portal
+                  </div>
+                </div>
+
+                <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)]">
+                  <div className="space-y-3">
+                    <div className="rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
+                      <div className="mb-4">
+                        <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">Classificação</p>
+                        <p className="mt-1 text-sm font-semibold leading-5 text-slate-500">Escolha o tipo e a origem do chamado.</p>
+                      </div>
+
+                      <div className="grid gap-4">
+                        <div>
+                          <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Categoria</label>
+                          <select
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            className={`mt-2 ${styles.select}`}
+                          >
+                            {categoriesByDepartment[ticketDepartment].map((cat) => (
+                              <option key={cat}>{cat}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Origem</label>
+                          <div className="mt-2 grid grid-cols-2 gap-2 rounded-2xl border border-[#DDE7E2] bg-[#F8FAF9] p-1">
+                            {["Administrativo", "Operacional"].map((originOption) => (
+                              <button
+                                key={originOption}
+                                type="button"
+                                onClick={() => setOrigin(originOption)}
+                                className={`h-10 rounded-xl text-sm font-black transition ${
+                                  origin === originOption
+                                    ? "bg-[#00A859] text-white shadow-sm"
+                                    : "text-slate-600 hover:bg-white"
+                                }`}
+                              >
+                                {originOption}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-[1.35rem] border border-[#BFEFD7] bg-[#ECFBF3] p-4 text-sm leading-6 text-[#073B2A] shadow-sm sm:rounded-[1.5rem]">
+                      <p className="font-black">Dica rápida</p>
+                      <p className="mt-1 text-xs font-semibold text-[#376B55]">
+                        Quanto mais claro for o contexto, mais rápido a equipe técnica consegue responder.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-3 shadow-sm sm:rounded-[1.5rem] sm:p-4">
+                    <div>
+                      <label className="text-sm font-bold text-[#102A43]">Descrição</label>
+                      <Textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Descreva o problema com contexto objetivo..."
+                        className="mt-2 min-h-[220px] rounded-2xl border-[#DDE7E2] bg-white/95 px-4 py-3 text-slate-950 focus:border-[#00A859]"
+                      />
+                      <p className="mt-2 text-xs font-semibold leading-5 text-slate-500">
+                        Inclua local, equipamento, mensagem de erro e urgência, se houver.
+                      </p>
+                    </div>
+
+                    <Button
+                      className={`h-12 w-full ${styles.primary}`}
+                      onClick={handleSubmit}
+                      disabled={isSubmitting || !description.trim()}
+                    >
+                      {isSubmitting ? "Enviando..." : "Abrir chamado"}
+                      <Send size={16} className="ml-2" />
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
           </GlassCard>
         ) : (
-          <div className="grid gap-4 xl:grid-cols-[360px_1fr]">
+          <div className="grid min-w-0 gap-4 xl:grid-cols-[360px_minmax(0,1fr)]">
             <GlassCard className="p-4">
               <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
@@ -906,30 +1176,44 @@ export function AdminPortal() {
               </div>
 
               <div className="max-h-[560px] space-y-3 overflow-y-auto pr-1">
+                {isLoadingTickets && myTickets.length === 0 && (
+                  <>
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <Skeleton key={i} className="h-28 rounded-2xl bg-white/80" />
+                    ))}
+                  </>
+                )}
                 {myTickets.map((ticket) => (
                   <button
                     key={ticket.id}
                     onClick={() => loadTicketMessages(ticket)}
-                    className={`w-full rounded-2xl border border-l-4 p-4 text-left shadow-sm transition hover:border-[#00A859]/35 hover:bg-white ${
+                    className={`group w-full overflow-hidden rounded-2xl border text-left shadow-sm transition-all duration-150 hover:shadow-md ${
                       selectedTicket?.id === ticket.id
-                        ? "border-[#00A859]/40 bg-[#00A859]/10"
-                        : "border-[#DDE7E2] bg-white/70"
+                        ? "border-[#00A859]/40 bg-[#00A859]/8 ring-1 ring-[#00A859]/20"
+                        : "border-[#DDE7E2] bg-white/80 hover:bg-white"
                     }`}
-                    style={{ borderLeftColor: getStatusAccent(ticket.status) }}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="text-xs font-black uppercase tracking-[0.14em] text-[#00A859]">#{ticket.id}</p>
-                        <h3 className="mt-1 truncate text-sm font-black text-[#111827]">{ticket.category}</h3>
+                    <div
+                      className="h-1 w-full rounded-t-2xl"
+                      style={{ background: getStatusAccent(ticket.status) }}
+                    />
+                    <div className="p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-[10px] font-black uppercase tracking-[0.16em]" style={{ color: getStatusAccent(ticket.status) }}>
+                            #{ticket.id}
+                          </p>
+                          <h3 className="mt-0.5 truncate text-sm font-black text-[#111827]">{ticket.category}</h3>
+                        </div>
+                        <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold ${getStatusStyle(ticket.status)}`}>
+                          {ticket.status}
+                        </span>
                       </div>
-                      <span className={`shrink-0 rounded-full border px-2 py-1 text-[10px] font-bold ${getStatusStyle(ticket.status)}`}>
-                        {ticket.status}
-                      </span>
-                    </div>
-                    <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500">{ticket.description}</p>
-                    <div className="mt-3 flex items-center gap-1.5 text-[11px] text-slate-400">
-                      <Clock3 size={12} />
-                      <span>{ticket.createdAt}</span>
+                      <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500">{ticket.description}</p>
+                      <div className="mt-3 flex items-center gap-1.5 text-[11px] text-slate-400">
+                        <Clock3 size={11} />
+                        <span>{ticket.createdAt}</span>
+                      </div>
                     </div>
                   </button>
                 ))}
@@ -1006,24 +1290,45 @@ export function AdminPortal() {
                     </div>
                   </div>
 
-                  <div className="flex-1 space-y-4 overflow-y-auto bg-[#F8FCFA] p-4 sm:p-5">
+                  <div className="flex-1 space-y-5 overflow-y-auto bg-[#F8FCFA] p-4 sm:p-5">
                     {messages.map((message) => {
                       const isEmployee = message.senderType === "employee"
+                      const isBot = message.senderType === "bot"
+                      const senderLabel = isEmployee ? "Você" : isBot ? "Bot" : (message.senderName || "Técnico")
+                      const initials = senderLabel
+                        .split(" ")
+                        .slice(0, 2)
+                        .map((w: string) => w[0])
+                        .join("")
+                        .toUpperCase()
 
                       return (
-                        <div key={message.id} className={`flex ${isEmployee ? "justify-end" : "justify-start"}`}>
+                        <div key={message.id} className={`flex items-end gap-2.5 ${isEmployee ? "flex-row-reverse" : "flex-row"}`}>
                           <div
-                            className={`max-w-[88%] rounded-3xl border p-4 shadow-sm ${
+                            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-black shadow-sm ${
                               isEmployee
-                                ? "border-[#00A859]/20 bg-[#00A859]/12 text-[#073B2A]"
-                                : "border-[#DDE7E2] bg-white text-[#111827]"
+                                ? "bg-[#00A859] text-white"
+                                : isBot
+                                ? "bg-blue-500 text-white"
+                                : "bg-[#073B2A] text-white"
                             }`}
                           >
-                            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-                              <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">
-                                {isEmployee ? "Você" : message.senderName || "Técnico"}
+                            {isBot ? <Bot size={14} /> : initials}
+                          </div>
+                          <div
+                            className={`min-w-0 max-w-[80%] rounded-3xl border px-4 py-3 shadow-sm ${
+                              isEmployee
+                                ? "rounded-br-md border-[#00A859]/25 bg-gradient-to-br from-[#00A859]/15 to-[#00A859]/8 text-[#073B2A]"
+                                : isBot
+                                ? "rounded-bl-md border-blue-200 bg-blue-50 text-[#111827]"
+                                : "rounded-bl-md border-[#DDE7E2] bg-white text-[#111827]"
+                            }`}
+                          >
+                            <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                              <p className={`text-[11px] font-black uppercase tracking-[0.1em] ${isBot ? "text-blue-600" : isEmployee ? "text-[#00A859]" : "text-slate-500"}`}>
+                                {isEmployee ? "Você" : isBot ? "Atendimento Automático" : message.senderName || "Técnico"}
                               </p>
-                              <p className="text-[11px] text-slate-400">
+                              <p className="text-[10px] text-slate-400">
                                 {new Date(message.createdAt).toLocaleString("pt-BR")}
                               </p>
                             </div>
@@ -1047,7 +1352,7 @@ export function AdminPortal() {
                         Este chamado está finalizado e arquivado.
                       </div>
                     ) : (
-                      <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
+                      <div className="grid min-w-0 gap-3 lg:grid-cols-[minmax(0,1fr)_auto]">
                         <Textarea
                           value={employeeReply}
                           onChange={(e) => setEmployeeReply(e.target.value)}
@@ -1063,7 +1368,7 @@ export function AdminPortal() {
                             {isSendingReply ? "Enviando..." : "Responder"}
                           </Button>
                           <Button
-                            className="px-6 h-11 rounded-2xl bg-slate-600 font-bold text-white transition hover:bg-slate-700 disabled:opacity-50"
+                            className="px-6 h-11 rounded-2xl border border-[#00A859]/40 bg-[#00A859]/10 font-bold text-[#073B2A] transition hover:bg-[#00A859]/20 disabled:opacity-50"
                             onClick={handleFinishTicket}
                             disabled={isFinishingTicket}
                           >
@@ -1075,15 +1380,23 @@ export function AdminPortal() {
                   </div>
                 </div>
               ) : (
-                <div className="flex h-full min-h-[520px] items-center justify-center p-8 text-center">
-                  <div className="max-w-md">
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-3xl bg-[#ECFBF3] text-[#00A859] ring-1 ring-[#BFEFD7]">
-                      <MessageSquareText size={28} />
+                <div className="flex h-full min-h-[520px] items-center justify-center bg-[#F8FCFA] p-8 text-center">
+                  <div className="max-w-sm">
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-[#ECFBF3] to-white text-[#00A859] shadow-sm ring-1 ring-[#BFEFD7]">
+                      <MessageSquareText size={30} />
                     </div>
-                    <h2 className="mt-4 text-2xl font-black tracking-[-0.04em] text-[#111827]">Selecione um chamado</h2>
+                    <h2 className="mt-5 text-2xl font-black tracking-[-0.04em] text-[#111827]">Selecione um chamado</h2>
                     <p className="mt-2 text-sm leading-6 text-slate-500">
-                      Clique em um chamado para acompanhar a conversa com a equipe técnica.
+                      Clique em qualquer chamado da lista ao lado para ver a conversa com a equipe técnica.
                     </p>
+                    <div className="mx-auto mt-5 flex max-w-[200px] flex-col gap-1.5">
+                      {["Aberto", "Em andamento", "Finalizado"].map((s) => (
+                        <div key={s} className={`flex items-center gap-2 rounded-xl border px-3 py-1.5 text-xs font-bold ${getStatusStyle(s)}`}>
+                          <span className="h-2 w-2 rounded-full" style={{ background: getStatusAccent(s) }} />
+                          {s}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}

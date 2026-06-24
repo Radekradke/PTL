@@ -37,6 +37,7 @@ model Ticket {
   category          String
   origin            String
   description       String
+  department        String   @default("TI")
   status            String   @default("Aberto")
   priority          String   @default("Normal")
   technicalResponse String?
@@ -59,6 +60,15 @@ model TicketMessage {
   createdAt  DateTime @default(now())
 
   ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+}
+
+model PushSubscription {
+  id        Int      @id @default(autoincrement())
+  sector    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
 }
 
 model Timeline {

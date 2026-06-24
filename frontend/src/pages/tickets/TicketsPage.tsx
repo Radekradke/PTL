@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { StatsCard } from "@/components/dashboard/StatsCard"
 import { TicketsTable } from "@/components/tickets/TicketsTable"
-import { Skeleton } from "@/components/ui/skeleton"
+import { PageLoader } from "@/components/ui/PageLoader"
 import { apiFetch } from "@/services/api"
 import { useNotifications } from "@/contexts/NotificationContext"
+import { TICKETS_CHANGED_EVENT } from "@/contexts/NotificationContext"
 
 export function TicketsPage() {
   const [tickets, setTickets] = useState<any[]>([])
@@ -14,8 +15,9 @@ export function TicketsPage() {
 
   useEffect(() => {
     loadTickets()
-    const interval = setInterval(loadTickets, 15000)
-    return () => clearInterval(interval)
+    const handler = () => loadTickets()
+    window.addEventListener(TICKETS_CHANGED_EVENT, handler)
+    return () => window.removeEventListener(TICKETS_CHANGED_EVENT, handler)
   }, [])
 
   async function loadTickets() {
@@ -57,8 +59,8 @@ export function TicketsPage() {
   const progressTickets = activeTickets.filter((ticket) => ticket.status === "Em andamento").length
   const waitingUserTickets = activeTickets.filter((ticket) => ticket.status === "Aguardando usuário").length
   const finishedTickets = tickets.filter((ticket) => ticket.status === "Finalizado").length
-  const offshoreTickets = tickets.filter((ticket) => ticket.origin === "Offshore").length
-  const baseTickets = tickets.filter((ticket) => ticket.origin === "Base").length
+  const offshoreTickets = tickets.filter((ticket) => ticket.origin === "Operacional").length
+  const baseTickets = tickets.filter((ticket) => ticket.origin === "Administrativo").length
   const totalTickets = tickets.length
 
   return (
@@ -76,15 +78,15 @@ export function TicketsPage() {
 
             <div className="grid gap-2 sm:gap-3 grid-cols-3 shrink-0">
               <div className="rounded-2xl sm:rounded-3xl border border-[#DDE8E2] bg-white p-3 sm:p-4 text-center shadow-sm">
-                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Total</p>
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">Total</p>
                 <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-[#111827]">{totalTickets}</p>
               </div>
               <div className="rounded-2xl sm:rounded-3xl border border-amber-200 bg-amber-50 p-3 sm:p-4 text-center shadow-sm">
-                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-amber-700">Pendentes</p>
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.14em] text-amber-700">Pendentes</p>
                 <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-amber-700">{openTickets + waitingUserTickets}</p>
               </div>
               <div className="rounded-2xl sm:rounded-3xl border border-[#DDE8E2] bg-[#ECFBF3] p-3 sm:p-4 text-center shadow-sm">
-                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-[#073B2A]">Em atendimento</p>
+                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.14em] text-[#073B2A]">Em atendimento</p>
                 <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-[#00A859]">{progressTickets}</p>
               </div>
             </div>
@@ -92,17 +94,9 @@ export function TicketsPage() {
         </section>
 
         {isLoadingTickets ? (
-          <>
-            <section className="space-y-3 sm:space-y-4 lg:space-y-4">
-              <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Status</h3>
-              <div className="grid gap-2 sm:gap-3 lg:gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <Skeleton key={index} className="h-28 rounded-[1.15rem] bg-white/80 sm:h-32 sm:rounded-[1.5rem]" />
-                ))}
-              </div>
-            </section>
-            <Skeleton className="h-[420px] rounded-3xl bg-white/80" />
-          </>
+          <div className="rounded-3xl border border-[#DDE8E2] bg-white/90 shadow-sm">
+            <PageLoader message="Carregando chamados..." />
+          </div>
         ) : (
           <>
             <section className="space-y-3 sm:space-y-4 lg:space-y-4">
@@ -122,17 +116,17 @@ export function TicketsPage() {
               <h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Origem</h3>
               <div className="grid grid-cols-2 gap-2 sm:hidden">
                 <div className="rounded-2xl border border-[#DDE8E2] bg-white px-3 py-3 shadow-sm">
-                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Base</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Administrativo</p>
                   <p className="mt-1 text-2xl font-black text-cyan-700">{baseTickets}</p>
                 </div>
                 <div className="rounded-2xl border border-rose-100 bg-[#FFF7F8] px-3 py-3 shadow-sm">
-                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-rose-600">Offshore</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-rose-600">Operacional</p>
                   <p className="mt-1 text-2xl font-black text-rose-700">{offshoreTickets}</p>
                 </div>
               </div>
               <div className="hidden gap-2 sm:grid sm:gap-3 lg:gap-4 sm:grid-cols-2">
-                <StatsCard title="Offshore" value={String(offshoreTickets)} tone="danger" />
-                <StatsCard title="Base" value={String(baseTickets)} tone="base" />
+                <StatsCard title="Operacional" value={String(offshoreTickets)} tone="danger" />
+                <StatsCard title="Administrativo" value={String(baseTickets)} tone="base" />
               </div>
             </section>
 

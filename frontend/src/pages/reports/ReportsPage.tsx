@@ -6,7 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout"
 import { StatsCard } from "@/components/dashboard/StatsCard"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+import { PageLoader } from "@/components/ui/PageLoader"
 import { FileSpreadsheet, Download, RotateCcw, Search, Calendar, FileText } from "lucide-react"
 import { apiFetch } from "@/services/api"
 
@@ -47,7 +47,7 @@ export function ReportsPage() {
         sector: ticket.sector?.name || "Sem setor",
         category: ticket.category || "Sem categoria",
         status: ticket.status || "Aberto",
-        origin: ticket.origin || "Base",
+        origin: ticket.origin || "Administrativo",
         description: ticket.description || "",
         technicalResponse: ticket.technicalResponse || "",
         archived: ticket.archived || false,
@@ -86,8 +86,8 @@ export function ReportsPage() {
   const progressFilteredTickets = filteredTickets.filter((ticket) => ticket.status === "Em andamento").length
   const waitingUserFilteredTickets = filteredTickets.filter((ticket) => ticket.status === "Aguardando usuário").length
   const finishedFilteredTickets = filteredTickets.filter((ticket) => ticket.status === "Finalizado").length
-  const offshoreFilteredTickets = filteredTickets.filter((ticket) => ticket.origin === "Offshore").length
-  const baseFilteredTickets = filteredTickets.filter((ticket) => ticket.origin === "Base").length
+  const offshoreFilteredTickets = filteredTickets.filter((ticket) => ticket.origin === "Operacional").length
+  const baseFilteredTickets = filteredTickets.filter((ticket) => ticket.origin === "Administrativo").length
 
   function getFiltersSummary() {
     const filters = []
@@ -143,27 +143,10 @@ export function ReportsPage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="ls-page-shell py-2">
-          <section className="ls-hero-clean p-6 sm:p-8">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-              <div className="w-full max-w-2xl space-y-3">
-                <Skeleton className="h-4 w-44 rounded-full bg-white/80" />
-                <Skeleton className="h-12 w-64 rounded-2xl bg-white/80" />
-                <Skeleton className="h-5 w-full max-w-xl rounded-full bg-white/80" />
-              </div>
-              <div className="grid w-full gap-3 sm:w-auto sm:grid-cols-2">
-                <Skeleton className="h-12 w-full rounded-2xl bg-white/80 sm:w-36" />
-                <Skeleton className="h-12 w-full rounded-2xl bg-white/80 sm:w-36" />
-              </div>
-            </div>
-          </section>
-          <Skeleton className="h-56 rounded-3xl bg-white/80" />
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <Skeleton key={index} className="h-32 rounded-[1.5rem] bg-white/80" />
-            ))}
+        <div className="ls-page-shell">
+          <div className="rounded-3xl border border-[#DDE8E2] bg-white/90 shadow-sm">
+            <PageLoader message="Carregando relatórios..." />
           </div>
-          <Skeleton className="h-72 rounded-3xl bg-white/80" />
         </div>
       </AppLayout>
     )
@@ -172,14 +155,14 @@ export function ReportsPage() {
   return (
     <AppLayout>
       <div className="ls-page-shell py-2">
-        <section className="ls-hero-clean p-6 sm:p-8">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#00A859]">Central de relatórios</p>
-              <h1 className="mt-2 text-4xl font-black tracking-[-0.06em] text-[#111827] sm:text-5xl">Relatórios</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#64748B] sm:text-base">Filtre, exporte e acompanhe os chamados com leitura rápida.</p>
+        <section className="ls-hero-clean p-3 sm:p-6 lg:p-8">
+          <div className="flex min-w-0 flex-col gap-4 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-0">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#00A859] sm:text-xs sm:tracking-[0.22em]">Central de relatórios</p>
+              <h1 className="mt-1 text-2xl font-black tracking-[-0.045em] text-[#111827] sm:mt-2 sm:text-4xl sm:tracking-[-0.06em] lg:text-5xl">Relatórios</h1>
+              <p className="mt-1 max-w-2xl text-xs leading-5 text-[#64748B] sm:mt-3 sm:text-sm sm:leading-6 lg:text-base">Filtre, exporte e acompanhe os chamados com leitura rápida.</p>
             </div>
-            <div className="grid w-full gap-3 sm:w-auto sm:grid-cols-2">
+            <div className="grid w-full min-w-0 gap-3 sm:w-auto sm:grid-cols-2">
               <Button onClick={exportPDF} className="ls-button-primary h-12 px-5 font-black"><Download size={16} className="mr-2" /> Gerar PDF</Button>
               <Button onClick={exportExcel} className="h-12 rounded-2xl border border-[#DDE8E2] bg-white px-5 font-black text-[#073B2A] shadow-sm hover:bg-[#ECFBF3]"><FileSpreadsheet size={16} className="mr-2" /> Gerar Excel</Button>
             </div>
@@ -195,19 +178,19 @@ export function ReportsPage() {
             <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Search size={14}/>Buscar</span><Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Nome, descrição ou categoria" className="ls-input" /></label>
             <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Setor</span><select value={sectorFilter} onChange={(e) => setSectorFilter(e.target.value)} className="ls-input"><option value="Todos">Todos</option>{sectors.map((sector) => <option key={sector}>{sector}</option>)}</select></label>
             <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Categoria</span><select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="ls-input"><option value="Todas">Todas</option>{categories.map((category) => <option key={category}>{category}</option>)}</select></label>
-            <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Origem</span><select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="ls-input"><option value="Todas">Todas</option><option>Base</option><option>Offshore</option></select></label>
+            <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Origem</span><select value={originFilter} onChange={(e) => setOriginFilter(e.target.value)} className="ls-input"><option value="Todas">Todas</option><option>Administrativo</option><option>Operacional</option></select></label>
             <label className="space-y-2"><span className="text-sm font-semibold text-slate-600">Status</span><select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="ls-input"><option value="Todos">Todos</option><option>Aberto</option><option>Em andamento</option><option>Aguardando usuário</option><option>Finalizado</option></select></label>
             <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Calendar size={14}/>Data Inicial</span><Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="ls-input" /></label>
             <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Calendar size={14}/>Data Final</span><Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="ls-input" /></label>
           </div>
-          <div className="mt-5 flex flex-col gap-4 rounded-3xl border border-[#DDE8E2] bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0 text-sm text-slate-600"><strong className="text-[#111827]">{filteredTickets.length}</strong> chamados encontrados <div className="mt-1 text-xs text-slate-500">{getFiltersSummary()}</div></div>
+          <div className="mt-5 flex min-w-0 flex-col gap-4 rounded-3xl border border-[#DDE8E2] bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0 text-sm text-slate-600"><strong className="text-[#111827]">{filteredTickets.length}</strong> chamados encontrados <div className="mt-1 break-words text-xs text-slate-500">{getFiltersSummary()}</div></div>
             <Button onClick={clearFilters} variant="outline" className="h-11 rounded-2xl border-[#DDE8E2] bg-white text-[#073B2A] hover:bg-[#ECFBF3]"><RotateCcw size={16} className="mr-2"/> Limpar filtros</Button>
           </div>
         </section>
 
         <section className="space-y-4"><h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Resumo por status</h3><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5"><StatsCard title="Total filtrado" value={String(totalFilteredTickets)} tone="neutral" /><StatsCard title="Abertos" value={String(openFilteredTickets)} tone="warning" /><StatsCard title="Em andamento" value={String(progressFilteredTickets)} tone="info" /><StatsCard title="Aguardando usuário" value={String(waitingUserFilteredTickets)} tone="danger" /><StatsCard title="Finalizados" value={String(finishedFilteredTickets)} tone="success" /></div></section>
-        <section className="space-y-4"><h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Resumo por origem</h3><div className="grid gap-4 sm:grid-cols-2"><StatsCard title="Offshore" value={String(offshoreFilteredTickets)} tone="danger" /><StatsCard title="Base" value={String(baseFilteredTickets)} tone="base" /></div></section>
+        <section className="space-y-4"><h3 className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">Resumo por origem</h3><div className="grid gap-4 sm:grid-cols-2"><StatsCard title="Operacional" value={String(offshoreFilteredTickets)} tone="danger" /><StatsCard title="Administrativo" value={String(baseFilteredTickets)} tone="base" /></div></section>
 
         <section className="ls-card p-4 sm:p-6">
           <h2 className="ls-section-title text-xl">Preview dos dados</h2>
