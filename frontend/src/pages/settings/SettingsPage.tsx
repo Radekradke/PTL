@@ -200,19 +200,19 @@ export function SettingsPage() {
           </section>
 
           <section className="ls-card p-5 sm:p-6">
-            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="mb-5 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h2 className="ls-section-title text-2xl">Funcionários</h2>
                 <p className="mt-1 text-sm text-slate-500">Usuário e senha definem o acesso ao portal.</p>
               </div>
               {!isLoadingData && employees.length > 0 && (
-                <div className="flex gap-2 text-xs font-bold">
-                  <span className="flex items-center gap-1.5 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-emerald-700">
+                <div className="flex min-w-0 flex-wrap gap-2 text-xs font-bold">
+                  <span className="flex min-w-0 items-center gap-1.5 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-emerald-700">
                     <UserCheck size={13} />
                     {employees.filter(e => e.username).length} com acesso
                   </span>
                   {employees.filter(e => !e.username).length > 0 && (
-                    <span className="flex items-center gap-1.5 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-amber-700">
+                    <span className="flex min-w-0 items-center gap-1.5 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-amber-700">
                       <UserX size={13} />
                       {employees.filter(e => !e.username).length} sem acesso
                     </span>
@@ -252,7 +252,7 @@ export function SettingsPage() {
                       }`}
                     >
                       {/* Cabeçalho do card */}
-                      <div className="mb-4 flex min-w-0 items-center gap-3">
+                      <div className="mb-4 flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:items-center">
                         <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-sm font-black ${
                           hasAccess ? "bg-[#ECFBF3] text-[#073B2A]" : "bg-amber-100 text-amber-800"
                         }`}>
@@ -262,13 +262,13 @@ export function SettingsPage() {
                           <p className="break-words font-black text-[#111827]">{employee.name}</p>
                           <p className="break-words text-xs text-slate-500">{sectorName}</p>
                         </div>
-                        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                        <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto sm:shrink-0 sm:justify-end">
                           {hasAccess ? (
-                            <span className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700">
+                            <span className="flex max-w-full items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-black leading-tight text-emerald-700">
                               <UserCheck size={11} /> Acesso ativo
                             </span>
                           ) : (
-                            <span className="flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-black text-amber-700">
+                            <span className="flex max-w-full items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-black leading-tight text-amber-700">
                               <UserX size={11} /> Sem acesso ao portal
                             </span>
                           )}
