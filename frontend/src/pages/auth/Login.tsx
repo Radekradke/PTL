@@ -168,6 +168,11 @@ export function Login() {
 
       <div className="grid w-full min-w-0 max-w-5xl overflow-hidden rounded-[1.35rem] border border-white/70 bg-white shadow-[0_24px_70px_rgba(7,59,42,0.14)] sm:rounded-[2rem] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:shadow-[0_28px_90px_rgba(7,59,42,0.16)]">
 
+    <div className="flex min-h-screen items-center justify-center bg-[#EAF0ED] px-4 py-8 text-[#111827]">
+      <style>{CSS}</style>
+
+      <div className="grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_28px_90px_rgba(7,59,42,0.16)] lg:grid-cols-[1.05fr_0.95fr]">
+
         {/* ── Left panel ── */}
         <section className="relative hidden min-h-[620px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.28),transparent_32%),linear-gradient(135deg,#073B2A,#102A43)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
           <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-[#39D98A]/20 blur-[90px]" />
@@ -197,6 +202,7 @@ export function Login() {
 
         {/* ── Right panel ── */}
         <section className="flex min-h-[560px] min-w-0 items-center justify-center overflow-hidden bg-white px-5 py-8 sm:min-h-[620px] sm:px-12 sm:py-10">
+        <section className="flex min-h-[620px] items-center justify-center overflow-hidden bg-white px-6 py-10 sm:px-12">
           <div className={`w-full max-w-[360px] ${animClass}`}>
 
             {!selectedDept ? (

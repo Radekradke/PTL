@@ -201,6 +201,7 @@ export function SettingsPage() {
 
           <section className="ls-card p-5 sm:p-6">
             <div className="mb-5 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h2 className="ls-section-title text-2xl">Funcionários</h2>
                 <p className="mt-1 text-sm text-slate-500">Usuário e senha definem o acesso ao portal.</p>
@@ -208,11 +209,14 @@ export function SettingsPage() {
               {!isLoadingData && employees.length > 0 && (
                 <div className="flex min-w-0 flex-wrap gap-2 text-xs font-bold">
                   <span className="flex min-w-0 items-center gap-1.5 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-emerald-700">
+                <div className="flex gap-2 text-xs font-bold">
+                  <span className="flex items-center gap-1.5 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-emerald-700">
                     <UserCheck size={13} />
                     {employees.filter(e => e.username).length} com acesso
                   </span>
                   {employees.filter(e => !e.username).length > 0 && (
                     <span className="flex min-w-0 items-center gap-1.5 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-amber-700">
+                    <span className="flex items-center gap-1.5 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-amber-700">
                       <UserX size={13} />
                       {employees.filter(e => !e.username).length} sem acesso
                     </span>
@@ -225,6 +229,7 @@ export function SettingsPage() {
             <div className="rounded-2xl border border-dashed border-[#BFEFD7] bg-[#F8FCFA] p-4">
               <p className="mb-3 text-xs font-black uppercase tracking-[0.12em] text-[#00A859]">Novo funcionário</p>
               <div className="grid min-w-0 gap-3 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
+              <div className="grid gap-3 xl:grid-cols-[1.2fr_1fr_1fr_1fr_auto]">
                 <Input placeholder="Nome completo" value={newEmployeeName} onChange={(e) => setNewEmployeeName(e.target.value)} className="ls-input" />
                 <Input placeholder="Usuário" value={newEmployeeUsername} onChange={(e) => setNewEmployeeUsername(e.target.value)} className="ls-input" />
                 <Input type="password" placeholder="Senha (mín. 6 caracteres)" value={newEmployeePassword} onChange={(e) => setNewEmployeePassword(e.target.value)} className="ls-input" />
@@ -248,11 +253,13 @@ export function SettingsPage() {
                     <div
                       key={employee.id}
                       className={`min-w-0 rounded-3xl border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(7,59,42,0.10)] ${
+                      className={`rounded-3xl border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(7,59,42,0.10)] ${
                         hasAccess ? "border-[#DDE8E2]" : "border-amber-200 bg-amber-50/30"
                       }`}
                     >
                       {/* Cabeçalho do card */}
                       <div className="mb-4 flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:items-center">
+                      <div className="mb-4 flex items-center gap-3">
                         <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-sm font-black ${
                           hasAccess ? "bg-[#ECFBF3] text-[#073B2A]" : "bg-amber-100 text-amber-800"
                         }`}>
@@ -269,6 +276,16 @@ export function SettingsPage() {
                             </span>
                           ) : (
                             <span className="flex max-w-full items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-black leading-tight text-amber-700">
+                          <p className="font-black text-[#111827]">{employee.name}</p>
+                          <p className="text-xs text-slate-500">{sectorName}</p>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-2">
+                          {hasAccess ? (
+                            <span className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700">
+                              <UserCheck size={11} /> Acesso ativo
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-black text-amber-700">
                               <UserX size={11} /> Sem acesso ao portal
                             </span>
                           )}
@@ -277,6 +294,7 @@ export function SettingsPage() {
 
                       {/* Campos de edição */}
                       <div className="grid min-w-0 gap-3 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]">
+                      <div className="grid gap-3 xl:grid-cols-[1.2fr_1fr_1fr_1fr]">
                         <Input value={employee.name} onChange={(e) => updateEmployeeState(employee.id, "name", e.target.value)} placeholder="Nome" className="ls-input" />
                         <Input value={employee.username || ""} onChange={(e) => updateEmployeeState(employee.id, "username", e.target.value)} placeholder="usuário" className="ls-input" />
                         <div className="relative">

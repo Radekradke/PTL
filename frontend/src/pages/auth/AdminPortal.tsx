@@ -658,6 +658,8 @@ export function AdminPortal() {
     return (
       <div className="ls-mobile-auth-shell flex items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.20),transparent_30%),linear-gradient(180deg,#F7FAF8,#EAF0ED)] px-3 py-4 text-[#111827] sm:px-4 sm:py-8">
         <div className="grid w-full min-w-0 max-w-5xl overflow-hidden rounded-[1.35rem] border border-white/80 bg-white shadow-[0_24px_70px_rgba(7,59,42,0.14)] sm:rounded-[2rem] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:shadow-[0_28px_90px_rgba(7,59,42,0.14)]">
+      <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.20),transparent_30%),linear-gradient(180deg,#F7FAF8,#EAF0ED)] px-4 py-8 text-[#111827]">
+        <div className="grid w-full max-w-5xl overflow-hidden rounded-[1.5rem] border border-white/80 bg-white shadow-[0_28px_90px_rgba(7,59,42,0.14)] sm:rounded-[2rem] lg:grid-cols-[1.05fr_0.95fr]">
           <section className="relative hidden min-h-[620px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.28),transparent_32%),linear-gradient(135deg,#073B2A,#102A43)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
             <div className="relative">
            <img
@@ -926,6 +928,7 @@ export function AdminPortal() {
                 </div>
 
                 <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+                <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
                   <div className="space-y-4">
                     <div className="rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
                       <p className="mb-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Identificação</p>
@@ -1076,6 +1079,7 @@ export function AdminPortal() {
                 </div>
 
                 <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)]">
+                <div className="grid gap-4 lg:grid-cols-[0.72fr_1.28fr]">
                   <div className="space-y-3">
                     <div className="rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
                       <div className="mb-4">
@@ -1317,6 +1321,7 @@ export function AdminPortal() {
                           </div>
                           <div
                             className={`min-w-0 max-w-[80%] rounded-3xl border px-4 py-3 shadow-sm ${
+                            className={`max-w-[80%] rounded-3xl border px-4 py-3 shadow-sm ${
                               isEmployee
                                 ? "rounded-br-md border-[#00A859]/25 bg-gradient-to-br from-[#00A859]/15 to-[#00A859]/8 text-[#073B2A]"
                                 : isBot

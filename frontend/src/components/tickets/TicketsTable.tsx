@@ -363,6 +363,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
     return (
       <div
         className={`min-w-0 rounded-2xl border border-l-4 border-[#DDE7E2] bg-white p-4 shadow-sm ${highlightedTicketIds.has(ticket.id) ? "ticket-row-new" : ""} ${dimmed ? "opacity-60" : ""}`}
+        className={`rounded-2xl border border-l-4 border-[#DDE7E2] bg-white p-4 shadow-sm ${highlightedTicketIds.has(ticket.id) ? "ticket-row-new" : ""} ${dimmed ? "opacity-60" : ""}`}
         style={{ borderLeftColor: getTicketAccentColor(ticket) }}
       >
         <div className="flex items-start justify-between gap-3">
@@ -372,6 +373,9 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
             <p className="mt-1 break-words text-sm text-[#516070]">{ticket.user} · {ticket.sector}</p>
           </div>
           <span className={`status-badge-animated max-w-[9rem] shrink-0 rounded-full px-2.5 py-1 text-center text-[11px] font-semibold leading-tight ${getStatusStyle(ticket.status)}`}>
+            <p className="mt-1 text-sm text-[#516070]">{ticket.user} · {ticket.sector}</p>
+          </div>
+          <span className={`status-badge-animated shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${getStatusStyle(ticket.status)}`}>
             {ticket.status}
           </span>
         </div>
@@ -389,6 +393,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
         </div>
 
         <div className="mt-4 grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+        <div className="mt-4 grid gap-2 sm:grid-cols-[1fr_auto]">
           <select
             value={ticket.status}
             onChange={(e) => handleChangeStatus(ticket.id, e.target.value)}
@@ -662,6 +667,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
           {selectedTicket && (
             <div className="flex h-[calc(100vh-10rem)] max-h-[640px] min-w-0 overflow-hidden lg:grid lg:grid-cols-[minmax(0,1fr)_260px]">
+            <div className="flex h-[calc(100vh-10rem)] max-h-[640px] overflow-hidden lg:grid lg:grid-cols-[1fr_260px]">
               <div className="flex min-h-0 flex-col overflow-hidden">
                 <div className="flex-1 space-y-3 overflow-y-auto bg-[#F8FCFA] p-4">
                   {ticketMessages.length === 0 && (
@@ -675,6 +681,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     return (
                       <div key={msg.id} className={`flex ${isEmployee ? "justify-end" : "justify-start"}`}>
                         <div className={`min-w-0 max-w-[82%] rounded-3xl border p-3 text-sm shadow-sm ${isEmployee ? "border-[#00A859]/20 bg-[#00A859]/10 text-[#073B2A]" : isBot ? "border-blue-200 bg-blue-50 text-[#111827]" : "border-[#DDE7E2] bg-white text-[#111827]"}`}>
+                        <div className={`max-w-[82%] rounded-3xl border p-3 text-sm shadow-sm ${isEmployee ? "border-[#00A859]/20 bg-[#00A859]/10 text-[#073B2A]" : isBot ? "border-blue-200 bg-blue-50 text-[#111827]" : "border-[#DDE7E2] bg-white text-[#111827]"}`}>
                           <p className={`mb-1 text-[11px] font-black uppercase tracking-[0.1em] ${isBot ? "text-blue-600" : isEmployee ? "text-[#00A859]" : "text-slate-500"}`}>
                             {isBot ? "🤖 Atendimento Automático" : isEmployee ? msg.senderName : "Técnico"}
                           </p>
