@@ -245,7 +245,7 @@ export function Login() {
 
                 <div className="mt-6 border-t border-slate-100 pt-5 text-center">
                   <p className="text-xs text-slate-400">É funcionário?</p>
-                  <button onClick={() => navigate("/portal")} className="mt-2 text-sm font-bold text-[#00A859] transition hover:underline">
+                  <button onClick={() => navigate("/")} className="mt-2 text-sm font-bold text-[#00A859] transition hover:underline">
                     Acessar portal do funcionário →
                   </button>
                 </div>
@@ -320,7 +320,7 @@ export function Login() {
                   <p className="text-xs leading-5 text-slate-400">Acesso restrito para equipes autorizadas.</p>
                   <div className="mt-4 border-t border-slate-100 pt-4">
                     <p className="text-xs text-slate-400">É funcionário?</p>
-                    <button onClick={() => navigate("/portal")} className="mt-2 text-sm font-bold text-[#00A859] transition hover:underline">
+                    <button onClick={() => navigate("/")} className="mt-2 text-sm font-bold text-[#00A859] transition hover:underline">
                       Acessar portal do funcionário →
                     </button>
                   </div>

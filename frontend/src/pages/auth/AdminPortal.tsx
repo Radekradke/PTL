@@ -769,7 +769,7 @@ export function AdminPortal() {
                 <div className="mt-4 border-t border-slate-100 pt-4">
                   <p className="text-xs text-slate-400">É técnico ou gestor?</p>
                   <button
-                    onClick={() => navigate("/")}
+                    onClick={() => navigate("/login")}
                     className="mt-2 text-sm font-bold text-[#00A859] transition hover:underline"
                   >
                     Acessar painel técnico →
