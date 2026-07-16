@@ -4,6 +4,17 @@ export const TECHNICAL_USER_KEY = "lifting-user"
 export const PORTAL_USER_KEY = "lifting-portal-employee"
 export const AUTH_CHANGED_EVENT = "lifting-auth-changed"
 
+export function getTechnicalUser() {
+  const stored = localStorage.getItem(TECHNICAL_USER_KEY)
+  if (!stored) return null
+
+  try {
+    return JSON.parse(stored)
+  } catch {
+    return null
+  }
+}
+
 export function getTechnicalToken() {
   const stored = localStorage.getItem(TECHNICAL_USER_KEY)
   if (!stored) return null

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { categoriesByDepartment, type TicketDepartment } from "@/lib/categories"
-import { apiFetch } from "@/services/api"
+import { apiFetch, getTechnicalUser } from "@/services/api"
 
 import {
   Dialog,
@@ -35,6 +35,26 @@ interface TicketsTableProps {
 
 type SortKey = "id" | "user" | "sector" | "category" | "origin" | "status" | "createdAt"
 type SortDir = "asc" | "desc"
+
+// Compara nomes de setor ignorando acentos e maiúsculas ("Infraestrutura" ≈ "infraestrutura")
+function normalizeSectorName(name: string) {
+  return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim()
+}
+
+// O departamento padrão do novo chamado acompanha o setor logado.
+function initialDepartment(): TicketDepartment {
+  const sector = getTechnicalUser()?.sector
+  return sector === "RH" || sector === "Infraestrutura" ? sector : "TI"
+}
+
+// Admin enxerga todos os funcionários; TI/RH/Infraestrutura só os do próprio setor.
+function filterEmployeesByLoggedSector(list: Employee[]) {
+  const loggedSector: string | undefined = getTechnicalUser()?.sector
+  if (!loggedSector || loggedSector === "Admin") return list
+
+  const target = normalizeSectorName(loggedSector)
+  return list.filter((emp) => normalizeSectorName(emp.sector?.name || "") === target)
+}
 
 function parsePtBrDate(str: string) {
   const [datePart, timePart] = str.split(", ")
@@ -90,8 +110,8 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   const [employees, setEmployees] = useState<Employee[]>([])
   const [sectors, setSectors] = useState<Sector[]>([])
   const [employeeId, setEmployeeId] = useState("")
-  const [department, setDepartment] = useState<TicketDepartment>("TI")
-  const [category, setCategory] = useState("PC")
+  const [department, setDepartment] = useState<TicketDepartment>(initialDepartment)
+  const [category, setCategory] = useState(() => categoriesByDepartment[initialDepartment()][0])
   const [sectorId, setSectorId] = useState("")
   const [origin, setOrigin] = useState("Administrativo")
   const [description, setDescription] = useState("")
@@ -113,6 +133,9 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
   const [sortKey, setSortKey] = useState<SortKey>("id")
   const [sortDir, setSortDir] = useState<SortDir>("desc")
+
+  // No modal de novo chamado, o solicitante fica restrito ao setor logado (Admin vê todos)
+  const visibleEmployees = filterEmployeesByLoggedSector(employees)
 
   const selectedEmployee = employees.find((employee) => String(employee.id) === employeeId)
   const selectedEmployeeSector = selectedEmployee?.sector
@@ -184,8 +207,9 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       const sectorsData = await sectorsRes.json()
       setEmployees(employeesData)
       setSectors(sectorsData)
-      if (employeesData.length > 0) {
-        const first = employeesData[0]
+      const selectable = filterEmployeesByLoggedSector(employeesData)
+      if (selectable.length > 0) {
+        const first = selectable[0]
         setEmployeeId(String(first.id))
         setSectorId(String(first.sectorId || first.sector?.id || ""))
       } else if (sectorsData.length > 0) {
@@ -210,12 +234,12 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
         body: JSON.stringify({ employeeId: Number(employeeId), sectorId: Number(sectorId), department, category, origin, description }),
       })
       if (!response.ok) { toast.error("Erro ao criar chamado."); return }
-      if (employees.length > 0) {
-        const first = employees[0]
+      if (visibleEmployees.length > 0) {
+        const first = visibleEmployees[0]
         setEmployeeId(String(first.id))
         setSectorId(String(first.sectorId || first.sector?.id || ""))
       } else { setEmployeeId(""); setSectorId("") }
-      setDepartment("TI"); setCategory("PC"); setOrigin("Administrativo"); setDescription("")
+      setDepartment(initialDepartment()); setCategory(categoriesByDepartment[initialDepartment()][0]); setOrigin("Administrativo"); setDescription("")
       onTicketsChange()
     } catch (error) {
       console.error("Erro ao criar chamado:", error)
@@ -442,8 +466,13 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     <label className="text-sm font-medium text-[#334155]">Solicitante</label>
                     <select value={employeeId} onChange={(e) => handleEmployeeChange(e.target.value)} className="w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]">
                       <option value="">Selecione um funcionário</option>
-                      {employees.map((emp) => <option key={emp.id} value={emp.id}>{emp.name}</option>)}
+                      {visibleEmployees.map((emp) => <option key={emp.id} value={emp.id}>{emp.name}</option>)}
                     </select>
+                    {visibleEmployees.length === 0 && employees.length > 0 && (
+                      <p className="text-xs text-amber-600">
+                        Nenhum funcionário cadastrado no seu setor. Cadastre em Configurações ou peça ao Admin.
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid gap-2">
