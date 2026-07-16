@@ -10,6 +10,7 @@ datasource db {
 model Sector {
   id        Int        @id @default(autoincrement())
   name      String     @unique
+  color     String     @default("#00A859")
   active    Boolean    @default(true)
   employees Employee[]
   tickets   Ticket[]

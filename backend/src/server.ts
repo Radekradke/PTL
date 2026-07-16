@@ -9,6 +9,7 @@ import { authRoutes } from "./routes/auth.routes"
 import { ouvidoriaRoutes } from "./routes/ouvidoria.routes"
 import { pushRoutes } from "./routes/push.routes"
 import { assertAuthConfig } from "./lib/auth"
+import { prisma } from "./lib/prisma"
 import { addSseClient } from "./lib/eventBus"
 import { requireAuth } from "./middlewares/auth.middleware"
 import { startTicketAutoClose } from "./services/ticketAutoClose"
@@ -74,7 +75,20 @@ app.use("/push", pushRoutes)
 
 const PORT = process.env.PORT || 3333
 
-app.listen(PORT, () => {
+// Garantia idempotente para deploys que não rodam `prisma migrate deploy`:
+// o Prisma Client gerado espera a coluna "color" em Sector.
+async function ensureRuntimeSchema() {
+  try {
+    await prisma.$executeRawUnsafe(
+      `ALTER TABLE "Sector" ADD COLUMN IF NOT EXISTS "color" TEXT NOT NULL DEFAULT '#00A859'`
+    )
+  } catch (error) {
+    console.error("Falha ao garantir coluna Sector.color:", error)
+  }
+}
+
+app.listen(PORT, async () => {
   console.log(`API rodando em http://localhost:${PORT}`)
+  await ensureRuntimeSchema()
   startTicketAutoClose()
 })
