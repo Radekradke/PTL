@@ -5,6 +5,7 @@ import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveCo
 import { AppLayout } from "@/components/layout/AppLayout"
 import { StatsCard } from "@/components/dashboard/StatsCard"
 import { useNotifications } from "@/contexts/NotificationContext"
+import { useSectorColors } from "@/lib/sectorColors"
 
 
 type ChartDatum = {
@@ -93,10 +94,12 @@ function MobileDistributionSummary({ data, colors }: { data: ChartDatum[]; color
 function MobileBarChart({
   data,
   fill,
+  colors,
   tooltipStyle,
 }: {
   data: ChartDatum[]
   fill: string
+  colors?: Record<string, string>
   tooltipStyle: CSSProperties
 }) {
   const chartWidth = Math.max(data.length * 110, 560)
@@ -119,7 +122,9 @@ function MobileBarChart({
             />
             <YAxis allowDecimals={false} stroke="#94A3B8" tick={{ fill: "#475569", fontSize: 11 }} />
             <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "rgba(0,168,89,0.08)" }} />
-            <Bar dataKey="total" fill={fill} radius={[12, 12, 4, 4]} minPointSize={4} />
+            <Bar dataKey="total" fill={fill} radius={[12, 12, 4, 4]} minPointSize={4}>
+              {colors && data.map((item) => <Cell key={item.name} fill={colors[item.name] || fill} />)}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -184,6 +189,7 @@ function MobilePieChart({
 
 export function Dashboard() {
   const { tickets } = useNotifications()
+  const sectorColors = useSectorColors()
   const [sectorFilter, setSectorFilter] = useState("Todos")
   const [categoryFilter, setCategoryFilter] = useState("Todas")
   const [originFilter, setOriginFilter] = useState("Todas")
@@ -342,7 +348,7 @@ export function Dashboard() {
           <div className="ls-card p-3 sm:p-4 lg:p-6">
             <h2 className="ls-section-title text-lg sm:text-xl">Por setor</h2>
             <p className="text-xs sm:text-sm text-slate-500">Volume por área.</p>
-            <MobileBarChart data={ticketsBySector} fill="#00A859" tooltipStyle={tooltipStyle} />
+            <MobileBarChart data={ticketsBySector} fill="#00A859" colors={sectorColors} tooltipStyle={tooltipStyle} />
           </div>
           <div className="ls-card p-3 sm:p-4 lg:p-6">
             <h2 className="ls-section-title text-lg sm:text-xl">Por categoria</h2>
