@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { lazy, Suspense, type ReactNode } from "react"
-import { Login } from "./pages/auth/Login"
+import { AdminPortal } from "./pages/auth/AdminPortal"
 import { NotificationProvider } from "./contexts/NotificationContext"
 import { Toaster } from "react-hot-toast"
 import { TECHNICAL_USER_KEY } from "@/services/api"
@@ -8,7 +8,7 @@ import { TECHNICAL_USER_KEY } from "@/services/api"
 // Páginas pesadas carregadas sob demanda (code-splitting) — reduz o bundle inicial.
 const TicketsPage = lazy(() => import("./pages/tickets/TicketsPage").then((m) => ({ default: m.TicketsPage })))
 const Dashboard = lazy(() => import("./pages/dashboard/Dashboard").then((m) => ({ default: m.Dashboard })))
-const AdminPortal = lazy(() => import("./pages/auth/AdminPortal").then((m) => ({ default: m.AdminPortal })))
+const Login = lazy(() => import("./pages/auth/Login").then((m) => ({ default: m.Login })))
 const ReportsPage = lazy(() => import("@/pages/reports/ReportsPage").then((m) => ({ default: m.ReportsPage })))
 const SettingsPage = lazy(() => import("./pages/settings/SettingsPage").then((m) => ({ default: m.SettingsPage })))
 
@@ -42,7 +42,7 @@ function ProtectedRoute({
   const user = getCurrentUser()
 
   if (!user || !allowed.includes(user.sector)) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/login" replace />
   }
 
   return children
@@ -66,7 +66,11 @@ function App() {
 
         <Suspense fallback={<RouteFallback />}>
           <Routes>
-            <Route path="/" element={<Login />} />
+            {/* Tela inicial (site e PWA): portal do funcionário */}
+            <Route path="/" element={<AdminPortal />} />
+            <Route path="/login" element={<Login />} />
+            {/* Rota antiga do portal mantida para links salvos */}
+            <Route path="/portal" element={<Navigate to="/" replace />} />
 
             <Route
               path="/dashboard"
@@ -104,7 +108,7 @@ function App() {
               }
             />
 
-            <Route path="/portal" element={<AdminPortal />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
       </BrowserRouter>

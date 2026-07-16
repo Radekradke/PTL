@@ -19,7 +19,7 @@ export function Sidebar() {
   function handleLogout() {
     localStorage.removeItem(TECHNICAL_USER_KEY)
     window.dispatchEvent(new Event(AUTH_CHANGED_EVENT))
-    navigate("/")
+    navigate("/login")
   }
 
   const items = [
