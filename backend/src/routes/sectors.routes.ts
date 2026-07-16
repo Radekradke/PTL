@@ -8,10 +8,21 @@ export const sectorsRoutes = Router()
 type SectorRow = {
   id: number
   name: string
+  color?: string | null
   active: boolean
   pin?: string | null
   createdAt: Date
   updatedAt: Date
+}
+
+const DEFAULT_SECTOR_COLOR = "#00A859"
+
+// Aceita apenas cores hex no formato #RRGGBB; ausente/inválida cai no padrão.
+function sanitizeColor(color: unknown) {
+  if (typeof color === "string" && /^#[0-9a-fA-F]{6}$/.test(color.trim())) {
+    return color.trim().toUpperCase()
+  }
+  return DEFAULT_SECTOR_COLOR
 }
 
 async function sectorPinColumnExists() {
@@ -30,6 +41,7 @@ async function sectorPinColumnExists() {
 function publicSector(sector: SectorRow) {
   return {
     ...sector,
+    color: sector.color || DEFAULT_SECTOR_COLOR,
     pin: sector.pin || "",
   }
 }
@@ -37,13 +49,13 @@ function publicSector(sector: SectorRow) {
 async function findSectorByName(name: string, includePin: boolean) {
   const sectors = includePin
     ? await prisma.$queryRaw<SectorRow[]>`
-        SELECT "id", "name", "active", "pin", "createdAt", "updatedAt"
+        SELECT "id", "name", "color", "active", "pin", "createdAt", "updatedAt"
         FROM "Sector"
         WHERE "name" = ${name}
         LIMIT 1
       `
     : await prisma.$queryRaw<SectorRow[]>`
-        SELECT "id", "name", "active", "createdAt", "updatedAt"
+        SELECT "id", "name", "color", "active", "createdAt", "updatedAt"
         FROM "Sector"
         WHERE "name" = ${name}
         LIMIT 1
@@ -57,13 +69,13 @@ sectorsRoutes.get("/", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"])
     const hasPin = await sectorPinColumnExists()
     const sectors = hasPin
       ? await prisma.$queryRaw<SectorRow[]>`
-          SELECT "id", "name", "active", "pin", "createdAt", "updatedAt"
+          SELECT "id", "name", "color", "active", "pin", "createdAt", "updatedAt"
           FROM "Sector"
           WHERE "active" = true
           ORDER BY "name" ASC
         `
       : await prisma.$queryRaw<SectorRow[]>`
-          SELECT "id", "name", "active", "createdAt", "updatedAt"
+          SELECT "id", "name", "color", "active", "createdAt", "updatedAt"
           FROM "Sector"
           WHERE "active" = true
           ORDER BY "name" ASC
@@ -78,7 +90,8 @@ sectorsRoutes.get("/", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"])
 
 sectorsRoutes.post("/", requireTechnical(["Admin"]), async (req, res) => {
   try {
-    const { name, pin } = req.body
+    const { name, pin, color } = req.body
+    const sectorColor = sanitizeColor(color)
     const nameValidation = validateName(name, "Setor")
 
     if (!nameValidation.ok) {
@@ -102,15 +115,15 @@ sectorsRoutes.post("/", requireTechnical(["Admin"]), async (req, res) => {
       const sectors = hasPin
         ? await prisma.$queryRaw<SectorRow[]>`
             UPDATE "Sector"
-            SET "active" = true, "pin" = ${pinValidation.value}, "updatedAt" = CURRENT_TIMESTAMP
+            SET "active" = true, "color" = ${sectorColor}, "pin" = ${pinValidation.value}, "updatedAt" = CURRENT_TIMESTAMP
             WHERE "id" = ${existingSector.id}
-            RETURNING "id", "name", "active", "pin", "createdAt", "updatedAt"
+            RETURNING "id", "name", "color", "active", "pin", "createdAt", "updatedAt"
           `
         : await prisma.$queryRaw<SectorRow[]>`
             UPDATE "Sector"
-            SET "active" = true, "updatedAt" = CURRENT_TIMESTAMP
+            SET "active" = true, "color" = ${sectorColor}, "updatedAt" = CURRENT_TIMESTAMP
             WHERE "id" = ${existingSector.id}
-            RETURNING "id", "name", "active", "createdAt", "updatedAt"
+            RETURNING "id", "name", "color", "active", "createdAt", "updatedAt"
           `
 
       return res.status(200).json(publicSector(sectors[0]))
@@ -118,14 +131,14 @@ sectorsRoutes.post("/", requireTechnical(["Admin"]), async (req, res) => {
 
     const sectors = hasPin
       ? await prisma.$queryRaw<SectorRow[]>`
-          INSERT INTO "Sector" ("name", "pin")
-          VALUES (${nameValidation.value}, ${pinValidation.value})
-          RETURNING "id", "name", "active", "pin", "createdAt", "updatedAt"
+          INSERT INTO "Sector" ("name", "color", "pin")
+          VALUES (${nameValidation.value}, ${sectorColor}, ${pinValidation.value})
+          RETURNING "id", "name", "color", "active", "pin", "createdAt", "updatedAt"
         `
       : await prisma.$queryRaw<SectorRow[]>`
-          INSERT INTO "Sector" ("name")
-          VALUES (${nameValidation.value})
-          RETURNING "id", "name", "active", "createdAt", "updatedAt"
+          INSERT INTO "Sector" ("name", "color")
+          VALUES (${nameValidation.value}, ${sectorColor})
+          RETURNING "id", "name", "color", "active", "createdAt", "updatedAt"
         `
 
     res.status(201).json(publicSector(sectors[0]))
@@ -142,7 +155,8 @@ sectorsRoutes.post("/", requireTechnical(["Admin"]), async (req, res) => {
 
 sectorsRoutes.put("/:id", requireTechnical(["Admin"]), async (req, res) => {
   const { id } = req.params
-  const { name, pin } = req.body
+  const { name, pin, color } = req.body
+  const sectorColor = sanitizeColor(color)
   const idValidation = validateId(id, "Setor")
   const nameValidation = validateName(name, "Setor")
   const pinValidation = validatePin(pin)
@@ -164,15 +178,15 @@ sectorsRoutes.put("/:id", requireTechnical(["Admin"]), async (req, res) => {
     const sectors = hasPin
       ? await prisma.$queryRaw<SectorRow[]>`
           UPDATE "Sector"
-          SET "name" = ${nameValidation.value}, "pin" = ${pinValidation.value}, "updatedAt" = CURRENT_TIMESTAMP
+          SET "name" = ${nameValidation.value}, "color" = ${sectorColor}, "pin" = ${pinValidation.value}, "updatedAt" = CURRENT_TIMESTAMP
           WHERE "id" = ${idValidation.value}
-          RETURNING "id", "name", "active", "pin", "createdAt", "updatedAt"
+          RETURNING "id", "name", "color", "active", "pin", "createdAt", "updatedAt"
         `
       : await prisma.$queryRaw<SectorRow[]>`
           UPDATE "Sector"
-          SET "name" = ${nameValidation.value}, "updatedAt" = CURRENT_TIMESTAMP
+          SET "name" = ${nameValidation.value}, "color" = ${sectorColor}, "updatedAt" = CURRENT_TIMESTAMP
           WHERE "id" = ${idValidation.value}
-          RETURNING "id", "name", "active", "createdAt", "updatedAt"
+          RETURNING "id", "name", "color", "active", "createdAt", "updatedAt"
         `
 
     if (!sectors[0]) {

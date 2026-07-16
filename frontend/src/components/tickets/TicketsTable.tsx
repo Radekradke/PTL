@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { categoriesByDepartment, type TicketDepartment } from "@/lib/categories"
+import { buildSectorColorMap, SectorBadge } from "@/lib/sectorColors"
 import { apiFetch, getTechnicalUser } from "@/services/api"
 
 import {
@@ -19,6 +20,7 @@ import {
 interface Sector {
   id: number
   name: string
+  color?: string
 }
 
 interface Employee {
@@ -136,6 +138,8 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
   // No modal de novo chamado, o solicitante fica restrito ao setor logado (Admin vê todos)
   const visibleEmployees = filterEmployeesByLoggedSector(employees)
+
+  const sectorColorByName = buildSectorColorMap(sectors)
 
   const selectedEmployee = employees.find((employee) => String(employee.id) === employeeId)
   const selectedEmployeeSector = selectedEmployee?.sector
@@ -344,7 +348,9 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       >
         <td className="px-2 py-2 text-[#111827] whitespace-nowrap">#{ticket.id}</td>
         <td className="px-2 py-2 max-w-[120px] truncate text-[#102A43]">{ticket.user}</td>
-        <td className="px-2 py-2 max-w-[100px] truncate text-[#334155]">{ticket.sector}</td>
+        <td className="px-2 py-2 whitespace-nowrap">
+          <SectorBadge name={ticket.sector} color={sectorColorByName[ticket.sector]} />
+        </td>
         <td className="px-2 py-2 text-[#334155] whitespace-nowrap">{ticket.category}</td>
         <td className="px-2 py-2 whitespace-nowrap">
           <span className={`status-badge-animated inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${ticket.origin === "Operacional" ? "bg-[#FFF1F2] text-[#BE123C] ring-1 ring-[#FECACA]" : "bg-[#EAF0ED] text-[#334155] ring-1 ring-[#DDE7E2]"}`}>
@@ -393,7 +399,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
           <div className="min-w-0">
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#00A859]">#{ticket.id}</p>
             <h3 className="mt-1 truncate text-base font-bold text-[#111827]">{ticket.category}</h3>
-            <p className="mt-1 text-sm text-[#516070]">{ticket.user} · {ticket.sector}</p>
+            <p className="mt-1 text-sm text-[#516070]">{ticket.user}</p>
           </div>
           <span className={`status-badge-animated shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${getStatusStyle(ticket.status)}`}>
             {ticket.status}
@@ -406,6 +412,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
         <p className="mt-2 text-[11px] text-slate-400">{ticket.createdAt}</p>
 
         <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+          <SectorBadge name={ticket.sector} color={sectorColorByName[ticket.sector]} />
           <span className={`status-badge-animated rounded-full px-3 py-1.5 font-semibold ${getSlaStatus(ticket).className}`}>
             {getSlaStatus(ticket).label}
           </span>
@@ -752,7 +759,12 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 <p className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Informações</p>
                 <div className="space-y-2">
                   <FieldCard label="Solicitante" value={selectedTicket.user} />
-                  <FieldCard label="Setor" value={selectedTicket.sector} />
+                  <div className="rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 shadow-sm">
+                    <p className="text-[11px] font-black uppercase tracking-[0.12em] text-[#64748B]">Setor</p>
+                    <p className="mt-1.5">
+                      <SectorBadge name={selectedTicket.sector} color={sectorColorByName[selectedTicket.sector]} />
+                    </p>
+                  </div>
                   <FieldCard label="Categoria" value={selectedTicket.category} />
                   <FieldCard label="Origem" value={selectedTicket.origin} />
                   <FieldCard label="Criado em" value={selectedTicket.createdAt} />

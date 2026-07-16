@@ -1,13 +1,48 @@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { UserCheck, UserX, KeyRound } from "lucide-react"
+import { UserCheck, UserX, KeyRound, ChevronDown, Users } from "lucide-react"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { apiFetch } from "@/services/api"
 
-type Sector = { id: number; name: string; pin?: string }
+type Sector = { id: number; name: string; pin?: string; color?: string }
+
+// Paleta fixa de cores de setor — evita cores ilegíveis e mantém identidade visual
+const SECTOR_COLORS = [
+  "#00A859", // verde Lifting
+  "#0EA5E9", // azul claro
+  "#2563EB", // azul
+  "#8B5CF6", // roxo
+  "#EC4899", // rosa
+  "#EF4444", // vermelho
+  "#F97316", // laranja
+  "#F59E0B", // âmbar
+  "#14B8A6", // teal
+  "#64748B", // cinza
+]
+
+const DEFAULT_SECTOR_COLOR = SECTOR_COLORS[0]
+
+function ColorPicker({ value, onChange }: { value: string; onChange: (color: string) => void }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {SECTOR_COLORS.map((color) => (
+        <button
+          key={color}
+          type="button"
+          onClick={() => onChange(color)}
+          aria-label={`Selecionar cor ${color}`}
+          className={`h-7 w-7 rounded-full border border-black/5 transition ${
+            value.toUpperCase() === color ? "scale-110 ring-2 ring-[#073B2A] ring-offset-2" : "hover:scale-110"
+          }`}
+          style={{ background: color }}
+        />
+      ))}
+    </div>
+  )
+}
 
 type Employee = {
   id: number
@@ -37,6 +72,8 @@ export function SettingsPage() {
   const [employees, setEmployees] = useState<Employee[]>([])
   const [newSectorName, setNewSectorName] = useState("")
   const [newSectorPin, setNewSectorPin] = useState("")
+  const [newSectorColor, setNewSectorColor] = useState(DEFAULT_SECTOR_COLOR)
+  const [openSectorIds, setOpenSectorIds] = useState<Set<number>>(new Set())
   const [newEmployeeName, setNewEmployeeName] = useState("")
   const [newEmployeeUsername, setNewEmployeeUsername] = useState("")
   const [newEmployeePassword, setNewEmployeePassword] = useState("")
@@ -82,7 +119,7 @@ export function SettingsPage() {
     setIsAddingSector(true)
 
     try {
-      const response = await apiFetch("/sectors", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sectorName, pin: sectorPin }) })
+      const response = await apiFetch("/sectors", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sectorName, pin: sectorPin, color: newSectorColor }) })
       if (!response.ok) {
         const data = await response.json().catch(() => null)
         toast.error(data?.message || `Erro ao criar setor.`)
@@ -91,6 +128,7 @@ export function SettingsPage() {
 
       setNewSectorName("")
       setNewSectorPin("")
+      setNewSectorColor(DEFAULT_SECTOR_COLOR)
       toast.success("Setor criado com sucesso.")
       await loadData()
     } catch (error) {
@@ -106,7 +144,7 @@ export function SettingsPage() {
 
     if (!/^\d{4,8}$/.test(sectorPin)) { toast.error("PIN deve conter de 4 a 8 números."); return }
 
-    const response = await apiFetch(`/sectors/${sector.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sectorName, pin: sectorPin }) })
+    const response = await apiFetch(`/sectors/${sector.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: sectorName, pin: sectorPin, color: sector.color || DEFAULT_SECTOR_COLOR }) })
     if (!response.ok) {
       const data = await response.json().catch(() => null)
       toast.error(data?.message || "Erro ao salvar setor.")
@@ -141,6 +179,8 @@ export function SettingsPage() {
       return
     }
     toast.success("Funcionário criado com sucesso.")
+    // Abre o grupo do setor para o funcionário recém-criado aparecer
+    setOpenSectorIds((prev) => new Set(prev).add(Number(newEmployeeSectorId)))
     setNewEmployeeName(""); setNewEmployeeUsername(""); setNewEmployeePassword(""); loadData()
   }
 
@@ -165,13 +205,38 @@ export function SettingsPage() {
     loadData()
   }
 
-  function updateSectorState(id: number, field: "name" | "pin", value: string) {
+  function updateSectorState(id: number, field: "name" | "pin" | "color", value: string) {
     setSectors(sectors.map((sector) => sector.id === id ? { ...sector, [field]: value } : sector))
   }
 
   function updateEmployeeState(id: number, field: "name" | "sectorId" | "username" | "password", value: string) {
     setEmployees(employees.map((employee) => employee.id === id ? { ...employee, [field]: field === "sectorId" ? Number(value) : value } : employee))
   }
+
+  function toggleSectorGroup(id: number) {
+    setOpenSectorIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  // Funcionários agrupados por setor (o grupo "Sem setor" cobre setores desativados)
+  const employeeGroups = [
+    ...sectors.map((sector) => ({
+      key: sector.id,
+      name: sector.name,
+      color: sector.color || DEFAULT_SECTOR_COLOR,
+      list: employees.filter((employee) => employee.sectorId === sector.id),
+    })),
+    {
+      key: -1,
+      name: "Sem setor",
+      color: "#94A3B8",
+      list: employees.filter((employee) => !sectors.some((sector) => sector.id === employee.sectorId)),
+    },
+  ].filter((group) => group.key !== -1 || group.list.length > 0)
 
   return (
     <AppLayout>
@@ -195,8 +260,21 @@ export function SettingsPage() {
         <div className="grid gap-6 xl:grid-cols-2">
           <section className="ls-card p-5 sm:p-6">
             <div className="mb-5"><h2 className="ls-section-title text-2xl">Setores</h2><p className="mt-1 text-sm text-slate-500">Controle os setores usados no painel e portal.</p></div>
-            <div className="grid gap-3 sm:grid-cols-[1fr_10rem_auto]"><Input placeholder="Nome do setor" value={newSectorName} onChange={(e) => setNewSectorName(e.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addSector() }} className="ls-input" /><Input inputMode="numeric" placeholder="PIN" value={newSectorPin} onChange={(e) => setNewSectorPin(e.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addSector() }} className="ls-input" /><Button className="ls-button-primary h-11 font-black" onClick={addSector} disabled={isAddingSector}>{isAddingSector ? "Adicionando..." : "Adicionar"}</Button></div>
-            <div className="mt-6 space-y-4">{isLoadingData ? Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-32 rounded-3xl bg-white/80" />) : sectors.map((sector) => <div key={sector.id} className="rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(7,59,42,0.10)]"><div className="grid gap-3 sm:grid-cols-[1fr_10rem]"><Input value={sector.name} onChange={(e) => updateSectorState(sector.id, "name", e.target.value)} className="ls-input" /><Input inputMode="numeric" placeholder="PIN" value={sector.pin || ""} onChange={(e) => updateSectorState(sector.id, "pin", e.target.value)} className="ls-input" /></div><div className="mt-4 flex flex-wrap justify-end gap-3"><Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateSector(sector)}>Salvar</Button><Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeSector(sector.id)}>Excluir</Button></div></div>)}</div>
+            <div className="rounded-2xl border border-dashed border-[#BFEFD7] bg-[#F8FCFA] p-4">
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.12em] text-[#00A859]">Novo setor</p>
+              <div className="grid gap-3 sm:grid-cols-[1fr_10rem]">
+                <Input placeholder="Nome do setor" value={newSectorName} onChange={(e) => setNewSectorName(e.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addSector() }} className="ls-input" />
+                <Input inputMode="numeric" placeholder="PIN" value={newSectorPin} onChange={(e) => setNewSectorPin(e.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addSector() }} className="ls-input" />
+              </div>
+              <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="mb-2 text-xs font-bold text-slate-500">Cor de identificação</p>
+                  <ColorPicker value={newSectorColor} onChange={setNewSectorColor} />
+                </div>
+                <Button className="ls-button-primary h-11 font-black" onClick={addSector} disabled={isAddingSector}>{isAddingSector ? "Adicionando..." : "Adicionar"}</Button>
+              </div>
+            </div>
+            <div className="mt-6 space-y-4">{isLoadingData ? Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-32 rounded-3xl bg-white/80" />) : sectors.map((sector) => <div key={sector.id} className="relative overflow-hidden rounded-3xl border border-[#DDE8E2] bg-white p-4 pl-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(7,59,42,0.10)]"><span className="absolute left-0 top-0 h-full w-1.5" style={{ background: sector.color || DEFAULT_SECTOR_COLOR }} /><div className="grid gap-3 sm:grid-cols-[1fr_10rem]"><Input value={sector.name} onChange={(e) => updateSectorState(sector.id, "name", e.target.value)} className="ls-input" /><Input inputMode="numeric" placeholder="PIN" value={sector.pin || ""} onChange={(e) => updateSectorState(sector.id, "pin", e.target.value)} className="ls-input" /></div><div className="mt-3"><ColorPicker value={sector.color || DEFAULT_SECTOR_COLOR} onChange={(color) => updateSectorState(sector.id, "color", color)} /></div><div className="mt-4 flex flex-wrap justify-end gap-3"><Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateSector(sector)}>Salvar</Button><Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeSector(sector.id)}>Excluir</Button></div></div>)}</div>
           </section>
 
           <section className="ls-card p-5 sm:p-6">
@@ -235,16 +313,55 @@ export function SettingsPage() {
               </div>
             </div>
 
-            {/* Lista de funcionários */}
+            {/* Lista de funcionários agrupada por setor */}
             <div className="mt-5 space-y-3">
               {isLoadingData
-                ? Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-40 rounded-3xl bg-white/80" />)
-                : employees.map((employee) => {
-                  const hasAccess = !!employee.username
-                  const sectorName = sectors.find((s) => s.id === employee.sectorId)?.name || employee.sector?.name || "Sem setor"
-                  const initials = employee.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()
+                ? Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-16 rounded-3xl bg-white/80" />)
+                : employeeGroups.map((group) => {
+                  const isOpen = openSectorIds.has(group.key)
+                  const withAccess = group.list.filter((e) => e.username).length
 
                   return (
+                    <div key={group.key} className="overflow-hidden rounded-3xl border border-[#DDE8E2] bg-white shadow-sm">
+                      {/* Cabeçalho do setor */}
+                      <button
+                        type="button"
+                        onClick={() => toggleSectorGroup(group.key)}
+                        className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-[#F8FCFA]"
+                      >
+                        <span className="h-9 w-1.5 shrink-0 rounded-full" style={{ background: group.color }} />
+                        <span
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl"
+                          style={{ background: `${group.color}1A`, color: group.color }}
+                        >
+                          <Users size={16} />
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate font-black text-[#111827]">{group.name}</span>
+                          <span className="block text-xs text-slate-500">
+                            {group.list.length} funcionário(s){group.list.length > 0 && ` · ${withAccess} com acesso`}
+                          </span>
+                        </span>
+                        <span
+                          className="shrink-0 rounded-full px-2.5 py-1 text-xs font-black"
+                          style={{ background: `${group.color}1A`, color: group.color }}
+                        >
+                          {group.list.length}
+                        </span>
+                        <ChevronDown size={18} className={`shrink-0 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                      </button>
+
+                      {/* Funcionários do setor */}
+                      {isOpen && (
+                        <div className="space-y-3 border-t border-[#EDF3F0] bg-[#FAFCFB] p-3">
+                          {group.list.length === 0 && (
+                            <p className="px-2 py-3 text-center text-xs text-slate-400">Nenhum funcionário neste setor ainda.</p>
+                          )}
+                          {group.list.map((employee) => {
+                            const hasAccess = !!employee.username
+                            const initials = employee.name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase()
+
+                            return (
                     <div
                       key={employee.id}
                       className={`rounded-3xl border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(7,59,42,0.10)] ${
@@ -260,7 +377,7 @@ export function SettingsPage() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="font-black text-[#111827]">{employee.name}</p>
-                          <p className="text-xs text-slate-500">{sectorName}</p>
+                          <p className="text-xs text-slate-500">{employee.username ? `@${employee.username}` : "Sem usuário de acesso"}</p>
                         </div>
                         <div className="flex shrink-0 items-center gap-2">
                           {hasAccess ? (
@@ -292,6 +409,11 @@ export function SettingsPage() {
                         <Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateEmployee(employee)}>Salvar</Button>
                         <Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeEmployee(employee.id)}>Desativar</Button>
                       </div>
+                    </div>
+                            )
+                          })}
+                        </div>
+                      )}
                     </div>
                   )
                 })
