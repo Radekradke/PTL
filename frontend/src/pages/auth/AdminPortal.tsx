@@ -167,23 +167,23 @@ function MiniMetric({
   accent?: string
 }) {
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-[#DDE7E2] bg-white/90 px-3 py-3 shadow-sm transition hover:shadow-md sm:px-4">
+    <div className="group relative overflow-hidden rounded-2xl border border-[#DDE7E2] bg-white/90 px-2.5 py-3 shadow-sm transition hover:shadow-md sm:px-4">
       {accent && (
         <span
           className="absolute left-0 top-0 h-full w-1 rounded-l-2xl"
           style={{ background: accent }}
         />
       )}
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-2">
         {Icon && (
           <span
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl"
+            className="hidden h-7 w-7 shrink-0 items-center justify-center rounded-xl sm:flex"
             style={{ background: accent ? `${accent}18` : "#F1F5F9", color: accent ?? "#64748b" }}
           >
             <Icon size={14} />
           </span>
         )}
-        <p className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-500 sm:text-[11px]">{label}</p>
+        <p className="min-w-0 truncate text-[9px] font-black uppercase tracking-[0.06em] text-slate-500 sm:text-[11px] sm:tracking-[0.12em]">{label}</p>
       </div>
       <p className="mt-1.5 pl-0.5 text-2xl font-black tracking-tight text-[#073B2A] sm:text-xl">{value}</p>
     </div>
@@ -860,15 +860,15 @@ export function AdminPortal() {
                 <button
                   key={key}
                   onClick={() => handleTabChange(key)}
-                  className={`inline-flex h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold transition-all duration-200 ${
+                  className={`inline-flex h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl px-2 text-sm font-bold transition-all duration-200 sm:flex-none sm:gap-2 sm:px-4 ${
                     activeTab === key
                       ? `${activeColor} text-white shadow-md scale-[1.01]`
                       : "text-slate-600 hover:bg-slate-50 hover:text-[#073B2A]"
                   }`}
                 >
-                  <Icon size={15} className={activeTab === key ? "opacity-100" : "opacity-60"} />
-                  <span className="hidden sm:inline">{label}</span>
-                  <span className="sm:hidden">{key === "new" ? "Novo" : key === "mine" ? "Meus" : "Ouvidoria"}</span>
+                  <Icon size={15} className={`hidden shrink-0 sm:block ${activeTab === key ? "opacity-100" : "opacity-60"}`} />
+                  <span className="hidden truncate sm:inline">{label}</span>
+                  <span className="truncate sm:hidden">{key === "new" ? "Novo" : key === "mine" ? "Meus" : "Ouvidoria"}</span>
                 </button>
               ))}
             </div>
@@ -1387,7 +1387,7 @@ export function AdminPortal() {
                     </div>
                     <h2 className="mt-5 text-2xl font-black tracking-[-0.04em] text-[#111827]">Selecione um chamado</h2>
                     <p className="mt-2 text-sm leading-6 text-slate-500">
-                      Clique em qualquer chamado da lista ao lado para ver a conversa com a equipe técnica.
+                      Clique em qualquer chamado da lista para ver a conversa com a equipe técnica.
                     </p>
                     <div className="mx-auto mt-5 flex max-w-[200px] flex-col gap-1.5">
                       {["Aberto", "Em andamento", "Finalizado"].map((s) => (
