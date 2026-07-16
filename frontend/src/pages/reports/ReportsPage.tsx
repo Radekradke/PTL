@@ -155,14 +155,14 @@ export function ReportsPage() {
   return (
     <AppLayout>
       <div className="ls-page-shell py-2">
-        <section className="ls-hero-clean p-6 sm:p-8">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#00A859]">Central de relatórios</p>
-              <h1 className="mt-2 text-4xl font-black tracking-[-0.06em] text-[#111827] sm:text-5xl">Relatórios</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#64748B] sm:text-base">Filtre, exporte e acompanhe os chamados com leitura rápida.</p>
+        <section className="ls-hero-clean p-3 sm:p-6 lg:p-8">
+          <div className="flex min-w-0 flex-col gap-4 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-0">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#00A859] sm:text-xs sm:tracking-[0.22em]">Central de relatórios</p>
+              <h1 className="mt-1 text-2xl font-black tracking-[-0.045em] text-[#111827] sm:mt-2 sm:text-4xl sm:tracking-[-0.06em] lg:text-5xl">Relatórios</h1>
+              <p className="mt-1 max-w-2xl text-xs leading-5 text-[#64748B] sm:mt-3 sm:text-sm sm:leading-6 lg:text-base">Filtre, exporte e acompanhe os chamados com leitura rápida.</p>
             </div>
-            <div className="grid w-full gap-3 sm:w-auto sm:grid-cols-2">
+            <div className="grid w-full min-w-0 gap-3 sm:w-auto sm:grid-cols-2">
               <Button onClick={exportPDF} className="ls-button-primary h-12 px-5 font-black"><Download size={16} className="mr-2" /> Gerar PDF</Button>
               <Button onClick={exportExcel} className="h-12 rounded-2xl border border-[#DDE8E2] bg-white px-5 font-black text-[#073B2A] shadow-sm hover:bg-[#ECFBF3]"><FileSpreadsheet size={16} className="mr-2" /> Gerar Excel</Button>
             </div>
@@ -183,8 +183,8 @@ export function ReportsPage() {
             <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Calendar size={14}/>Data Inicial</span><Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="ls-input" /></label>
             <label className="space-y-2"><span className="flex items-center gap-2 text-sm font-semibold text-slate-600"><Calendar size={14}/>Data Final</span><Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="ls-input" /></label>
           </div>
-          <div className="mt-5 flex flex-col gap-4 rounded-3xl border border-[#DDE8E2] bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0 text-sm text-slate-600"><strong className="text-[#111827]">{filteredTickets.length}</strong> chamados encontrados <div className="mt-1 text-xs text-slate-500">{getFiltersSummary()}</div></div>
+          <div className="mt-5 flex min-w-0 flex-col gap-4 rounded-3xl border border-[#DDE8E2] bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0 text-sm text-slate-600"><strong className="text-[#111827]">{filteredTickets.length}</strong> chamados encontrados <div className="mt-1 break-words text-xs text-slate-500">{getFiltersSummary()}</div></div>
             <Button onClick={clearFilters} variant="outline" className="h-11 rounded-2xl border-[#DDE8E2] bg-white text-[#073B2A] hover:bg-[#ECFBF3]"><RotateCcw size={16} className="mr-2"/> Limpar filtros</Button>
           </div>
         </section>

@@ -176,12 +176,12 @@ export function SettingsPage() {
   return (
     <AppLayout>
       <div className="ls-page-shell py-2">
-        <section className="ls-hero-clean p-6 sm:p-8">
-          <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#00A859]">Administração</p>
-              <h1 className="mt-2 text-4xl font-black tracking-[-0.06em] text-[#111827] sm:text-5xl">Configurações</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#64748B] sm:text-base">
+        <section className="ls-hero-clean p-3 sm:p-6 lg:p-8">
+          <div className="flex min-w-0 flex-col gap-4 sm:gap-6 xl:flex-row xl:items-center xl:justify-between">
+            <div className="min-w-0">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#00A859] sm:text-xs sm:tracking-[0.22em]">Administração</p>
+              <h1 className="mt-1 text-2xl font-black tracking-[-0.045em] text-[#111827] sm:mt-2 sm:text-4xl sm:tracking-[-0.06em] lg:text-5xl">Configurações</h1>
+              <p className="mt-1 max-w-2xl text-xs leading-5 text-[#64748B] sm:mt-3 sm:text-sm sm:leading-6 lg:text-base">
                 Cadastre setores e funcionários. Esses dados são a base do portal e dos chamados.
               </p>
             </div>
@@ -192,26 +192,30 @@ export function SettingsPage() {
           </div>
         </section>
 
-        <div className="grid gap-6 xl:grid-cols-2">
+        <div className="grid min-w-0 gap-6 xl:grid-cols-2">
           <section className="ls-card p-5 sm:p-6">
             <div className="mb-5"><h2 className="ls-section-title text-2xl">Setores</h2><p className="mt-1 text-sm text-slate-500">Controle os setores usados no painel e portal.</p></div>
-            <div className="grid gap-3 sm:grid-cols-[1fr_10rem_auto]"><Input placeholder="Nome do setor" value={newSectorName} onChange={(e) => setNewSectorName(e.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addSector() }} className="ls-input" /><Input inputMode="numeric" placeholder="PIN" value={newSectorPin} onChange={(e) => setNewSectorPin(e.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addSector() }} className="ls-input" /><Button className="ls-button-primary h-11 font-black" onClick={addSector} disabled={isAddingSector}>{isAddingSector ? "Adicionando..." : "Adicionar"}</Button></div>
-            <div className="mt-6 space-y-4">{isLoadingData ? Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-32 rounded-3xl bg-white/80" />) : sectors.map((sector) => <div key={sector.id} className="rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(7,59,42,0.10)]"><div className="grid gap-3 sm:grid-cols-[1fr_10rem]"><Input value={sector.name} onChange={(e) => updateSectorState(sector.id, "name", e.target.value)} className="ls-input" /><Input inputMode="numeric" placeholder="PIN" value={sector.pin || ""} onChange={(e) => updateSectorState(sector.id, "pin", e.target.value)} className="ls-input" /></div><div className="mt-4 flex flex-wrap justify-end gap-3"><Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateSector(sector)}>Salvar</Button><Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeSector(sector.id)}>Excluir</Button></div></div>)}</div>
+            <div className="grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_10rem_auto]"><Input placeholder="Nome do setor" value={newSectorName} onChange={(e) => setNewSectorName(e.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addSector() }} className="ls-input" /><Input inputMode="numeric" placeholder="PIN" value={newSectorPin} onChange={(e) => setNewSectorPin(e.target.value)} onKeyDown={(event) => { if (event.key === "Enter") addSector() }} className="ls-input" /><Button className="ls-button-primary h-11 font-black" onClick={addSector} disabled={isAddingSector}>{isAddingSector ? "Adicionando..." : "Adicionar"}</Button></div>
+            <div className="mt-6 space-y-4">{isLoadingData ? Array.from({ length: 3 }).map((_, index) => <Skeleton key={index} className="h-32 rounded-3xl bg-white/80" />) : sectors.map((sector) => <div key={sector.id} className="min-w-0 rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(7,59,42,0.10)]"><div className="grid min-w-0 gap-3 sm:grid-cols-[minmax(0,1fr)_10rem]"><Input value={sector.name} onChange={(e) => updateSectorState(sector.id, "name", e.target.value)} className="ls-input" /><Input inputMode="numeric" placeholder="PIN" value={sector.pin || ""} onChange={(e) => updateSectorState(sector.id, "pin", e.target.value)} className="ls-input" /></div><div className="mt-4 flex flex-wrap justify-end gap-3"><Button size="sm" className="ls-button-primary rounded-2xl px-4" onClick={() => updateSector(sector)}>Salvar</Button><Button variant="destructive" size="sm" className="rounded-2xl" onClick={() => removeSector(sector.id)}>Excluir</Button></div></div>)}</div>
           </section>
 
           <section className="ls-card p-5 sm:p-6">
+            <div className="mb-5 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h2 className="ls-section-title text-2xl">Funcionários</h2>
                 <p className="mt-1 text-sm text-slate-500">Usuário e senha definem o acesso ao portal.</p>
               </div>
               {!isLoadingData && employees.length > 0 && (
+                <div className="flex min-w-0 flex-wrap gap-2 text-xs font-bold">
+                  <span className="flex min-w-0 items-center gap-1.5 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-emerald-700">
                 <div className="flex gap-2 text-xs font-bold">
                   <span className="flex items-center gap-1.5 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-emerald-700">
                     <UserCheck size={13} />
                     {employees.filter(e => e.username).length} com acesso
                   </span>
                   {employees.filter(e => !e.username).length > 0 && (
+                    <span className="flex min-w-0 items-center gap-1.5 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-amber-700">
                     <span className="flex items-center gap-1.5 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-amber-700">
                       <UserX size={13} />
                       {employees.filter(e => !e.username).length} sem acesso
@@ -224,6 +228,7 @@ export function SettingsPage() {
             {/* Formulário novo funcionário */}
             <div className="rounded-2xl border border-dashed border-[#BFEFD7] bg-[#F8FCFA] p-4">
               <p className="mb-3 text-xs font-black uppercase tracking-[0.12em] text-[#00A859]">Novo funcionário</p>
+              <div className="grid min-w-0 gap-3 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]">
               <div className="grid gap-3 xl:grid-cols-[1.2fr_1fr_1fr_1fr_auto]">
                 <Input placeholder="Nome completo" value={newEmployeeName} onChange={(e) => setNewEmployeeName(e.target.value)} className="ls-input" />
                 <Input placeholder="Usuário" value={newEmployeeUsername} onChange={(e) => setNewEmployeeUsername(e.target.value)} className="ls-input" />
@@ -247,11 +252,13 @@ export function SettingsPage() {
                   return (
                     <div
                       key={employee.id}
+                      className={`min-w-0 rounded-3xl border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(7,59,42,0.10)] ${
                       className={`rounded-3xl border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(7,59,42,0.10)] ${
                         hasAccess ? "border-[#DDE8E2]" : "border-amber-200 bg-amber-50/30"
                       }`}
                     >
                       {/* Cabeçalho do card */}
+                      <div className="mb-4 flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:items-center">
                       <div className="mb-4 flex items-center gap-3">
                         <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl text-sm font-black ${
                           hasAccess ? "bg-[#ECFBF3] text-[#073B2A]" : "bg-amber-100 text-amber-800"
@@ -259,6 +266,16 @@ export function SettingsPage() {
                           {initials}
                         </div>
                         <div className="min-w-0 flex-1">
+                          <p className="break-words font-black text-[#111827]">{employee.name}</p>
+                          <p className="break-words text-xs text-slate-500">{sectorName}</p>
+                        </div>
+                        <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto sm:shrink-0 sm:justify-end">
+                          {hasAccess ? (
+                            <span className="flex max-w-full items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-black leading-tight text-emerald-700">
+                              <UserCheck size={11} /> Acesso ativo
+                            </span>
+                          ) : (
+                            <span className="flex max-w-full items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-black leading-tight text-amber-700">
                           <p className="font-black text-[#111827]">{employee.name}</p>
                           <p className="text-xs text-slate-500">{sectorName}</p>
                         </div>
@@ -276,6 +293,7 @@ export function SettingsPage() {
                       </div>
 
                       {/* Campos de edição */}
+                      <div className="grid min-w-0 gap-3 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]">
                       <div className="grid gap-3 xl:grid-cols-[1.2fr_1fr_1fr_1fr]">
                         <Input value={employee.name} onChange={(e) => updateEmployeeState(employee.id, "name", e.target.value)} placeholder="Nome" className="ls-input" />
                         <Input value={employee.username || ""} onChange={(e) => updateEmployeeState(employee.id, "username", e.target.value)} placeholder="usuário" className="ls-input" />

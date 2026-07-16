@@ -163,6 +163,11 @@ export function Login() {
   const activeDept = departmentOptions.find((d) => d.id === selectedDept)
 
   return (
+    <div className="ls-mobile-auth-shell flex items-center justify-center bg-[#EAF0ED] px-3 py-4 text-[#111827] sm:px-4 sm:py-8">
+      <style>{CSS}</style>
+
+      <div className="grid w-full min-w-0 max-w-5xl overflow-hidden rounded-[1.35rem] border border-white/70 bg-white shadow-[0_24px_70px_rgba(7,59,42,0.14)] sm:rounded-[2rem] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:shadow-[0_28px_90px_rgba(7,59,42,0.16)]">
+
     <div className="flex min-h-screen items-center justify-center bg-[#EAF0ED] px-4 py-8 text-[#111827]">
       <style>{CSS}</style>
 
@@ -196,6 +201,7 @@ export function Login() {
         </section>
 
         {/* ── Right panel ── */}
+        <section className="flex min-h-[560px] min-w-0 items-center justify-center overflow-hidden bg-white px-5 py-8 sm:min-h-[620px] sm:px-12 sm:py-10">
         <section className="flex min-h-[620px] items-center justify-center overflow-hidden bg-white px-6 py-10 sm:px-12">
           <div className={`w-full max-w-[360px] ${animClass}`}>
 

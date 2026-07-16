@@ -21,6 +21,7 @@ export function MobileBottomNav() {
     { label: "Relatórios", path: "/reports", icon: FileText, allowed: access.reports },
     { label: "Config", path: "/settings", icon: Settings, allowed: access.settings },
   ].filter((item) => item.allowed.includes(role))
+  const visibleItems = items.slice(0, 4)
 
   function handleLogout() {
     localStorage.removeItem(TECHNICAL_USER_KEY)
@@ -29,9 +30,12 @@ export function MobileBottomNav() {
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200/80 bg-white/90 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-18px_50px_rgba(15,23,42,0.10)] backdrop-blur-2xl lg:hidden">
-      <div className="mx-auto grid max-w-lg grid-cols-5 gap-0.5 rounded-2xl sm:rounded-3xl border border-slate-200 bg-white p-1 shadow-sm">
-        {items.slice(0, 4).map((item) => {
+    <div className="mobile-bottom-nav-safe fixed inset-x-0 bottom-0 z-50 border-t border-slate-200/80 bg-white/90 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 shadow-[0_-18px_50px_rgba(15,23,42,0.10)] backdrop-blur-2xl lg:hidden">
+      <div
+        className="mx-auto grid max-w-lg gap-0.5 rounded-2xl border border-slate-200 bg-white p-1 shadow-sm sm:rounded-3xl"
+        style={{ gridTemplateColumns: `repeat(${visibleItems.length + 1}, minmax(0, 1fr))` }}
+      >
+        {visibleItems.map((item) => {
           const Icon = item.icon
           const active = location.pathname === item.path
 
@@ -44,7 +48,7 @@ export function MobileBottomNav() {
               }`}
             >
               <Icon size={18} />
-              <span className="text-[9px] sm:text-[10px] truncate">{item.label}</span>
+              <span className="max-w-full truncate text-[9px] leading-tight sm:text-[10px]">{item.label}</span>
             </button>
           )
         })}
@@ -54,7 +58,7 @@ export function MobileBottomNav() {
           className="flex flex-col items-center justify-center gap-0.5 rounded-xl sm:rounded-2xl px-1 py-2 text-[10px] sm:text-xs font-bold text-rose-600 transition hover:bg-rose-50"
         >
           <LogOut size={18} />
-          <span className="text-[9px] sm:text-[10px] truncate">Sair</span>
+          <span className="max-w-full truncate text-[9px] leading-tight sm:text-[10px]">Sair</span>
         </button>
       </div>
     </div>
