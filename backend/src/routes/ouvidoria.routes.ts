@@ -61,10 +61,10 @@ ouvidoriaRoutes.post("/", ouvidoriaLimiter, requireAuth, async (req, res) => {
   if (cleanComplaint.length > 4000) return res.status(400).json({ message: "Denúncia muito longa. Máximo de 4000 caracteres." })
 
   const apiKey = process.env.RESEND_API_KEY
-  const destinatario = process.env.OUVIDORIA_EMAIL
+  const destinatario = process.env.OUVIDORIA_EMAIL || "ouvidoria.lifting@gmail.com"
 
-  if (!apiKey || !destinatario) {
-    console.error("[Ouvidoria] RESEND_API_KEY ou OUVIDORIA_EMAIL não configurados.")
+  if (!apiKey) {
+    console.error("[Ouvidoria] RESEND_API_KEY não configurada.")
     return res.status(500).json({ message: "Ouvidoria não configurada. Contate o administrador." })
   }
 
