@@ -51,7 +51,16 @@ app.use(
     credentials: true,
   })
 )
-app.use(express.json({ limit: "20kb" }))
+// Rotas de chamados aceitam fotos em base64, por isso o limite maior; o restante segue enxuto
+const jsonDefault = express.json({ limit: "20kb" })
+const jsonWithPhotos = express.json({ limit: "8mb" })
+
+app.use((req, res, next) => {
+  const acceptsPhotos =
+    req.method === "POST" && (req.path === "/tickets" || /^\/tickets\/\d+\/messages$/.test(req.path))
+
+  return (acceptsPhotos ? jsonWithPhotos : jsonDefault)(req, res, next)
+})
 
 app.get("/", (_req, res) => {
   res.json({ message: "Lifting Support API online" })
@@ -84,6 +93,29 @@ async function ensureRuntimeSchema() {
     )
   } catch (error) {
     console.error("Falha ao garantir coluna Sector.color:", error)
+  }
+
+  try {
+    await prisma.$executeRawUnsafe(
+      `CREATE TABLE IF NOT EXISTS "TicketAttachment" (
+        "id" SERIAL PRIMARY KEY,
+        "ticketId" INTEGER NOT NULL REFERENCES "Ticket"("id") ON DELETE CASCADE,
+        "messageId" INTEGER REFERENCES "TicketMessage"("id") ON DELETE CASCADE,
+        "filename" TEXT NOT NULL,
+        "mimeType" TEXT NOT NULL,
+        "size" INTEGER NOT NULL,
+        "data" TEXT NOT NULL,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )`
+    )
+    await prisma.$executeRawUnsafe(
+      `CREATE INDEX IF NOT EXISTS "TicketAttachment_ticketId_idx" ON "TicketAttachment"("ticketId")`
+    )
+    await prisma.$executeRawUnsafe(
+      `CREATE INDEX IF NOT EXISTS "TicketAttachment_messageId_idx" ON "TicketAttachment"("messageId")`
+    )
+  } catch (error) {
+    console.error("Falha ao garantir tabela TicketAttachment:", error)
   }
 }
 
