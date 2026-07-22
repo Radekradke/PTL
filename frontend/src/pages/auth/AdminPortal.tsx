@@ -9,6 +9,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { categoriesByDepartment, type TicketDepartment } from "@/lib/categories"
 import { API_URL, PORTAL_USER_KEY, apiFetch, getPortalToken } from "@/services/api"
 import {
+  MAX_TICKET_PHOTOS,
+  fileToCompressedPhoto,
+  type MessageAttachment,
+  type PendingPhoto,
+} from "@/lib/ticketPhotos"
+import { AttachmentImage } from "@/components/tickets/AttachmentImage"
+import {
   CheckCircle2,
   ChevronDown,
   LogOut,
@@ -33,6 +40,8 @@ import {
   Building2,
   ChevronRight,
   ChevronLeft,
+  ImagePlus,
+  X,
 } from "lucide-react"
 
 type Sector = {
@@ -56,6 +65,7 @@ type TicketMessage = {
   senderName: string
   message: string
   createdAt: string
+  attachments?: MessageAttachment[]
 }
 
 type PortalTicket = {
@@ -208,6 +218,73 @@ function EmptyPortalState({
   )
 }
 
+function PhotoPicker({
+  photos,
+  onAdd,
+  onRemove,
+  compact = false,
+}: {
+  photos: PendingPhoto[]
+  onAdd: (files: FileList | null) => void
+  onRemove: (id: string) => void
+  compact?: boolean
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  return (
+    <div className={compact ? "space-y-2" : "space-y-3"}>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        className="hidden"
+        onChange={(e) => {
+          onAdd(e.target.files)
+          e.target.value = ""
+        }}
+      />
+
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={photos.length >= MAX_TICKET_PHOTOS}
+          className="inline-flex items-center gap-1.5 rounded-xl border border-[#DDE7E2] bg-white px-3 py-2 text-xs font-bold text-[#073B2A] shadow-sm transition hover:border-[#00A859]/40 hover:bg-[#ECFBF3] disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <ImagePlus size={14} className="text-[#00A859]" />
+          Anexar fotos
+        </button>
+        <span className="text-[11px] font-semibold text-slate-400">
+          {photos.length}/{MAX_TICKET_PHOTOS}
+        </span>
+      </div>
+
+      {photos.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {photos.map((photo) => (
+            <div key={photo.id} className="group relative">
+              <img
+                src={photo.previewUrl}
+                alt={photo.filename}
+                className={`rounded-xl border border-[#DDE7E2] object-cover shadow-sm ${compact ? "h-16 w-16" : "h-20 w-20"}`}
+              />
+              <button
+                type="button"
+                onClick={() => onRemove(photo.id)}
+                className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white shadow transition hover:bg-red-600"
+                aria-label="Remover foto"
+              >
+                <X size={11} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function AdminPortal() {
   const navigate = useNavigate()
   const [loggedEmployee, setLoggedEmployee] = useState<Employee | null>(null)
@@ -233,6 +310,8 @@ export function AdminPortal() {
   const [employeeReply, setEmployeeReply] = useState("")
   const [isLoadingTickets, setIsLoadingTickets] = useState(false)
   const [isSendingReply, setIsSendingReply] = useState(false)
+  const [newTicketPhotos, setNewTicketPhotos] = useState<PendingPhoto[]>([])
+  const [replyPhotos, setReplyPhotos] = useState<PendingPhoto[]>([])
   const [isFinishingTicket, setIsFinishingTicket] = useState(false)
   const hasShownExpiredSession = useRef(false)
 
@@ -387,6 +466,7 @@ export function AdminPortal() {
 
   async function loadTicketMessages(ticket: PortalTicket) {
     setSelectedTicket(ticket)
+    setReplyPhotos([])
 
     try {
       const response = await apiFetch(`/tickets/${ticket.id}/messages`, {}, getPortalToken())
@@ -457,6 +537,40 @@ export function AdminPortal() {
     }
   }
 
+  async function addPhotos(files: FileList | null, target: "new" | "reply") {
+    if (!files || files.length === 0) return
+
+    const currentList = target === "new" ? newTicketPhotos : replyPhotos
+    const remaining = MAX_TICKET_PHOTOS - currentList.length
+
+    if (remaining <= 0) {
+      toast.error(`Máximo de ${MAX_TICKET_PHOTOS} fotos por envio.`)
+      return
+    }
+
+    const selected = Array.from(files).slice(0, remaining)
+    if (files.length > remaining) {
+      toast.error(`Máximo de ${MAX_TICKET_PHOTOS} fotos por envio.`)
+    }
+
+    for (const file of selected) {
+      try {
+        const photo = await fileToCompressedPhoto(file)
+        if (target === "new") {
+          setNewTicketPhotos((current) => (current.length >= MAX_TICKET_PHOTOS ? current : [...current, photo]))
+        } else {
+          setReplyPhotos((current) => (current.length >= MAX_TICKET_PHOTOS ? current : [...current, photo]))
+        }
+      } catch (error: any) {
+        toast.error(error?.message || "Não foi possível processar a imagem.")
+      }
+    }
+  }
+
+  function photosToPayload(photos: PendingPhoto[]) {
+    return photos.map(({ filename, mimeType, data }) => ({ filename, mimeType, data }))
+  }
+
   async function handleSubmit() {
     if (!loggedEmployee || !description) {
       toast.error("Descreva o problema antes de abrir o chamado.")
@@ -477,6 +591,7 @@ export function AdminPortal() {
           category,
           origin,
           description,
+          attachments: photosToPayload(newTicketPhotos),
         }),
       }, getPortalToken())
 
@@ -501,6 +616,7 @@ export function AdminPortal() {
       setCategory("PC")
       setOrigin("Administrativo")
       setDescription("")
+      setNewTicketPhotos([])
       loadMyTickets(loggedEmployee.id)
     } catch (error) {
       console.error(error)
@@ -511,7 +627,8 @@ export function AdminPortal() {
   }
 
   async function handleEmployeeReply() {
-    if (!loggedEmployee || !selectedTicket || !employeeReply.trim()) return
+    if (!loggedEmployee || !selectedTicket) return
+    if (!employeeReply.trim() && replyPhotos.length === 0) return
 
     setIsSendingReply(true)
 
@@ -525,6 +642,7 @@ export function AdminPortal() {
           senderType: "employee",
           employeeId: loggedEmployee.id,
           message: employeeReply.trim(),
+          attachments: photosToPayload(replyPhotos),
         }),
       }, getPortalToken())
 
@@ -541,6 +659,7 @@ export function AdminPortal() {
       setMessages((currentMessages) => [...currentMessages, newMessage])
       setSelectedTicket({ ...selectedTicket, status: "Em andamento" })
       setEmployeeReply("")
+      setReplyPhotos([])
       loadMyTickets(loggedEmployee.id)
     } catch (error) {
       console.error("Erro ao responder chamado:", error)
@@ -616,6 +735,8 @@ export function AdminPortal() {
     setCategory("PC")
     setOrigin("Administrativo")
     setDescription("")
+    setNewTicketPhotos([])
+    setReplyPhotos([])
     setActiveTab("new")
     setShowArchivedTickets(false)
     setMyTickets([])
@@ -1140,6 +1261,17 @@ export function AdminPortal() {
                       </p>
                     </div>
 
+                    <div className="rounded-2xl border border-dashed border-[#CFE2D8] bg-[#F8FCFA] p-3">
+                      <p className="mb-2 text-xs font-bold text-slate-500">
+                        Fotos do problema <span className="font-medium text-slate-400">(opcional)</span>
+                      </p>
+                      <PhotoPicker
+                        photos={newTicketPhotos}
+                        onAdd={(files) => addPhotos(files, "new")}
+                        onRemove={(id) => setNewTicketPhotos((current) => current.filter((photo) => photo.id !== id))}
+                      />
+                    </div>
+
                     <Button
                       className={`h-12 w-full ${styles.primary}`}
                       onClick={handleSubmit}
@@ -1332,7 +1464,21 @@ export function AdminPortal() {
                                 {new Date(message.createdAt).toLocaleString("pt-BR")}
                               </p>
                             </div>
-                            <p className="whitespace-pre-wrap break-words text-sm leading-6">{message.message}</p>
+                            {message.message && (
+                              <p className="whitespace-pre-wrap break-words text-sm leading-6">{message.message}</p>
+                            )}
+                            {(message.attachments?.length ?? 0) > 0 && (
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                {message.attachments!.map((attachment) => (
+                                  <AttachmentImage
+                                    key={attachment.id}
+                                    ticketId={message.ticketId}
+                                    attachment={attachment}
+                                    token={getPortalToken()}
+                                  />
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </div>
                       )
@@ -1353,17 +1499,25 @@ export function AdminPortal() {
                       </div>
                     ) : (
                       <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
-                        <Textarea
-                          value={employeeReply}
-                          onChange={(e) => setEmployeeReply(e.target.value)}
-                          placeholder="Responda o técnico ou envie mais detalhes..."
-                          className="min-h-[92px] rounded-2xl border-[#DDE7E2] bg-white text-slate-950 focus:border-[#00A859]"
-                        />
+                        <div className="space-y-2">
+                          <Textarea
+                            value={employeeReply}
+                            onChange={(e) => setEmployeeReply(e.target.value)}
+                            placeholder="Responda o técnico ou envie mais detalhes..."
+                            className="min-h-[92px] rounded-2xl border-[#DDE7E2] bg-white text-slate-950 focus:border-[#00A859]"
+                          />
+                          <PhotoPicker
+                            compact
+                            photos={replyPhotos}
+                            onAdd={(files) => addPhotos(files, "reply")}
+                            onRemove={(id) => setReplyPhotos((current) => current.filter((photo) => photo.id !== id))}
+                          />
+                        </div>
                         <div className="grid grid-cols-2 gap-2 lg:flex lg:flex-col">
                           <Button
                             className={`h-11 px-6 ${styles.primary}`}
                             onClick={handleEmployeeReply}
-                            disabled={isSendingReply || !employeeReply.trim()}
+                            disabled={isSendingReply || (!employeeReply.trim() && replyPhotos.length === 0)}
                           >
                             {isSendingReply ? "Enviando..." : "Responder"}
                           </Button>

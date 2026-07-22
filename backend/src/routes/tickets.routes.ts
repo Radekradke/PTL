@@ -38,6 +38,16 @@ const employeePublicSelect = {
   updatedAt: true,
 }
 
+const attachmentMetaSelect = {
+  id: true,
+  ticketId: true,
+  messageId: true,
+  filename: true,
+  mimeType: true,
+  size: true,
+  createdAt: true,
+}
+
 const ticketInclude = {
   employee: { select: employeePublicSelect },
   sector: { select: sectorPublicSelect },
@@ -46,6 +56,7 @@ const ticketInclude = {
   },
   messages: {
     orderBy: { createdAt: "asc" as const },
+    include: { attachments: { select: attachmentMetaSelect } },
   },
 }
 
@@ -80,6 +91,43 @@ function nextStatusFromSender(senderType: string) {
 
 function shouldArchiveStatus(status: string) {
   return status === "Finalizado"
+}
+
+const ATTACHMENT_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"]
+const MAX_ATTACHMENTS = 3
+// ~3MB de imagem depois de decodificar o base64
+const MAX_ATTACHMENT_BASE64_LENGTH = 4_200_000
+
+type CleanAttachment = { filename: string; mimeType: string; data: string; size: number }
+
+function validateAttachments(value: unknown): { ok: true; value: CleanAttachment[] } | { ok: false; message: string } {
+  if (value === undefined || value === null) return { ok: true, value: [] }
+  if (!Array.isArray(value)) return { ok: false, message: "Anexos inválidos." }
+  if (value.length > MAX_ATTACHMENTS) return { ok: false, message: `Máximo de ${MAX_ATTACHMENTS} fotos por envio.` }
+
+  const clean: CleanAttachment[] = []
+
+  for (const item of value) {
+    const mimeType = String(item?.mimeType || "")
+    const data = String(item?.data || "")
+    const filename = String(item?.filename || "foto.jpg").slice(0, 120)
+
+    if (!ATTACHMENT_MIME_TYPES.includes(mimeType)) {
+      return { ok: false, message: "Apenas imagens JPG, PNG ou WebP são permitidas." }
+    }
+
+    if (!data || data.length > MAX_ATTACHMENT_BASE64_LENGTH) {
+      return { ok: false, message: "Cada foto deve ter no máximo 3MB." }
+    }
+
+    if (!/^[A-Za-z0-9+/=]+$/.test(data)) {
+      return { ok: false, message: "Imagem inválida." }
+    }
+
+    clean.push({ filename, mimeType, data, size: Math.floor(data.length * 0.75) })
+  }
+
+  return { ok: true, value: clean }
 }
 
 ticketsRoutes.get("/", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
@@ -168,6 +216,11 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
     return res.status(400).json({ message: descriptionValidation.message })
   }
 
+  const attachmentsValidation = validateAttachments(req.body.attachments)
+  if (!attachmentsValidation.ok) {
+    return res.status(400).json({ message: attachmentsValidation.message })
+  }
+
   if (auth.type === "employee" && auth.employeeId !== employeeIdValidation.value) {
     return res.status(403).json({ message: "Funcionário sem permissão para abrir chamado em nome de outro usuário." })
   }
@@ -208,6 +261,17 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
     include: ticketInclude,
   })
 
+  if (attachmentsValidation.value.length > 0) {
+    const firstMessage = ticket.messages[0]
+    await prisma.ticketAttachment.createMany({
+      data: attachmentsValidation.value.map((attachment) => ({
+        ticketId: ticket.id,
+        messageId: firstMessage?.id,
+        ...attachment,
+      })),
+    })
+  }
+
   sendAutoReply(ticket.id, ticket.category).catch((err) => {
     console.error("Falha ao enviar resposta automática:", err)
   })
@@ -238,10 +302,43 @@ ticketsRoutes.get("/:id/messages", requireTicketParticipant(["Admin", "TI", "RH"
     orderBy: {
       createdAt: "asc",
     },
+    include: { attachments: { select: attachmentMetaSelect } },
   })
 
   res.json(messages)
 })
+
+ticketsRoutes.get(
+  "/:id/attachments/:attachmentId",
+  requireTicketParticipant(["Admin", "TI", "RH", "Infraestrutura"]),
+  async (req, res) => {
+    const idValidation = validateId(req.params.id, "Chamado")
+    const attachmentIdValidation = validateId(req.params.attachmentId, "Anexo")
+
+    if (!idValidation.ok) {
+      return res.status(400).json({ message: idValidation.message })
+    }
+
+    if (!attachmentIdValidation.ok) {
+      return res.status(400).json({ message: attachmentIdValidation.message })
+    }
+
+    const attachment = await prisma.ticketAttachment.findFirst({
+      where: {
+        id: attachmentIdValidation.value,
+        ticketId: idValidation.value,
+      },
+    })
+
+    if (!attachment) {
+      return res.status(404).json({ message: "Anexo não encontrado." })
+    }
+
+    res.setHeader("Content-Type", attachment.mimeType)
+    res.setHeader("Cache-Control", "private, max-age=86400")
+    res.send(Buffer.from(attachment.data, "base64"))
+  }
+)
 
 ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
   const { id } = req.params
@@ -253,7 +350,14 @@ ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI", "RH
     return res.status(400).json({ message: idValidation.message })
   }
 
-  const messageValidation = validateLongText(message, "Mensagem", 1, 2000)
+  const attachmentsValidation = validateAttachments(req.body.attachments)
+  if (!attachmentsValidation.ok) {
+    return res.status(400).json({ message: attachmentsValidation.message })
+  }
+
+  // Com fotos anexadas, o texto da mensagem é opcional
+  const minMessageLength = attachmentsValidation.value.length > 0 ? 0 : 1
+  const messageValidation = validateLongText(message, "Mensagem", minMessageLength, 2000)
   if (!messageValidation.ok) {
     return res.status(400).json({ message: messageValidation.message })
   }
@@ -294,6 +398,21 @@ ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI", "RH
     },
   })
 
+  let createdAttachments: any[] = []
+  if (attachmentsValidation.value.length > 0) {
+    await prisma.ticketAttachment.createMany({
+      data: attachmentsValidation.value.map((attachment) => ({
+        ticketId: idValidation.value,
+        messageId: createdMessage.id,
+        ...attachment,
+      })),
+    })
+    createdAttachments = await prisma.ticketAttachment.findMany({
+      where: { messageId: createdMessage.id },
+      select: attachmentMetaSelect,
+    })
+  }
+
   await prisma.ticket.update({
     where: { id: idValidation.value },
     data: {
@@ -315,14 +434,14 @@ ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI", "RH
   if (normalizedSenderType === "employee") {
     sendPushToSector(ticket.department, {
       title: `Nova resposta · ${ticket.department}`,
-      body: `${ticket.employee.name} respondeu o chamado #${ticket.id} (${ticket.category}): ${messageValidation.value.slice(0, 80)}`,
+      body: `${ticket.employee.name} respondeu o chamado #${ticket.id} (${ticket.category}): ${messageValidation.value.slice(0, 80) || "📷 Foto anexada"}`,
       ticketId: ticket.id,
       url: "/tickets",
     }).catch((err) => console.error("Falha ao enviar push:", err))
   }
 
   broadcastTicketChange()
-  res.status(201).json(createdMessage)
+  res.status(201).json({ ...createdMessage, attachments: createdAttachments })
 })
 
 ticketsRoutes.patch("/:id/status", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {

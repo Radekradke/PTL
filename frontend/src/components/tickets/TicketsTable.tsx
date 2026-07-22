@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { categoriesByDepartment, type TicketDepartment } from "@/lib/categories"
 import { buildSectorColorMap, SectorBadge } from "@/lib/sectorColors"
 import { apiFetch, getTechnicalUser } from "@/services/api"
+import { AttachmentImage } from "@/components/tickets/AttachmentImage"
 
 import {
   Dialog,
@@ -714,7 +715,14 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                           <p className={`mb-1 text-[11px] font-black uppercase tracking-[0.1em] ${isBot ? "text-blue-600" : isEmployee ? "text-[#00A859]" : "text-slate-500"}`}>
                             {isBot ? "🤖 Atendimento Automático" : isEmployee ? msg.senderName : "Técnico"}
                           </p>
-                          <p className="whitespace-pre-wrap break-words leading-5">{msg.message}</p>
+                          {msg.message && <p className="whitespace-pre-wrap break-words leading-5">{msg.message}</p>}
+                          {(msg.attachments?.length ?? 0) > 0 && (
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {msg.attachments.map((attachment: any) => (
+                                <AttachmentImage key={attachment.id} ticketId={msg.ticketId} attachment={attachment} />
+                              ))}
+                            </div>
+                          )}
                           <p className="mt-1.5 text-[10px] text-slate-400">{new Date(msg.createdAt).toLocaleString("pt-BR")}</p>
                         </div>
                       </div>

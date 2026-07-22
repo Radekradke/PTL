@@ -46,10 +46,11 @@ model Ticket {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  employee Employee        @relation(fields: [employeeId], references: [id], onDelete: Restrict)
-  sector   Sector          @relation(fields: [sectorId], references: [id], onDelete: Restrict)
-  timeline Timeline[]
-  messages TicketMessage[]
+  employee    Employee           @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  sector      Sector             @relation(fields: [sectorId], references: [id], onDelete: Restrict)
+  timeline    Timeline[]
+  messages    TicketMessage[]
+  attachments TicketAttachment[]
 }
 
 model TicketMessage {
@@ -60,7 +61,25 @@ model TicketMessage {
   message    String
   createdAt  DateTime @default(now())
 
-  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticket      Ticket             @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  attachments TicketAttachment[]
+}
+
+model TicketAttachment {
+  id        Int      @id @default(autoincrement())
+  ticketId  Int
+  messageId Int?
+  filename  String
+  mimeType  String
+  size      Int
+  data      String
+  createdAt DateTime @default(now())
+
+  ticket  Ticket         @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  message TicketMessage? @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([messageId])
 }
 
 model PushSubscription {
