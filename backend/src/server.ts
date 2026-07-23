@@ -97,6 +97,14 @@ async function ensureRuntimeSchema() {
 
   try {
     await prisma.$executeRawUnsafe(
+      `ALTER TABLE "Ticket" ADD COLUMN IF NOT EXISTS "autoCloseWarnedAt" TIMESTAMP(3)`
+    )
+  } catch (error) {
+    console.error("Falha ao garantir coluna Ticket.autoCloseWarnedAt:", error)
+  }
+
+  try {
+    await prisma.$executeRawUnsafe(
       `CREATE TABLE IF NOT EXISTS "TicketAttachment" (
         "id" SERIAL PRIMARY KEY,
         "ticketId" INTEGER NOT NULL REFERENCES "Ticket"("id") ON DELETE CASCADE,
