@@ -17,6 +17,7 @@ import {
 import { sendAutoReply } from "../services/autoReply"
 import { broadcastTicketChange } from "../lib/eventBus"
 import { sendPushToSector } from "../services/pushNotification"
+import { sendTicketOpenedEmail } from "../services/ticketEmail"
 
 export const ticketsRoutes = Router()
 
@@ -276,6 +277,17 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
     console.error("Falha ao enviar resposta automática:", err)
   })
 
+  // Avisa por e-mail o gestor responsável pelo departamento do chamado
+  sendTicketOpenedEmail({
+    ticketId: ticket.id,
+    department: ticket.department,
+    employeeName: employee.name,
+    sectorName: employee.sector.name,
+    category: ticket.category,
+    origin: ticket.origin,
+    description: ticket.description,
+  }).catch((err) => console.error("Falha ao enviar e-mail de novo chamado:", err))
+
   sendPushToSector(ticket.department, {
     title: `Novo chamado · ${ticket.department}`,
     body: `${employee.name} (${employee.sector.name}): ${ticket.category} — ${ticket.description.slice(0, 80)}`,
@@ -430,11 +442,21 @@ ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI", "RH
     },
   })
 
-  // Quando o funcionário responde, avisa a equipe técnica do setor (que é quem assina push)
+  // Toda resposta gera um aviso para a equipe técnica do setor (que é quem assina push),
+  // deixando claro qual chamado foi atualizado e quem respondeu.
+  const pushPreview = messageValidation.value.slice(0, 80) || "📷 Foto anexada"
+
   if (normalizedSenderType === "employee") {
     sendPushToSector(ticket.department, {
-      title: `Nova resposta · ${ticket.department}`,
-      body: `${ticket.employee.name} respondeu o chamado #${ticket.id} (${ticket.category}): ${messageValidation.value.slice(0, 80) || "📷 Foto anexada"}`,
+      title: `Chamado #${ticket.id} atualizado`,
+      body: `${ticket.employee.name} respondeu (${ticket.category}): ${pushPreview}`,
+      ticketId: ticket.id,
+      url: "/tickets",
+    }).catch((err) => console.error("Falha ao enviar push:", err))
+  } else {
+    sendPushToSector(ticket.department, {
+      title: `Chamado #${ticket.id} atualizado`,
+      body: `${finalSenderName} respondeu (${ticket.category}): ${pushPreview}`,
       ticketId: ticket.id,
       url: "/tickets",
     }).catch((err) => console.error("Falha ao enviar push:", err))
@@ -511,6 +533,13 @@ ticketsRoutes.patch("/:id/response", requireTechnical(["Admin", "TI", "RH", "Inf
     },
     include: ticketInclude,
   })
+
+  sendPushToSector(ticket.department, {
+    title: `Chamado #${ticket.id} atualizado`,
+    body: `Técnico respondeu (${ticket.category}): ${responseValidation.value.slice(0, 80)}`,
+    ticketId: ticket.id,
+    url: "/tickets",
+  }).catch((err) => console.error("Falha ao enviar push:", err))
 
   broadcastTicketChange()
   res.json(ticket)

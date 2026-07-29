@@ -8,6 +8,7 @@ import { ticketsRoutes } from "./routes/tickets.routes"
 import { authRoutes } from "./routes/auth.routes"
 import { ouvidoriaRoutes } from "./routes/ouvidoria.routes"
 import { pushRoutes } from "./routes/push.routes"
+import { departmentEmailsRoutes } from "./routes/departmentEmails.routes"
 import { assertAuthConfig } from "./lib/auth"
 import { prisma } from "./lib/prisma"
 import { addSseClient } from "./lib/eventBus"
@@ -81,6 +82,7 @@ app.use("/employees", employeesRoutes)
 app.use("/tickets", ticketsRoutes)
 app.use("/ouvidoria", ouvidoriaRoutes)
 app.use("/push", pushRoutes)
+app.use("/department-emails", departmentEmailsRoutes)
 
 const PORT = process.env.PORT || 3333
 
@@ -93,6 +95,14 @@ async function ensureRuntimeSchema() {
     )
   } catch (error) {
     console.error("Falha ao garantir coluna Sector.color:", error)
+  }
+
+  try {
+    await prisma.$executeRawUnsafe(
+      `ALTER TABLE "Ticket" ADD COLUMN IF NOT EXISTS "autoCloseWarnedAt" TIMESTAMP(3)`
+    )
+  } catch (error) {
+    console.error("Falha ao garantir coluna Ticket.autoCloseWarnedAt:", error)
   }
 
   try {
@@ -116,6 +126,25 @@ async function ensureRuntimeSchema() {
     )
   } catch (error) {
     console.error("Falha ao garantir tabela TicketAttachment:", error)
+  }
+
+  try {
+    await prisma.$executeRawUnsafe(
+      `CREATE TABLE IF NOT EXISTS "DepartmentEmail" (
+        "id" SERIAL PRIMARY KEY,
+        "department" TEXT NOT NULL,
+        "email" TEXT NOT NULL,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )`
+    )
+    await prisma.$executeRawUnsafe(
+      `CREATE INDEX IF NOT EXISTS "DepartmentEmail_department_idx" ON "DepartmentEmail"("department")`
+    )
+    await prisma.$executeRawUnsafe(
+      `CREATE UNIQUE INDEX IF NOT EXISTS "DepartmentEmail_department_email_key" ON "DepartmentEmail"("department", "email")`
+    )
+  } catch (error) {
+    console.error("Falha ao garantir tabela DepartmentEmail:", error)
   }
 }
 
