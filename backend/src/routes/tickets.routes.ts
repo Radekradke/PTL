@@ -17,6 +17,7 @@ import {
 import { sendAutoReply } from "../services/autoReply"
 import { broadcastTicketChange } from "../lib/eventBus"
 import { sendPushToSector } from "../services/pushNotification"
+import { sendTicketOpenedEmail } from "../services/ticketEmail"
 
 export const ticketsRoutes = Router()
 
@@ -275,6 +276,17 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
   sendAutoReply(ticket.id, ticket.category).catch((err) => {
     console.error("Falha ao enviar resposta automática:", err)
   })
+
+  // Avisa por e-mail o gestor responsável pelo departamento do chamado
+  sendTicketOpenedEmail({
+    ticketId: ticket.id,
+    department: ticket.department,
+    employeeName: employee.name,
+    sectorName: employee.sector.name,
+    category: ticket.category,
+    origin: ticket.origin,
+    description: ticket.description,
+  }).catch((err) => console.error("Falha ao enviar e-mail de novo chamado:", err))
 
   sendPushToSector(ticket.department, {
     title: `Novo chamado · ${ticket.department}`,

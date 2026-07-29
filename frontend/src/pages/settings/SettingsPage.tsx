@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { UserCheck, UserX, KeyRound, ChevronDown, Users } from "lucide-react"
+import { UserCheck, UserX, KeyRound, ChevronDown, Users, Mail, Trash2 } from "lucide-react"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -8,6 +8,16 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { apiFetch } from "@/services/api"
 
 type Sector = { id: number; name: string; pin?: string; color?: string }
+
+type DepartmentEmail = { id: number; department: string; email: string }
+
+// Departamentos fixos que recebem chamados (mesma lista do backend)
+const TICKET_DEPARTMENTS: { value: string; label: string; color: string }[] = [
+  { value: "TI", label: "Setor TI", color: "#0EA5E9" },
+  { value: "RH", label: "Setor RH", color: "#8B5CF6" },
+  { value: "Infraestrutura", label: "Infraestrutura", color: "#F59E0B" },
+]
+
 
 // Paleta fixa de cores de setor — evita cores ilegíveis e mantém identidade visual
 const SECTOR_COLORS = [
@@ -80,6 +90,10 @@ export function SettingsPage() {
   const [newEmployeeSectorId, setNewEmployeeSectorId] = useState("")
   const [isAddingSector, setIsAddingSector] = useState(false)
   const [isLoadingData, setIsLoadingData] = useState(true)
+  const [departmentEmails, setDepartmentEmails] = useState<DepartmentEmail[]>([])
+  const [newEmailDepartment, setNewEmailDepartment] = useState(TICKET_DEPARTMENTS[0].value)
+  const [newEmailAddress, setNewEmailAddress] = useState("")
+  const [isAddingEmail, setIsAddingEmail] = useState(false)
 
   async function loadData() {
     setIsLoadingData(true)
@@ -97,9 +111,53 @@ export function SettingsPage() {
       setSectors(sectorsData)
       setEmployees(employeesData.map((employee: Employee) => ({ ...employee, password: "" })))
       if (sectorsData.length > 0 && !newEmployeeSectorId) setNewEmployeeSectorId(String(sectorsData[0].id))
+
+      const emailsResponse = await apiFetch("/department-emails")
+      if (emailsResponse.ok) {
+        setDepartmentEmails(await readApiJson(emailsResponse, "Erro ao carregar e-mails."))
+      }
     } finally {
       setIsLoadingData(false)
     }
+  }
+
+  async function addDepartmentEmail() {
+    const email = newEmailAddress.trim()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Digite um e-mail válido.")
+      return
+    }
+
+    setIsAddingEmail(true)
+    try {
+      const response = await apiFetch("/department-emails", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ department: newEmailDepartment, email }),
+      })
+      if (!response.ok) {
+        const data = await response.json().catch(() => null)
+        toast.error(data?.message || "Erro ao cadastrar e-mail.")
+        return
+      }
+      setNewEmailAddress("")
+      toast.success("E-mail cadastrado.")
+      loadData()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erro ao cadastrar e-mail.")
+    } finally {
+      setIsAddingEmail(false)
+    }
+  }
+
+  async function removeDepartmentEmail(id: number) {
+    const response = await apiFetch(`/department-emails/${id}`, { method: "DELETE" })
+    if (!response.ok) {
+      toast.error("Erro ao remover e-mail.")
+      return
+    }
+    toast.success("E-mail removido.")
+    setDepartmentEmails((current) => current.filter((item) => item.id !== id))
   }
 
   useEffect(() => {
@@ -254,6 +312,77 @@ export function SettingsPage() {
               <div className="rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm"><p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Setores</p><p className="mt-1 text-2xl font-black text-[#073B2A]">{sectors.length}</p></div>
               <div className="rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm"><p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Funcionários</p><p className="mt-1 text-2xl font-black text-[#00A859]">{employees.length}</p></div>
             </div>
+          </div>
+        </section>
+
+        <section className="ls-card p-5 sm:p-6">
+          <div className="mb-5 flex items-start gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#ECFBF3] text-[#00A859]">
+              <Mail size={18} />
+            </span>
+            <div>
+              <h2 className="ls-section-title text-2xl">E-mails dos responsáveis</h2>
+              <p className="mt-1 text-sm text-slate-500">
+                Quando um funcionário abre um chamado, o(s) e-mail(s) cadastrado(s) para aquele departamento recebem um aviso automático. Ex.: chamado de TI → gestor de TI.
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-dashed border-[#BFEFD7] bg-[#F8FCFA] p-4">
+            <p className="mb-3 text-xs font-black uppercase tracking-[0.12em] text-[#00A859]">Novo e-mail</p>
+            <div className="grid gap-3 sm:grid-cols-[12rem_1fr_auto]">
+              <select value={newEmailDepartment} onChange={(e) => setNewEmailDepartment(e.target.value)} className="ls-input">
+                {TICKET_DEPARTMENTS.map((dept) => <option key={dept.value} value={dept.value}>{dept.label}</option>)}
+              </select>
+              <Input
+                type="email"
+                placeholder="gestor@empresa.com.br"
+                value={newEmailAddress}
+                onChange={(e) => setNewEmailAddress(e.target.value)}
+                onKeyDown={(event) => { if (event.key === "Enter") addDepartmentEmail() }}
+                className="ls-input"
+              />
+              <Button className="ls-button-primary h-11 font-black" onClick={addDepartmentEmail} disabled={isAddingEmail}>
+                {isAddingEmail ? "Adicionando..." : "Adicionar"}
+              </Button>
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-4 lg:grid-cols-3">
+            {TICKET_DEPARTMENTS.map((dept) => {
+              const list = departmentEmails.filter((item) => item.department === dept.value)
+              return (
+                <div key={dept.value} className="rounded-3xl border border-[#DDE8E2] bg-white p-4 shadow-sm">
+                  <div className="mb-3 flex items-center gap-2">
+                    <span className="h-3 w-3 rounded-full" style={{ background: dept.color }} />
+                    <p className="font-black text-[#111827]">{dept.label}</p>
+                    <span className="ml-auto rounded-full px-2 py-0.5 text-xs font-black" style={{ background: `${dept.color}1A`, color: dept.color }}>
+                      {list.length}
+                    </span>
+                  </div>
+                  {list.length === 0 ? (
+                    <p className="py-3 text-center text-xs text-slate-400">Nenhum e-mail cadastrado.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {list.map((item) => (
+                        <div key={item.id} className="flex items-center gap-2 rounded-2xl border border-[#EDF3F0] bg-[#FAFCFB] px-3 py-2">
+                          <Mail size={13} className="shrink-0 text-slate-400" />
+                          <span className="min-w-0 flex-1 truncate text-sm text-[#102A43]" title={item.email}>{item.email}</span>
+                          <button
+                            type="button"
+                            onClick={() => removeDepartmentEmail(item.id)}
+                            className="shrink-0 rounded-lg p-1.5 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+                            aria-label="Remover e-mail"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </section>
 

@@ -100,3 +100,13 @@ model Timeline {
 
   ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 }
+
+model DepartmentEmail {
+  id         Int      @id @default(autoincrement())
+  department String
+  email      String
+  createdAt  DateTime @default(now())
+
+  @@unique([department, email])
+  @@index([department])
+}
