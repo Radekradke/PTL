@@ -15,6 +15,7 @@ import {
   type PendingPhoto,
 } from "@/lib/ticketPhotos"
 import { AttachmentImage } from "@/components/tickets/AttachmentImage"
+import { APP_VERSION } from "@/lib/version"
 import {
   CheckCircle2,
   ChevronDown,
@@ -887,6 +888,7 @@ export function AdminPortal() {
                 <p className="text-xs leading-5 text-slate-400">
                   Acesso restrito para funcionários autorizados.
                 </p>
+                <p className="mt-1 text-[11px] font-semibold text-slate-300">Versão {APP_VERSION}</p>
                 <div className="mt-4 border-t border-slate-100 pt-4">
                   <p className="text-xs text-slate-400">É técnico ou gestor?</p>
                   <button
@@ -959,6 +961,7 @@ export function AdminPortal() {
               </h1>
               <p className="mt-1 text-sm leading-5 text-slate-500">
                 Setor: <strong className="text-[#073B2A]">{loggedEmployee.sector?.name}</strong>
+                <span className="ml-2 text-xs font-semibold text-slate-400">· Versão {APP_VERSION}</span>
               </p>
             </div>
 
