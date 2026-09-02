@@ -1,6 +1,7 @@
 import { FileText, LayoutDashboard, LogOut, Settings, Ticket } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY } from "@/services/api"
+import { APP_VERSION } from "@/lib/version"
 import logoHorizontal from "@/assets/logo-lifting-horizontal.png"
 
 const access = {
@@ -90,6 +91,9 @@ export function Sidebar() {
           <LogOut size={18} className="opacity-70" />
           Sair
         </button>
+        <p className="mt-2 text-center text-[10px] font-bold tracking-wide text-slate-400">
+          Versão {APP_VERSION}
+        </p>
       </div>
     </aside>
   )

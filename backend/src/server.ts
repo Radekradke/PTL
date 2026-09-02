@@ -13,7 +13,6 @@ import { assertAuthConfig } from "./lib/auth"
 import { prisma } from "./lib/prisma"
 import { addSseClient } from "./lib/eventBus"
 import { requireAuth } from "./middlewares/auth.middleware"
-import { startTicketAutoClose } from "./services/ticketAutoClose"
 
 dotenv.config()
 assertAuthConfig()
@@ -151,5 +150,4 @@ async function ensureRuntimeSchema() {
 app.listen(PORT, async () => {
   console.log(`API rodando em http://localhost:${PORT}`)
   await ensureRuntimeSchema()
-  startTicketAutoClose()
 })

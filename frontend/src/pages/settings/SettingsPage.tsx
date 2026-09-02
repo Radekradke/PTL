@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { UserCheck, UserX, KeyRound, ChevronDown, Users, Mail, Trash2 } from "lucide-react"
+import { UserCheck, UserX, KeyRound, ChevronDown, Users, Mail, Trash2, Sparkles } from "lucide-react"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { apiFetch } from "@/services/api"
+import { APP_VERSION, CHANGELOG } from "@/lib/version"
 
 type Sector = { id: number; name: string; pin?: string; color?: string }
 
@@ -550,6 +551,52 @@ export function SettingsPage() {
             </div>
           </section>
         </div>
+
+        <section className="ls-card p-5 sm:p-6">
+          <div className="mb-5 flex items-start gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#ECFBF3] text-[#00A859]">
+              <Sparkles size={18} />
+            </span>
+            <div className="flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="ls-section-title text-2xl">Versão e novidades</h2>
+                <span className="rounded-full bg-[#00A859]/10 px-2.5 py-0.5 text-xs font-black text-[#00A859]">
+                  v{APP_VERSION}
+                </span>
+              </div>
+              <p className="mt-1 text-sm text-slate-500">
+                Histórico de atualizações do sistema e o que mudou em cada versão.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {CHANGELOG.map((entry, index) => (
+              <div key={entry.version} className="relative rounded-3xl border border-[#DDE8E2] bg-white p-4 pl-5 shadow-sm">
+                <span className="absolute left-0 top-0 h-full w-1.5 rounded-l-3xl" style={{ background: index === 0 ? "#00A859" : "#CBD5E1" }} />
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <p className="text-lg font-black text-[#073B2A]">Versão {entry.version}</p>
+                  {index === 0 && (
+                    <span className="rounded-full bg-[#00A859]/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#00A859]">
+                      Atual
+                    </span>
+                  )}
+                  <span className="ml-auto text-xs font-semibold text-slate-400">
+                    {new Date(entry.date + "T12:00:00").toLocaleDateString("pt-BR")}
+                  </span>
+                </div>
+                <ul className="space-y-1.5">
+                  {entry.changes.map((change, i) => (
+                    <li key={i} className="flex gap-2 text-sm leading-6 text-[#334155]">
+                      <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#00A859]" />
+                      <span>{change}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     </AppLayout>
   )
