@@ -31,7 +31,8 @@ export function Sidebar() {
   ].filter((item) => item.allowed.includes(role))
 
   return (
-    <aside className="ls-metal-panel sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-black/20 px-4 py-5 text-emerald-50 lg:flex">
+    <aside className="ls-metal-panel hidden w-64 shrink-0 self-stretch border-r border-black/20 text-emerald-50 lg:block">
+      <div className="sticky top-0 flex h-[100dvh] flex-col px-4 py-5">
       {/* Marca */}
       <div className="px-2 pt-1">
         <img
@@ -95,6 +96,7 @@ export function Sidebar() {
         <p className="mt-2 px-3 text-[10px] font-medium tracking-wide text-emerald-200/40">
           Versão {APP_VERSION}
         </p>
+      </div>
       </div>
     </aside>
   )

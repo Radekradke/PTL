@@ -451,15 +451,14 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       <div className="rounded-3xl border border-[#DDE7E2] bg-white/90 p-4 shadow-[0_18px_48px_rgba(7,59,42,0.08)] backdrop-blur sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#00A859]">Chamados</p>
-            <h2 className="mt-1 text-2xl font-bold tracking-[-0.03em] text-[#073B2A]">Fila de atendimento</h2>
-            <p className="mt-1 text-sm text-[#64748B]">Filtre, abra e responda chamados em um só lugar.</p>
+            <h2 className="text-2xl font-bold tracking-[-0.03em] text-[#0B3D29]">Fila de atendimento</h2>
+            <p className="mt-1 text-sm text-[color:var(--muted-foreground)]">Filtre, abra e responda chamados em um só lugar.</p>
           </div>
 
           <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto lg:shrink-0">
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="h-12 w-full rounded-2xl bg-[linear-gradient(135deg,#00A859,#078C4D)] px-5 font-black text-white shadow-[0_16px_36px_rgba(0,168,89,0.26)] hover:bg-[#078C4D] sm:h-11 sm:w-auto whitespace-nowrap">
+                <Button className="ls-button-primary h-12 w-full px-5 text-sm sm:h-11 sm:w-auto whitespace-nowrap">
                   Novo chamado
                 </Button>
               </DialogTrigger>

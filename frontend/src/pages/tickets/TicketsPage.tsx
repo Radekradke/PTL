@@ -69,25 +69,24 @@ export function TicketsPage() {
         <section className="ls-hero-clean p-3 sm:p-6 lg:p-8">
           <div className="flex flex-col gap-3 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#00A859] sm:text-sm sm:tracking-[0.22em]">Operação técnica</p>
-              <h1 className="mt-1 text-2xl font-black tracking-[-0.045em] text-[#111827] sm:mt-2 sm:text-3xl sm:tracking-[-0.06em] lg:text-4xl">Chamados</h1>
-              <p className="mt-1 max-w-2xl text-xs leading-5 text-[#64748B] sm:mt-3 sm:text-sm sm:leading-6">
+              <h1 className="text-2xl font-bold tracking-[-0.045em] text-[color:var(--foreground)] sm:text-3xl sm:tracking-[-0.055em] lg:text-4xl">Chamados</h1>
+              <p className="mt-1.5 max-w-2xl text-xs leading-5 text-[color:var(--muted-foreground)] sm:mt-2.5 sm:text-sm sm:leading-6">
                 Gerencie a fila, responda usuários e acompanhe atendimentos.
               </p>
             </div>
 
             <div className="grid gap-2 sm:gap-3 grid-cols-3 shrink-0">
-              <div className="rounded-2xl sm:rounded-3xl border border-[#DDE8E2] bg-white p-3 sm:p-4 text-center shadow-sm">
-                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">Total</p>
-                <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-[#111827]">{totalTickets}</p>
+              <div className="rounded-xl border border-[color:var(--hairline)] bg-white p-3 sm:p-4 text-center shadow-[var(--shadow-sm)]">
+                <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.1em] text-[color:var(--muted-foreground)]">Total</p>
+                <p className="ls-num mt-1 sm:mt-2 text-xl sm:text-2xl font-bold text-[color:var(--foreground)]">{totalTickets}</p>
               </div>
-              <div className="rounded-2xl sm:rounded-3xl border border-amber-200 bg-amber-50 p-3 sm:p-4 text-center shadow-sm">
-                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.14em] text-amber-700">Pendentes</p>
-                <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-amber-700">{openTickets + waitingUserTickets}</p>
+              <div className="rounded-xl border border-amber-200/70 bg-amber-50 p-3 sm:p-4 text-center shadow-[var(--shadow-sm)]">
+                <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.1em] text-amber-700">Pendentes</p>
+                <p className="ls-num mt-1 sm:mt-2 text-xl sm:text-2xl font-bold text-amber-700">{openTickets + waitingUserTickets}</p>
               </div>
-              <div className="rounded-2xl sm:rounded-3xl border border-[#DDE8E2] bg-[#ECFBF3] p-3 sm:p-4 text-center shadow-sm">
-                <p className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.14em] text-[#073B2A]">Em atendimento</p>
-                <p className="mt-1 sm:mt-2 text-xl sm:text-2xl font-black text-[#00A859]">{progressTickets}</p>
+              <div className="rounded-xl border border-[color:var(--hairline)] bg-[color:var(--accent)] p-3 sm:p-4 text-center shadow-[var(--shadow-sm)]">
+                <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.1em] text-[#0B3D29]">Em atendimento</p>
+                <p className="ls-num mt-1 sm:mt-2 text-xl sm:text-2xl font-bold text-[#00A859]">{progressTickets}</p>
               </div>
             </div>
           </div>

@@ -252,23 +252,20 @@ export function Dashboard() {
         <section className="ls-hero-clean p-3 sm:p-6 lg:p-8">
           <div className="flex flex-col gap-3 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#00A859] sm:text-xs sm:tracking-[0.22em]">Visão geral</p>
-              <h1 className="mt-1 text-2xl font-black tracking-[-0.045em] text-[#111827] sm:mt-2 sm:text-4xl sm:tracking-[-0.06em] lg:text-5xl">Dashboard</h1>
-              <p className="mt-1 max-w-2xl text-xs leading-5 text-[#64748B] sm:mt-3 sm:text-sm sm:leading-6">Indicadores principais, filtros e gráficos para leitura rápida da operação.</p>
+              <h1 className="text-2xl font-bold tracking-[-0.045em] text-[color:var(--foreground)] sm:text-4xl sm:tracking-[-0.055em] lg:text-[2.75rem]">Dashboard</h1>
+              <p className="mt-1.5 max-w-2xl text-xs leading-5 text-[color:var(--muted-foreground)] sm:mt-2.5 sm:text-sm sm:leading-6">Indicadores principais, filtros e gráficos para leitura rápida da operação.</p>
             </div>
             <div className="grid grid-cols-3 gap-2 sm:gap-3 shrink-0">
-              <div className="rounded-2xl sm:rounded-3xl border border-[#DDE8E2] bg-white p-3 sm:p-4 text-center shadow-sm">
-                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Filtrados</p>
-                <p className="mt-1 text-xl sm:text-2xl font-black text-[#111827]">{filteredTickets.length}</p>
-              </div>
-              <div className="rounded-2xl sm:rounded-3xl border border-[#DDE8E2] bg-white p-3 sm:p-4 text-center shadow-sm">
-                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-[#00A859]">Setores</p>
-                <p className="mt-1 text-xl sm:text-2xl font-black text-[#073B2A]">{uniqueSectors.length}</p>
-              </div>
-              <div className="rounded-2xl sm:rounded-3xl border border-[#DDE8E2] bg-white p-3 sm:p-4 text-center shadow-sm">
-                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.14em] text-[#102A43]">Categorias</p>
-                <p className="mt-1 text-xl sm:text-2xl font-black text-[#102A43]">{uniqueCategories.length}</p>
-              </div>
+              {[
+                { label: "Filtrados", value: filteredTickets.length },
+                { label: "Setores", value: uniqueSectors.length },
+                { label: "Categorias", value: uniqueCategories.length },
+              ].map((m) => (
+                <div key={m.label} className="rounded-xl border border-[color:var(--hairline)] bg-white p-3 sm:p-4 text-center shadow-[var(--shadow-sm)]">
+                  <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.12em] text-[color:var(--muted-foreground)]">{m.label}</p>
+                  <p className="ls-num mt-1 text-xl sm:text-2xl font-bold text-[color:var(--foreground)]">{m.value}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -353,7 +350,7 @@ export function Dashboard() {
           <div className="ls-card p-3 sm:p-4 lg:p-6">
             <h2 className="ls-section-title text-lg sm:text-xl">Por categoria</h2>
             <p className="text-xs sm:text-sm text-slate-500">Tipos de demanda.</p>
-            <MobileBarChart data={ticketsByCategory} fill="#102A43" tooltipStyle={tooltipStyle} />
+            <MobileBarChart data={ticketsByCategory} fill="#0B3D29" tooltipStyle={tooltipStyle} />
           </div>
           <div className="ls-card p-3 sm:p-4 lg:p-6">
             <h2 className="ls-section-title text-lg sm:text-xl">Por status</h2>

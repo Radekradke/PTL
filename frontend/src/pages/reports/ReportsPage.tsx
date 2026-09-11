@@ -158,9 +158,8 @@ export function ReportsPage() {
         <section className="ls-hero-clean p-6 sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.22em] text-[#00A859]">Central de relatórios</p>
-              <h1 className="mt-2 text-4xl font-black tracking-[-0.06em] text-[#111827] sm:text-5xl">Relatórios</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#64748B] sm:text-base">Filtre, exporte e acompanhe os chamados com leitura rápida.</p>
+              <h1 className="text-3xl font-bold tracking-[-0.05em] text-[color:var(--foreground)] sm:text-4xl">Relatórios</h1>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--muted-foreground)] sm:text-base">Filtre, exporte e acompanhe os chamados com leitura rápida.</p>
             </div>
             <div className="grid w-full gap-3 sm:w-auto sm:grid-cols-2">
               <Button onClick={exportPDF} className="ls-button-primary h-12 px-5 font-black"><Download size={16} className="mr-2" /> Gerar PDF</Button>
