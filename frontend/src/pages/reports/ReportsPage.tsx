@@ -162,8 +162,8 @@ export function ReportsPage() {
               <p className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--muted-foreground)] sm:text-base">Filtre, exporte e acompanhe os chamados com leitura rápida.</p>
             </div>
             <div className="grid w-full gap-3 sm:w-auto sm:grid-cols-2">
-              <Button onClick={exportPDF} className="ls-button-primary h-12 px-5 font-black"><Download size={16} className="mr-2" /> Gerar PDF</Button>
-              <Button onClick={exportExcel} className="h-12 rounded-2xl border border-[#DDE8E2] bg-white px-5 font-black text-[#073B2A] shadow-sm hover:bg-[#ECFBF3]"><FileSpreadsheet size={16} className="mr-2" /> Gerar Excel</Button>
+              <Button onClick={exportPDF} className="ls-button-primary h-12 px-5 text-sm"><Download size={16} className="mr-2" strokeWidth={2} /> Gerar PDF</Button>
+              <Button onClick={exportExcel} className="ls-button-secondary h-12 px-5 text-sm text-[#0B3D29]"><FileSpreadsheet size={16} className="mr-2" strokeWidth={2} /> Gerar Excel</Button>
             </div>
           </div>
         </section>

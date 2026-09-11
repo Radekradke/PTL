@@ -68,7 +68,7 @@ function parsePtBrDate(str: string) {
 
 function FieldCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 shadow-sm">
+    <div className="rounded-xl border border-[color:var(--hairline)] bg-white px-4 py-3 shadow-sm">
       <p className="text-[11px] font-black uppercase tracking-[0.12em] text-[#64748B]">{label}</p>
       <p className="mt-1 break-words text-sm font-bold text-[#102A43]">{value || "—"}</p>
     </div>
@@ -471,7 +471,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 <div className="grid gap-3 sm:gap-4">
                   <div className="grid gap-2">
                     <label className="text-sm font-medium text-[#334155]">Solicitante</label>
-                    <select value={employeeId} onChange={(e) => handleEmployeeChange(e.target.value)} className="w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]">
+                    <select value={employeeId} onChange={(e) => handleEmployeeChange(e.target.value)} className="w-full rounded-xl border border-[color:var(--hairline)] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]">
                       <option value="">Selecione um funcionário</option>
                       {visibleEmployees.map((emp) => <option key={emp.id} value={emp.id}>{emp.name}</option>)}
                     </select>
@@ -515,7 +515,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     </div>
                     <div className="grid gap-2">
                       <label className="text-sm font-medium text-[#334155]">Categoria</label>
-                      <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]">
+                      <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full rounded-xl border border-[color:var(--hairline)] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]">
                         {categoriesByDepartment[department].map((c) => <option key={c}>{c}</option>)}
                       </select>
                     </div>
@@ -523,7 +523,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
                   <div className="grid gap-2">
                     <label className="text-sm font-medium text-[#334155]">Origem</label>
-                    <select value={origin} onChange={(e) => setOrigin(e.target.value)} className="w-full rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]">
+                    <select value={origin} onChange={(e) => setOrigin(e.target.value)} className="w-full rounded-xl border border-[color:var(--hairline)] bg-white px-4 py-3 text-[#102A43] shadow-sm outline-none focus:border-[#00A859]">
                       <option>Administrativo</option>
                       <option>Operacional</option>
                     </select>
@@ -531,10 +531,10 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
 
                   <div className="grid gap-2">
                     <label className="text-sm font-medium text-[#334155]">Descrição</label>
-                    <Textarea placeholder="Descreva o problema com contexto objetivo..." value={description} onChange={(e) => setDescription(e.target.value)} className="min-h-[120px] rounded-2xl border-[#DDE7E2] bg-white text-[#111827] sm:min-h-[140px]" />
+                    <Textarea placeholder="Descreva o problema com contexto objetivo..." value={description} onChange={(e) => setDescription(e.target.value)} className="min-h-[120px] rounded-xl border-[color:var(--hairline)] bg-white text-[#0E1A15] sm:min-h-[140px]" />
                   </div>
 
-                  <Button className="h-11 w-full rounded-2xl bg-[#00A859] text-white hover:bg-[#078C4D] disabled:opacity-50" onClick={handleCreateTicket} disabled={isSubmitting}>
+                  <Button className="ls-button-primary h-11 w-full text-sm" onClick={handleCreateTicket} disabled={isSubmitting}>
                     {isSubmitting ? "Criando..." : "Abrir chamado"}
                   </Button>
                 </div>
@@ -753,7 +753,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                         <Button variant="outline" className="h-10 rounded-2xl border-[#DDE7E2] bg-white text-[#102A43] hover:bg-[#EAF0ED]" onClick={() => setShowFinishConfirm(true)}>
                           Finalizar chamado
                         </Button>
-                        <Button className="h-10 rounded-2xl bg-[#00A859] px-6 text-white shadow-[0_12px_30px_rgba(0,168,89,0.22)] hover:bg-[#078C4D] disabled:opacity-50" onClick={handleAddResponse} disabled={!technicalResponse.trim()}>
+                        <Button className="ls-button-primary h-10 px-6 text-sm" onClick={handleAddResponse} disabled={!technicalResponse.trim()}>
                           Enviar resposta
                         </Button>
                       </>
@@ -766,7 +766,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                 <p className="mb-3 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Informações</p>
                 <div className="space-y-2">
                   <FieldCard label="Solicitante" value={selectedTicket.user} />
-                  <div className="rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3 shadow-sm">
+                  <div className="rounded-xl border border-[color:var(--hairline)] bg-white px-4 py-3 shadow-sm">
                     <p className="text-[11px] font-black uppercase tracking-[0.12em] text-[#64748B]">Setor</p>
                     <p className="mt-1.5">
                       <SectorBadge name={selectedTicket.sector} color={sectorColorByName[selectedTicket.sector]} />
