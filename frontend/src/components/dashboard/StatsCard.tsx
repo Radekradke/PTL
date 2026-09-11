@@ -83,7 +83,7 @@ export function StatsCard({ title, value, color, tone }: Props) {
   const displayValue = numericValue === null ? value : String(animatedValue)
 
   return (
-    <div className="group relative overflow-hidden rounded-[1rem] border border-[color:var(--hairline)] bg-white p-3 shadow-[var(--shadow-sm)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)] sm:rounded-[1.15rem] sm:p-5">
+    <div className="ls-glass group relative overflow-hidden p-3 transition-all duration-200 hover:-translate-y-0.5 sm:p-5">
       <div className={`absolute left-0 top-0 h-full w-1 sm:w-1.5 ${styles.accent}`} />
       <div className="flex items-start justify-between gap-2 pl-1 sm:gap-3">
         <p className={`${styles.label} max-w-[12rem] text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] sm:text-xs sm:leading-5`}>

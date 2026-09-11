@@ -92,6 +92,53 @@
   letter-spacing: -0.01em;
 }
 
+/* Glass verde-esverdeado — usado com PARCIMÔNIA (assinatura dos cards de chamado).
+   Vidro fosco de verdade: blur + realce de aresta interna + sombra tingida.
+   Fallback sólido para quem prefere menos transparência. */
+.ls-glass {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background-color: rgba(247, 251, 249, 0.55);
+  background-image: linear-gradient(135deg, rgba(0, 168, 89, 0.10) 0%, rgba(255, 255, 255, 0.34) 46%, rgba(228, 245, 236, 0.28) 100%);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    0 1px 2px rgb(var(--shadow-color) / 0.05),
+    0 20px 44px -24px rgb(var(--shadow-color) / 0.30);
+  border-radius: var(--radius-xl);
+  transition: box-shadow 200ms ease, transform 160ms ease, border-color 200ms ease;
+}
+
+.ls-glass:hover {
+  border-color: rgba(0, 168, 89, 0.32);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 1px 2px rgb(var(--shadow-color) / 0.06),
+    0 26px 54px -24px rgba(0, 168, 89, 0.28);
+}
+
+/* Estado selecionado — verde mais presente */
+.ls-glass-active {
+  border-color: rgba(0, 168, 89, 0.45);
+  background-image: linear-gradient(135deg, rgba(0, 168, 89, 0.18) 0%, rgba(228, 245, 236, 0.5) 60%, rgba(255, 255, 255, 0.4) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 0 0 1px rgba(0, 168, 89, 0.18),
+    0 22px 48px -22px rgba(0, 168, 89, 0.32);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .ls-glass,
+  .ls-glass-active {
+    background-color: #FFFFFF;
+    background-image: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .ls-glass-active { background-color: #EFFaf4; }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -109,8 +156,9 @@
     min-height: 100dvh;
     /* Fundo calmo: uma família só, com um respiro de luz muito sutil no topo */
     background:
-      radial-gradient(120% 80% at 50% -10%, rgba(0, 168, 89, 0.05), transparent 60%),
-      linear-gradient(180deg, #F7FAF8 0%, #F1F5F2 60%, #EDF2EF 100%);
+      radial-gradient(90% 60% at 12% 4%, rgba(0, 168, 89, 0.08), transparent 55%),
+      radial-gradient(80% 60% at 96% 92%, rgba(11, 61, 41, 0.07), transparent 55%),
+      linear-gradient(180deg, #F5F9F7 0%, #EFF4F1 58%, #EAF0ED 100%);
     background-attachment: fixed;
     color: var(--foreground);
     letter-spacing: -0.011em;

@@ -393,7 +393,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   function MobileCard({ ticket, dimmed = false }: { ticket: any; dimmed?: boolean }) {
     return (
       <div
-        className={`rounded-2xl border border-l-4 border-[#DDE7E2] bg-white p-4 shadow-sm ${highlightedTicketIds.has(ticket.id) ? "ticket-row-new" : ""} ${dimmed ? "opacity-60" : ""}`}
+        className={`ls-glass border-l-4 p-4 ${highlightedTicketIds.has(ticket.id) ? "ticket-row-new" : ""} ${dimmed ? "opacity-60" : ""}`}
         style={{ borderLeftColor: getTicketAccentColor(ticket) }}
       >
         <div className="flex items-start justify-between gap-3">

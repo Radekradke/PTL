@@ -1322,10 +1322,8 @@ export function AdminPortal() {
                   <button
                     key={ticket.id}
                     onClick={() => loadTicketMessages(ticket)}
-                    className={`group w-full overflow-hidden rounded-2xl border text-left shadow-sm transition-all duration-150 hover:shadow-md ${
-                      selectedTicket?.id === ticket.id
-                        ? "border-[#00A859]/40 bg-[#00A859]/8 ring-1 ring-[#00A859]/20"
-                        : "border-[#DDE7E2] bg-white/80 hover:bg-white"
+                    className={`ls-glass group w-full overflow-hidden text-left ${
+                      selectedTicket?.id === ticket.id ? "ls-glass-active" : ""
                     }`}
                   >
                     <div
