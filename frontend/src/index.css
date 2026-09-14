@@ -325,12 +325,199 @@
 }
 @keyframes portal-success-actions { 0%{opacity:0;transform:translateY(10px)} 100%{opacity:1;transform:translateY(0)} }
 
+/* ============================================================
+   Tela de acesso "split-slide" — funcionário × técnico
+   Painel verde com divisória curva que desliza para o outro lado.
+   ============================================================ */
+.auth-stage {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+  background:
+    radial-gradient(circle at top left, rgba(57, 217, 138, 0.16), transparent 34%),
+    linear-gradient(180deg, #F7FAF8, #EAF0ED);
+}
+
+.auth-container {
+  position: relative;
+  width: 100%;
+  max-width: 62rem;
+  min-height: 630px;
+  overflow: hidden;
+  border-radius: var(--radius-3xl);
+  background: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 30px 90px rgba(7, 59, 42, 0.18);
+}
+
+/* ── Metades de formulário (sobrepostas em desktop) ── */
+.auth-form-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  overflow-y: auto;
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.6s ease;
+}
+.auth-form-inner { width: 100%; max-width: 340px; }
+
+.auth-func-container { left: 0; z-index: 2; }
+.auth-tech-container { left: 0; z-index: 1; opacity: 0; pointer-events: none; }
+
+.auth-container.auth-active .auth-func-container {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+.auth-container.auth-active .auth-tech-container {
+  transform: translateX(100%);
+  opacity: 1;
+  z-index: 5;
+  pointer-events: auto;
+}
+
+/* ── Painel verde sobreposto (com borda curva) ── */
+.auth-overlay-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 100;
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1), border-radius 0.7s ease;
+  border-top-left-radius: 92px 50%;
+  border-bottom-left-radius: 92px 50%;
+}
+.auth-container.auth-active .auth-overlay-container {
+  transform: translateX(-100%);
+  border-radius: 0;
+  border-top-right-radius: 92px 50%;
+  border-bottom-right-radius: 92px 50%;
+}
+
+.auth-overlay {
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transform: translateX(0);
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+  color: #fff;
+  background:
+    radial-gradient(90% 60% at 22% 0%, rgba(57, 217, 138, 0.24), transparent 56%),
+    linear-gradient(150deg, #0A3A26 0%, #06301F 100%);
+}
+.auth-container.auth-active .auth-overlay { transform: translateX(50%); }
+
+/* Títulos dentro do painel verde ficam claros.
+   !important vence o override legado (.text-white{color:var(--ls-text)!important}
+   em mobile-product-fixes.css), que senão deixaria estes títulos escuros. */
+.auth-overlay h1,
+.auth-overlay h2,
+.auth-overlay h3,
+.auth-overlay h4,
+.auth-overlay .auth-overlay-text,
+.auth-mobile-top h1,
+.auth-mobile-top h2,
+.auth-mobile-top h3 { color: #ffffff !important; }
+
+.auth-overlay-panel {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 2.75rem;
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+}
+.auth-overlay-left  { left: 0;  transform: translateX(-18%); }
+.auth-container.auth-active .auth-overlay-left  { transform: translateX(0); }
+.auth-overlay-right { right: 0; transform: translateX(0); }
+.auth-container.auth-active .auth-overlay-right { transform: translateX(18%); }
+
+.auth-ghost-btn {
+  margin-top: 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  background: transparent;
+  padding: 0.7rem 1.6rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 180ms ease, border-color 180ms ease, transform 120ms ease;
+}
+.auth-ghost-btn:hover { background: rgba(255, 255, 255, 0.14); border-color: #fff; }
+.auth-ghost-btn:active { transform: translateY(1px) scale(0.99); }
+
+/* Cabeçalho verde só para mobile */
+.auth-mobile-top { display: none; }
+/* Troca de lado só aparece no mobile (no desktop usa-se o painel verde) */
+.auth-switch-mobile { display: none; }
+
+@media (max-width: 1023px) {
+  .auth-stage { padding: 1rem 0.85rem; }
+  .auth-container {
+    min-height: 0;
+    max-width: 30rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .auth-overlay-container { display: none; }
+
+  .auth-mobile-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 2rem 1.5rem 1.25rem;
+    color: #fff;
+    text-align: center;
+    background:
+      radial-gradient(90% 70% at 50% 0%, rgba(57, 217, 138, 0.26), transparent 60%),
+      linear-gradient(150deg, #0A3A26 0%, #06301F 100%);
+  }
+
+  .auth-form-container {
+    position: relative;
+    left: 0;
+    width: 100%;
+    height: auto;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    padding: 1.75rem 1.5rem 2rem;
+  }
+  .auth-func-container { display: flex; }
+  .auth-tech-container { display: none; }
+  .auth-container.auth-active .auth-func-container { display: none; }
+  .auth-container.auth-active .auth-tech-container { display: flex; }
+
+  .auth-switch-mobile { display: block; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .login-credit-overlay, .login-credit-logo, .login-credit-text, .login-credit-content::after,
   .ticket-row-new, .portal-success-check, .portal-success-actions { animation: none; }
   .login-credit-overlay { opacity: 1; }
   .status-badge-animated, .ls-button-primary, .ls-button-secondary { transition: none; }
+  .auth-form-container, .auth-overlay-container, .auth-overlay, .auth-overlay-panel { transition: none; }
 }
 
 @media (max-width: 640px) {
