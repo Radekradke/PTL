@@ -152,7 +152,7 @@ export function Login() {
       )
       window.dispatchEvent(new Event(AUTH_CHANGED_EVENT))
       subscribeToPush().catch(() => {})
-      navigate("/dashboard")
+      navigate("/home")
     } catch (error) {
       console.error("Erro ao acessar painel:", error)
       alert("Erro ao acessar painel.")
@@ -169,9 +169,7 @@ export function Login() {
       <div className="grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_28px_90px_rgba(7,59,42,0.16)] lg:grid-cols-[1.05fr_0.95fr]">
 
         {/* ── Left panel ── */}
-        <section className="relative hidden min-h-[620px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.28),transparent_32%),linear-gradient(135deg,#073B2A,#102A43)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
-          <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-[#39D98A]/20 blur-[90px]" />
-          <div className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-[#00A859]/20 blur-[100px]" />
+        <section className="ls-metal-panel relative hidden min-h-[620px] overflow-hidden p-10 text-white lg:flex lg:flex-col lg:justify-between">
           <div className="relative">
             <img src={logoLifting} alt="Lifting" className="h-20 w-auto object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.28)]" />
             <p className="mt-4 max-w-sm text-sm leading-6 text-emerald-50/80">
@@ -309,7 +307,7 @@ export function Login() {
                   <Button
                     onClick={handleLogin}
                     disabled={isLoading}
-                    className="mt-3 h-[52px] w-full rounded-full bg-gradient-to-r from-[#073B2A] via-[#00A859] to-[#073B2A] font-bold !text-white shadow-[0_18px_45px_rgba(0,168,89,0.28)] transition hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0"
+                    className="mt-3 h-[52px] w-full rounded-full bg-[#00A859] font-bold !text-white shadow-[var(--shadow-xs)] transition hover:bg-[#07934E] active:translate-y-px"
                   >
                     {isLoading ? "Validando..." : "Entrar no painel"}
                     <ArrowRight size={18} className="ml-2" />

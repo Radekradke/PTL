@@ -91,10 +91,10 @@ type SuccessState = {
 
 const styles = {
   page:
-    "min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.14),transparent_28%),linear-gradient(180deg,#F7FAF8_0%,#EEF6F2_52%,#EAF0ED_100%)] text-[#111827]",
+    "min-h-[100dvh] bg-[color:var(--background)] text-[color:var(--foreground)]",
   shell: "mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-3 py-4 sm:gap-5 sm:px-5 sm:py-6",
   glass:
-    "overflow-hidden rounded-[1.35rem] border border-white/80 bg-white/82 shadow-[0_16px_46px_rgba(7,59,42,0.09)] backdrop-blur-2xl ring-1 ring-white/60 sm:rounded-[1.75rem]",
+    "overflow-hidden rounded-[1.35rem] border border-[color:var(--hairline)] bg-white shadow-[var(--shadow-sm)] sm:rounded-[1.6rem]",
   card:
     "rounded-[1.35rem] border border-[#DDE7E2] bg-white shadow-[0_12px_34px_rgba(7,59,42,0.07)] sm:rounded-[1.75rem]",
   input:
@@ -102,7 +102,7 @@ const styles = {
   select:
     "h-11 w-full rounded-2xl border border-[#DDE7E2] bg-[#F8FAF9] px-4 text-sm font-semibold text-[#111827] shadow-sm outline-none transition focus:border-[#00A859] focus:ring-4 focus:ring-[#00A859]/10",
   primary:
-    "rounded-2xl bg-[linear-gradient(135deg,#00A859,#07864A)] font-bold text-white shadow-[0_14px_30px_rgba(0,168,89,0.22)] transition hover:-translate-y-0.5 hover:brightness-105 disabled:opacity-50 disabled:hover:translate-y-0",
+    "rounded-xl bg-[#00A859] font-bold text-white shadow-[var(--shadow-xs)] transition hover:bg-[#07934E] active:translate-y-px disabled:opacity-50",
   secondary:
     "rounded-2xl border border-[#DDE7E2] bg-white font-bold text-[#102A43] shadow-sm transition hover:bg-[#F4F8F6] hover:text-[#073B2A]",
 }
@@ -780,7 +780,7 @@ export function AdminPortal() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.20),transparent_30%),linear-gradient(180deg,#F7FAF8,#EAF0ED)] px-4 py-8 text-[#111827]">
         <div className="grid w-full max-w-5xl overflow-hidden rounded-[1.5rem] border border-white/80 bg-white shadow-[0_28px_90px_rgba(7,59,42,0.14)] sm:rounded-[2rem] lg:grid-cols-[1.05fr_0.95fr]">
-          <section className="relative hidden min-h-[620px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.28),transparent_32%),linear-gradient(135deg,#073B2A,#102A43)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
+          <section className="ls-metal-panel relative hidden min-h-[620px] overflow-hidden p-10 text-white lg:flex lg:flex-col lg:justify-between">
             <div className="relative">
            <img
               src={logoLifting}
@@ -875,7 +875,7 @@ export function AdminPortal() {
                 </div>
 
                 <Button
-                  className="mt-3 h-[52px] w-full rounded-full bg-gradient-to-r from-[#073B2A] via-[#00A859] to-[#073B2A] font-bold text-white shadow-[0_18px_45px_rgba(0,168,89,0.28)] transition hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 disabled:opacity-50"
+                  className="mt-3 h-[52px] w-full rounded-full bg-[#00A859] font-bold text-white shadow-[var(--shadow-xs)] transition hover:bg-[#07934E] active:translate-y-px disabled:opacity-50"
                   onClick={handlePortalLogin}
                   disabled={isLoggingIn}
                 >

@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast"
 import { TECHNICAL_USER_KEY } from "@/services/api"
 
 // Páginas pesadas carregadas sob demanda (code-splitting) — reduz o bundle inicial.
+const HomePage = lazy(() => import("./pages/home/HomePage").then((m) => ({ default: m.HomePage })))
 const TicketsPage = lazy(() => import("./pages/tickets/TicketsPage").then((m) => ({ default: m.TicketsPage })))
 const Dashboard = lazy(() => import("./pages/dashboard/Dashboard").then((m) => ({ default: m.Dashboard })))
 const Login = lazy(() => import("./pages/auth/Login").then((m) => ({ default: m.Login })))
@@ -71,6 +72,16 @@ function App() {
             <Route path="/login" element={<Login />} />
             {/* Rota antiga do portal mantida para links salvos */}
             <Route path="/portal" element={<Navigate to="/" replace />} />
+
+            {/* Menu inicial do painel técnico */}
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute allowed={["Admin", "TI", "RH", "Infraestrutura"]}>
+                  <HomePage />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="/dashboard"
