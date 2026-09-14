@@ -8,7 +8,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { categoriesByDepartment, type TicketDepartment } from "@/lib/categories"
 import { buildSectorColorMap, SectorBadge } from "@/lib/sectorColors"
 import { apiFetch, getTechnicalUser } from "@/services/api"
-import { AttachmentImage } from "@/components/tickets/AttachmentImage"
+import { AttachmentGallery } from "@/components/attachments/AttachmentGallery"
+import { AttachmentPicker } from "@/components/attachments/AttachmentPicker"
+import { attachmentPayload, type PendingAttachment } from "@/lib/attachments"
 
 import {
   Dialog,
@@ -126,6 +128,8 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   const [ticketMessages, setTicketMessages] = useState<any[]>([])
   const [showFinishConfirm, setShowFinishConfirm] = useState(false)
   const [technicalResponse, setTechnicalResponse] = useState("")
+  const [responseFiles, setResponseFiles] = useState<PendingAttachment[]>([])
+  const [newTicketFiles, setNewTicketFiles] = useState<PendingAttachment[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
@@ -236,7 +240,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
       const response = await apiFetch("/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ employeeId: Number(employeeId), sectorId: Number(sectorId), department, category, origin, description }),
+        body: JSON.stringify({ employeeId: Number(employeeId), sectorId: Number(sectorId), department, category, origin, description, attachments: attachmentPayload(newTicketFiles) }),
       })
       if (!response.ok) { toast.error("Erro ao criar chamado."); return }
       if (visibleEmployees.length > 0) {
@@ -244,7 +248,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
         setEmployeeId(String(first.id))
         setSectorId(String(first.sectorId || first.sector?.id || ""))
       } else { setEmployeeId(""); setSectorId("") }
-      setDepartment(initialDepartment()); setCategory(categoriesByDepartment[initialDepartment()][0]); setOrigin("Administrativo"); setDescription("")
+      setDepartment(initialDepartment()); setCategory(categoriesByDepartment[initialDepartment()][0]); setOrigin("Administrativo"); setDescription(""); setNewTicketFiles([])
       onTicketsChange()
     } catch (error) {
       console.error("Erro ao criar chamado:", error)
@@ -285,17 +289,22 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
   }
 
   function handleAddResponse() {
-    if (!selectedTicket || !technicalResponse.trim()) return
-    apiFetch(`/tickets/${selectedTicket.id}/response`, {
-      method: "PATCH",
+    if (!selectedTicket) return
+    const text = technicalResponse.trim()
+    if (!text && responseFiles.length === 0) return
+    // Envia como mensagem do técnico (suporta anexos: imagens, PDF, docs).
+    apiFetch(`/tickets/${selectedTicket.id}/messages`, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ technicalResponse: technicalResponse.trim() }),
+      body: JSON.stringify({ senderType: "technician", message: text, attachments: attachmentPayload(responseFiles) }),
     })
-      .then(() => {
+      .then(async (res) => {
+        if (!res.ok) { toast.error("Erro ao adicionar resposta técnica"); return }
         onTicketsChange()
         loadMessages(selectedTicket.id)
-        setSelectedTicket({ ...selectedTicket, technicalResponse: technicalResponse.trim(), status: "Em andamento", timeline: [...(selectedTicket.timeline || []), { date: getCurrentDateTime(), action: "Resposta técnica adicionada" }, { date: getCurrentDateTime(), action: "Status alterado para Em andamento" }] })
+        setSelectedTicket({ ...selectedTicket, technicalResponse: text || selectedTicket.technicalResponse, status: "Aguardando usuário", timeline: [...(selectedTicket.timeline || []), { date: getCurrentDateTime(), action: "Técnico respondeu ao chamado" }] })
         setTechnicalResponse("")
+        setResponseFiles([])
       })
       .catch(() => toast.error("Erro ao adicionar resposta técnica"))
   }
@@ -534,6 +543,15 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     <Textarea placeholder="Descreva o problema com contexto objetivo..." value={description} onChange={(e) => setDescription(e.target.value)} className="min-h-[120px] rounded-2xl border-[#DDE7E2] bg-white text-[#111827] sm:min-h-[140px]" />
                   </div>
 
+                  <div className="grid gap-2">
+                    <label className="text-sm font-medium text-[#334155]">Anexos <span className="text-slate-400">(opcional)</span></label>
+                    <AttachmentPicker
+                      attachments={newTicketFiles}
+                      onAdd={(attachment) => setNewTicketFiles((current) => [...current, attachment])}
+                      onRemove={(id) => setNewTicketFiles((current) => current.filter((f) => f.id !== id))}
+                    />
+                  </div>
+
                   <Button className="h-11 w-full rounded-2xl bg-[#00A859] text-white hover:bg-[#078C4D] disabled:opacity-50" onClick={handleCreateTicket} disabled={isSubmitting}>
                     {isSubmitting ? "Criando..." : "Abrir chamado"}
                   </Button>
@@ -716,10 +734,11 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                           </p>
                           {msg.message && <p className="whitespace-pre-wrap break-words leading-5">{msg.message}</p>}
                           {(msg.attachments?.length ?? 0) > 0 && (
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              {msg.attachments.map((attachment: any) => (
-                                <AttachmentImage key={attachment.id} ticketId={msg.ticketId} attachment={attachment} />
-                              ))}
+                            <div className="mt-2.5">
+                              <AttachmentGallery
+                                attachments={msg.attachments}
+                                buildPath={(a) => `/tickets/${msg.ticketId}/attachments/${a.id}`}
+                              />
                             </div>
                           )}
                           <p className="mt-1.5 text-[10px] text-slate-400">{new Date(msg.createdAt).toLocaleString("pt-BR")}</p>
@@ -737,6 +756,14 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                     onChange={(e) => setTechnicalResponse(e.target.value)}
                     className="min-h-[90px] rounded-2xl border-[#DDE7E2] bg-[#F7FAF8] text-[#111827] focus-visible:ring-[#00A859]/30"
                   />
+                  <div className="mt-3">
+                    <AttachmentPicker
+                      compact
+                      attachments={responseFiles}
+                      onAdd={(attachment) => setResponseFiles((current) => [...current, attachment])}
+                      onRemove={(id) => setResponseFiles((current) => current.filter((f) => f.id !== id))}
+                    />
+                  </div>
                   <div className="mt-3 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                     {showFinishConfirm ? (
                       <>
@@ -753,7 +780,7 @@ export function TicketsTable({ tickets, onTicketsChange }: TicketsTableProps) {
                         <Button variant="outline" className="h-10 rounded-2xl border-[#DDE7E2] bg-white text-[#102A43] hover:bg-[#EAF0ED]" onClick={() => setShowFinishConfirm(true)}>
                           Finalizar chamado
                         </Button>
-                        <Button className="h-10 rounded-2xl bg-[#00A859] px-6 text-white shadow-[0_12px_30px_rgba(0,168,89,0.22)] hover:bg-[#078C4D] disabled:opacity-50" onClick={handleAddResponse} disabled={!technicalResponse.trim()}>
+                        <Button className="h-10 rounded-2xl bg-[#00A859] px-6 text-white shadow-[0_12px_30px_rgba(0,168,89,0.22)] hover:bg-[#078C4D] disabled:opacity-50" onClick={handleAddResponse} disabled={!technicalResponse.trim() && responseFiles.length === 0}>
                           Enviar resposta
                         </Button>
                       </>

@@ -1,4 +1,4 @@
-import { FileText, Home, LayoutDashboard, LogOut, Settings, Ticket } from "lucide-react"
+import { FileText, Home, LayoutDashboard, Lightbulb, LogOut, Settings, Ticket } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { AUTH_CHANGED_EVENT, TECHNICAL_USER_KEY } from "@/services/api"
 import { APP_VERSION } from "@/lib/version"
@@ -23,6 +23,7 @@ export function Sidebar() {
     { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard, allowed: ALL },
     { label: "Chamados", path: "/tickets", icon: Ticket, allowed: ALL },
     { label: "Relatórios", path: "/reports", icon: FileText, allowed: ALL },
+    { label: "Sugestões", path: "/suggestions", icon: Lightbulb, allowed: ["Admin"] },
     { label: "Configurações", path: "/settings", icon: Settings, allowed: ["Admin"] },
   ].filter((item) => item.allowed.includes(role))
 

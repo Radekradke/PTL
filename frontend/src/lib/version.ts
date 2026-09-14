@@ -1,6 +1,6 @@
 // Fonte única da versão do app. Ao lançar uma atualização, incremente APP_VERSION
 // e adicione uma entrada no topo de CHANGELOG descrevendo o que mudou.
-export const APP_VERSION = "1.3.0"
+export const APP_VERSION = "1.3.2"
 
 export type ChangelogEntry = {
   version: string
@@ -9,6 +9,23 @@ export type ChangelogEntry = {
 }
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.3.2",
+    date: "2026-09-14",
+    changes: [
+      "Anexos nos chamados agora aceitam imagens, PDF, Word, Excel e TXT (máx. 10MB, até 5 por envio) — na abertura e nas respostas, no portal e no painel.",
+      "Novo visualizador de imagens interno (galeria com zoom, navegação e download) e visualização de PDF sem sair do app.",
+      "Nova área \"Sugestões de Melhoria\": funcionários enviam ideias com anexos e opção anônima; administração acompanha, filtra e define o status.",
+    ],
+  },
+  {
+    version: "1.3.1",
+    date: "2026-09-14",
+    changes: [
+      "Nova identidade visual (verde Lifting), tela inicial em bento e dashboard renovado.",
+      "Tela de acesso unificada com transição deslizante entre abrir chamado e responder chamados.",
+    ],
+  },
   {
     version: "1.3.0",
     date: "2026-09-02",

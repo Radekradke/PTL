@@ -9,6 +9,7 @@ import { authRoutes } from "./routes/auth.routes"
 import { ouvidoriaRoutes } from "./routes/ouvidoria.routes"
 import { pushRoutes } from "./routes/push.routes"
 import { departmentEmailsRoutes } from "./routes/departmentEmails.routes"
+import { suggestionsRoutes } from "./routes/suggestions.routes"
 import { assertAuthConfig } from "./lib/auth"
 import { prisma } from "./lib/prisma"
 import { addSseClient } from "./lib/eventBus"
@@ -51,15 +52,19 @@ app.use(
     credentials: true,
   })
 )
-// Rotas de chamados aceitam fotos em base64, por isso o limite maior; o restante segue enxuto
+// Rotas que aceitam anexos em base64 usam um limite maior; o restante segue enxuto.
+// 5 arquivos × 10 MB viram ~67 MB de base64 no corpo, por isso ~75 MB de folga.
 const jsonDefault = express.json({ limit: "20kb" })
-const jsonWithPhotos = express.json({ limit: "8mb" })
+const jsonWithFiles = express.json({ limit: "75mb" })
 
 app.use((req, res, next) => {
-  const acceptsPhotos =
-    req.method === "POST" && (req.path === "/tickets" || /^\/tickets\/\d+\/messages$/.test(req.path))
+  const acceptsFiles =
+    req.method === "POST" &&
+    (req.path === "/tickets" ||
+      /^\/tickets\/\d+\/messages$/.test(req.path) ||
+      req.path === "/suggestions")
 
-  return (acceptsPhotos ? jsonWithPhotos : jsonDefault)(req, res, next)
+  return (acceptsFiles ? jsonWithFiles : jsonDefault)(req, res, next)
 })
 
 app.get("/", (_req, res) => {
@@ -82,6 +87,7 @@ app.use("/tickets", ticketsRoutes)
 app.use("/ouvidoria", ouvidoriaRoutes)
 app.use("/push", pushRoutes)
 app.use("/department-emails", departmentEmailsRoutes)
+app.use("/suggestions", suggestionsRoutes)
 
 const PORT = process.env.PORT || 3333
 
@@ -125,6 +131,66 @@ async function ensureRuntimeSchema() {
     )
   } catch (error) {
     console.error("Falha ao garantir tabela TicketAttachment:", error)
+  }
+
+  // Novas colunas de anexo (v1.3.2): storageKey, uploadedBy, remoção lógica.
+  try {
+    await prisma.$executeRawUnsafe(`ALTER TABLE "TicketAttachment" ADD COLUMN IF NOT EXISTS "storageKey" TEXT`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "TicketAttachment" ADD COLUMN IF NOT EXISTS "uploadedBy" TEXT`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "TicketAttachment" ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMP(3)`)
+    await prisma.$executeRawUnsafe(`ALTER TABLE "TicketAttachment" ADD COLUMN IF NOT EXISTS "deletedBy" TEXT`)
+  } catch (error) {
+    console.error("Falha ao garantir colunas de anexo:", error)
+  }
+
+  // Sugestões de melhoria (v1.3.2).
+  try {
+    await prisma.$executeRawUnsafe(
+      `CREATE TABLE IF NOT EXISTS "Suggestion" (
+        "id" SERIAL PRIMARY KEY,
+        "title" TEXT NOT NULL,
+        "description" TEXT NOT NULL,
+        "improvement" TEXT,
+        "category" TEXT NOT NULL,
+        "sectorId" INTEGER,
+        "sectorName" TEXT,
+        "employeeId" INTEGER,
+        "authorName" TEXT,
+        "isAnonymous" BOOLEAN NOT NULL DEFAULT false,
+        "status" TEXT NOT NULL DEFAULT 'Nova',
+        "internalNote" TEXT,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )`
+    )
+    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "Suggestion_status_idx" ON "Suggestion"("status")`)
+    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "Suggestion_category_idx" ON "Suggestion"("category")`)
+    await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "Suggestion_employeeId_idx" ON "Suggestion"("employeeId")`)
+  } catch (error) {
+    console.error("Falha ao garantir tabela Suggestion:", error)
+  }
+
+  try {
+    await prisma.$executeRawUnsafe(
+      `CREATE TABLE IF NOT EXISTS "SuggestionAttachment" (
+        "id" SERIAL PRIMARY KEY,
+        "suggestionId" INTEGER NOT NULL REFERENCES "Suggestion"("id") ON DELETE CASCADE,
+        "filename" TEXT NOT NULL,
+        "storageKey" TEXT,
+        "mimeType" TEXT NOT NULL,
+        "size" INTEGER NOT NULL,
+        "data" TEXT NOT NULL,
+        "uploadedBy" TEXT,
+        "deletedAt" TIMESTAMP(3),
+        "deletedBy" TEXT,
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )`
+    )
+    await prisma.$executeRawUnsafe(
+      `CREATE INDEX IF NOT EXISTS "SuggestionAttachment_suggestionId_idx" ON "SuggestionAttachment"("suggestionId")`
+    )
+  } catch (error) {
+    console.error("Falha ao garantir tabela SuggestionAttachment:", error)
   }
 
   try {

@@ -18,6 +18,14 @@ import { sendAutoReply } from "../services/autoReply"
 import { broadcastTicketChange } from "../lib/eventBus"
 import { sendPushToSector } from "../services/pushNotification"
 import { sendTicketOpenedEmail } from "../services/ticketEmail"
+import { validateAttachments, contentDispositionFor } from "../lib/attachments"
+
+/** Identifica quem anexou, para auditoria. */
+function uploadedByFrom(auth: any): string {
+  if (!auth) return "unknown"
+  if (auth.type === "employee") return `employee:${auth.employeeId}`
+  return `technician:${auth.sector || "tec"}`
+}
 
 export const ticketsRoutes = Router()
 
@@ -57,7 +65,7 @@ const ticketInclude = {
   },
   messages: {
     orderBy: { createdAt: "asc" as const },
-    include: { attachments: { select: attachmentMetaSelect } },
+    include: { attachments: { where: { deletedAt: null }, select: attachmentMetaSelect } },
   },
 }
 
@@ -92,43 +100,6 @@ function nextStatusFromSender(senderType: string) {
 
 function shouldArchiveStatus(status: string) {
   return status === "Finalizado"
-}
-
-const ATTACHMENT_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"]
-const MAX_ATTACHMENTS = 3
-// ~3MB de imagem depois de decodificar o base64
-const MAX_ATTACHMENT_BASE64_LENGTH = 4_200_000
-
-type CleanAttachment = { filename: string; mimeType: string; data: string; size: number }
-
-function validateAttachments(value: unknown): { ok: true; value: CleanAttachment[] } | { ok: false; message: string } {
-  if (value === undefined || value === null) return { ok: true, value: [] }
-  if (!Array.isArray(value)) return { ok: false, message: "Anexos inválidos." }
-  if (value.length > MAX_ATTACHMENTS) return { ok: false, message: `Máximo de ${MAX_ATTACHMENTS} fotos por envio.` }
-
-  const clean: CleanAttachment[] = []
-
-  for (const item of value) {
-    const mimeType = String(item?.mimeType || "")
-    const data = String(item?.data || "")
-    const filename = String(item?.filename || "foto.jpg").slice(0, 120)
-
-    if (!ATTACHMENT_MIME_TYPES.includes(mimeType)) {
-      return { ok: false, message: "Apenas imagens JPG, PNG ou WebP são permitidas." }
-    }
-
-    if (!data || data.length > MAX_ATTACHMENT_BASE64_LENGTH) {
-      return { ok: false, message: "Cada foto deve ter no máximo 3MB." }
-    }
-
-    if (!/^[A-Za-z0-9+/=]+$/.test(data)) {
-      return { ok: false, message: "Imagem inválida." }
-    }
-
-    clean.push({ filename, mimeType, data, size: Math.floor(data.length * 0.75) })
-  }
-
-  return { ok: true, value: clean }
 }
 
 ticketsRoutes.get("/", requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]), async (req, res) => {
@@ -264,10 +235,12 @@ ticketsRoutes.post("/", requireAuth, async (req, res) => {
 
   if (attachmentsValidation.value.length > 0) {
     const firstMessage = ticket.messages[0]
+    const uploadedBy = uploadedByFrom(auth)
     await prisma.ticketAttachment.createMany({
       data: attachmentsValidation.value.map((attachment) => ({
         ticketId: ticket.id,
         messageId: firstMessage?.id,
+        uploadedBy,
         ...attachment,
       })),
     })
@@ -314,7 +287,7 @@ ticketsRoutes.get("/:id/messages", requireTicketParticipant(["Admin", "TI", "RH"
     orderBy: {
       createdAt: "asc",
     },
-    include: { attachments: { select: attachmentMetaSelect } },
+    include: { attachments: { where: { deletedAt: null }, select: attachmentMetaSelect } },
   })
 
   res.json(messages)
@@ -339,6 +312,7 @@ ticketsRoutes.get(
       where: {
         id: attachmentIdValidation.value,
         ticketId: idValidation.value,
+        deletedAt: null,
       },
     })
 
@@ -347,8 +321,48 @@ ticketsRoutes.get(
     }
 
     res.setHeader("Content-Type", attachment.mimeType)
+    res.setHeader("Content-Disposition", contentDispositionFor(attachment.mimeType, attachment.filename))
+    res.setHeader("X-Content-Type-Options", "nosniff")
     res.setHeader("Cache-Control", "private, max-age=86400")
     res.send(Buffer.from(attachment.data, "base64"))
+  }
+)
+
+// Remoção de anexo já enviado — somente técnico/admin. Remoção lógica
+// (registra quem removeu e quando) e anota no histórico do chamado.
+ticketsRoutes.delete(
+  "/:id/attachments/:attachmentId",
+  requireTechnical(["Admin", "TI", "RH", "Infraestrutura"]),
+  async (req, res) => {
+    const idValidation = validateId(req.params.id, "Chamado")
+    const attachmentIdValidation = validateId(req.params.attachmentId, "Anexo")
+    const auth = (req as any).auth
+
+    if (!idValidation.ok) return res.status(400).json({ message: idValidation.message })
+    if (!attachmentIdValidation.ok) return res.status(400).json({ message: attachmentIdValidation.message })
+
+    const attachment = await prisma.ticketAttachment.findFirst({
+      where: { id: attachmentIdValidation.value, ticketId: idValidation.value, deletedAt: null },
+    })
+
+    if (!attachment) {
+      return res.status(404).json({ message: "Anexo não encontrado." })
+    }
+
+    await prisma.ticketAttachment.update({
+      where: { id: attachment.id },
+      data: { deletedAt: new Date(), deletedBy: uploadedByFrom(auth) },
+    })
+
+    await prisma.timeline.create({
+      data: {
+        ticketId: idValidation.value,
+        action: `Anexo removido (${attachment.filename}) por ${auth?.sector || "técnico"}`,
+      },
+    })
+
+    broadcastTicketChange()
+    res.json({ ok: true })
   }
 )
 
@@ -412,15 +426,17 @@ ticketsRoutes.post("/:id/messages", requireTicketParticipant(["Admin", "TI", "RH
 
   let createdAttachments: any[] = []
   if (attachmentsValidation.value.length > 0) {
+    const uploadedBy = uploadedByFrom(auth)
     await prisma.ticketAttachment.createMany({
       data: attachmentsValidation.value.map((attachment) => ({
         ticketId: idValidation.value,
         messageId: createdMessage.id,
+        uploadedBy,
         ...attachment,
       })),
     })
     createdAttachments = await prisma.ticketAttachment.findMany({
-      where: { messageId: createdMessage.id },
+      where: { messageId: createdMessage.id, deletedAt: null },
       select: attachmentMetaSelect,
     })
   }
