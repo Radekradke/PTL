@@ -111,7 +111,7 @@ export function EmployeeSuggestions({ employee }: Props) {
       {/* Formulário */}
       <div>
         <div className="mb-5 flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#073B2A,#00A859)] text-white shadow-lg shadow-[#073B2A]/20">
+          <div className="ls-card-dark flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-white shadow-[var(--shadow-sm)]">
             <Lightbulb size={22} />
           </div>
           <div>
@@ -129,7 +129,7 @@ export function EmployeeSuggestions({ employee }: Props) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Ex.: Automatizar solicitação de compras"
-              className="mt-1.5 h-11 rounded-2xl border-[#DDE7E2] bg-[#F8FAF9] text-[#111827] focus:border-[#00A859]"
+              className="mt-1.5 h-11 rounded-2xl border-[color:var(--hairline)] bg-white text-[#111827] focus:border-[#00A859]"
             />
           </div>
 
@@ -139,7 +139,7 @@ export function EmployeeSuggestions({ employee }: Props) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Você não precisa saber a solução. Pode simplesmente relatar um problema. Ex.: Hoje preenchemos a mesma informação em duas planilhas diferentes."
-              className="mt-1.5 min-h-[130px] rounded-2xl border-[#DDE7E2] bg-white px-4 py-3 text-sm text-slate-950 focus:border-[#00A859]"
+              className="mt-1.5 min-h-[130px] rounded-2xl border-[color:var(--hairline)] bg-white px-4 py-3 text-sm text-slate-950 focus:border-[#00A859]"
             />
           </div>
 
@@ -149,7 +149,7 @@ export function EmployeeSuggestions({ employee }: Props) {
               value={improvement}
               onChange={(e) => setImprovement(e.target.value)}
               placeholder="Se tiver uma ideia de solução, conte aqui."
-              className="mt-1.5 min-h-[80px] rounded-2xl border-[#DDE7E2] bg-white px-4 py-3 text-sm text-slate-950 focus:border-[#00A859]"
+              className="mt-1.5 min-h-[80px] rounded-2xl border-[color:var(--hairline)] bg-white px-4 py-3 text-sm text-slate-950 focus:border-[#00A859]"
             />
           </div>
 
@@ -159,7 +159,7 @@ export function EmployeeSuggestions({ employee }: Props) {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="mt-1.5 h-11 w-full rounded-2xl border border-[#DDE7E2] bg-[#F8FAF9] px-4 text-sm font-semibold text-[#111827] outline-none transition focus:border-[#00A859] focus:ring-4 focus:ring-[#00A859]/10"
+                className="mt-1.5 h-11 w-full rounded-2xl border border-[color:var(--hairline)] bg-white px-4 text-sm font-semibold text-[#111827] outline-none transition focus:border-[#00A859] focus:ring-4 focus:ring-[#00A859]/10"
               >
                 {SUGGESTION_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
@@ -169,7 +169,7 @@ export function EmployeeSuggestions({ employee }: Props) {
               <Input
                 value={employee.sector?.name || "—"}
                 readOnly
-                className="mt-1.5 h-11 cursor-default select-none rounded-2xl border-[#DDE7E2] bg-[#F3F6F4] text-slate-500"
+                className="mt-1.5 h-11 cursor-default select-none rounded-2xl border-[color:var(--hairline)] bg-[color:var(--surface-inset)] text-slate-500"
               />
             </div>
           </div>
@@ -185,7 +185,7 @@ export function EmployeeSuggestions({ employee }: Props) {
             </div>
           </div>
 
-          <label className="flex cursor-pointer items-center gap-2.5 rounded-2xl border border-[#DDE7E2] bg-white px-4 py-3">
+          <label className="flex cursor-pointer items-center gap-2.5 rounded-2xl border border-[color:var(--hairline)] bg-white px-4 py-3">
             <input
               type="checkbox"
               checked={isAnonymous}
@@ -208,13 +208,13 @@ export function EmployeeSuggestions({ employee }: Props) {
       </div>
 
       {/* Minhas sugestões */}
-      <div className="rounded-[1.35rem] border border-[#DDE7E2] bg-[#F8FCFA] p-4 sm:rounded-[1.5rem]">
+      <div className="rounded-[1.35rem] border border-[color:var(--hairline)] bg-[color:var(--surface-inset)] p-4 sm:rounded-[1.5rem]">
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-base font-black tracking-[-0.03em] text-[#111827]">Minhas sugestões</h3>
           <button
             onClick={loadMine}
             disabled={loadingMine}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[#DDE7E2] bg-white text-slate-500 transition hover:text-[#00A859]"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-[color:var(--hairline)] bg-white text-slate-500 transition hover:text-[#00A859]"
             aria-label="Atualizar"
           >
             <RefreshCw size={14} className={loadingMine ? "animate-spin" : ""} />
@@ -230,7 +230,7 @@ export function EmployeeSuggestions({ employee }: Props) {
         ) : (
           <div className="max-h-[560px] space-y-2.5 overflow-y-auto pr-1">
             {mine.map((s) => (
-              <div key={s.id} className="rounded-2xl border border-[#DDE7E2] bg-white p-3.5 shadow-sm">
+              <div key={s.id} className="rounded-2xl border border-[color:var(--hairline)] bg-white p-3.5 shadow-sm">
                 <div className="flex items-start justify-between gap-2">
                   <h4 className="min-w-0 text-sm font-black text-[#111827]">{s.title}</h4>
                   <span className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold ${suggestionBadgeClass(s.status)}`}>

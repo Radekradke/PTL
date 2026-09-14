@@ -88,17 +88,17 @@ const styles = {
     "min-h-[100dvh] bg-[color:var(--background)] text-[color:var(--foreground)]",
   shell: "mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-3 py-4 sm:gap-5 sm:px-5 sm:py-6",
   glass:
-    "overflow-hidden rounded-[1.35rem] border border-[color:var(--hairline)] bg-white shadow-[var(--shadow-sm)] sm:rounded-[1.6rem]",
+    "overflow-hidden rounded-2xl border border-[color:var(--hairline)] bg-white shadow-[var(--shadow-sm)]",
   card:
-    "rounded-[1.35rem] border border-[#DDE7E2] bg-white shadow-[0_12px_34px_rgba(7,59,42,0.07)] sm:rounded-[1.75rem]",
+    "rounded-2xl border border-[color:var(--hairline)] bg-white shadow-[var(--shadow-sm)]",
   input:
-    "h-11 rounded-2xl border-[#DDE7E2] bg-[#F8FAF9] text-[#111827] placeholder:text-slate-400 focus:border-[#00A859] focus:ring-[#00A859]/10",
+    "h-11 rounded-xl border-[color:var(--hairline)] bg-white text-[color:var(--foreground)] placeholder:text-zinc-400 focus:border-[#00A859] focus:ring-[#00A859]/15",
   select:
-    "h-11 w-full rounded-2xl border border-[#DDE7E2] bg-[#F8FAF9] px-4 text-sm font-semibold text-[#111827] shadow-sm outline-none transition focus:border-[#00A859] focus:ring-4 focus:ring-[#00A859]/10",
+    "h-11 w-full rounded-xl border border-[color:var(--hairline)] bg-white px-4 text-sm font-semibold text-[color:var(--foreground)] shadow-[var(--shadow-xs)] outline-none transition focus:border-[#00A859] focus:ring-4 focus:ring-[#00A859]/12",
   primary:
     "rounded-xl bg-[#00A859] font-bold text-white shadow-[var(--shadow-xs)] transition hover:bg-[#07934E] active:translate-y-px disabled:opacity-50",
   secondary:
-    "rounded-2xl border border-[#DDE7E2] bg-white font-bold text-[#102A43] shadow-sm transition hover:bg-[#F4F8F6] hover:text-[#073B2A]",
+    "rounded-xl border border-[color:var(--hairline)] bg-white font-bold text-[color:var(--secondary-foreground)] shadow-[var(--shadow-xs)] transition hover:bg-[color:var(--muted)] hover:text-[#073B2A]",
 }
 
 function formatTicket(ticket: any): PortalTicket {
@@ -172,25 +172,19 @@ function MiniMetric({
   accent?: string
 }) {
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-[#DDE7E2] bg-white/90 px-2.5 py-3 shadow-sm transition hover:shadow-md sm:px-4">
-      {accent && (
-        <span
-          className="absolute left-0 top-0 h-full w-1 rounded-l-2xl"
-          style={{ background: accent }}
-        />
-      )}
+    <div className="rounded-xl border border-[color:var(--hairline)] bg-white px-2.5 py-2.5 shadow-[var(--shadow-xs)] transition-colors hover:border-[#00A859]/35 sm:px-4 sm:py-3">
       <div className="flex min-w-0 items-center gap-2">
         {Icon && (
           <span
-            className="hidden h-7 w-7 shrink-0 items-center justify-center rounded-xl sm:flex"
-            style={{ background: accent ? `${accent}18` : "#F1F5F9", color: accent ?? "#64748b" }}
+            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg"
+            style={{ background: accent ? `${accent}14` : "#F4F4F5", color: accent ?? "#71717A" }}
           >
-            <Icon size={14} />
+            <Icon size={13} />
           </span>
         )}
-        <p className="min-w-0 truncate text-[9px] font-black uppercase tracking-[0.06em] text-slate-500 sm:text-[11px] sm:tracking-[0.12em]">{label}</p>
+        <p className="min-w-0 truncate text-[9px] font-semibold uppercase tracking-[0.08em] text-zinc-400 sm:text-[11px]">{label}</p>
       </div>
-      <p className="mt-1.5 pl-0.5 text-2xl font-black tracking-tight text-[#073B2A] sm:text-xl">{value}</p>
+      <p className="ls-num mt-1.5 text-2xl font-bold tracking-tight text-[color:var(--foreground)] sm:text-xl">{value}</p>
     </div>
   )
 }
@@ -203,12 +197,12 @@ function EmptyPortalState({
   description: string
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-[#CFE2D8] bg-gradient-to-b from-[#F8FCFA] to-white p-8 text-center">
-      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[#00A859] shadow-sm ring-1 ring-[#DDE7E2]">
+    <div className="rounded-2xl border border-dashed border-[color:var(--hairline)] bg-[color:var(--surface-inset)] p-8 text-center">
+      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[#00A859] shadow-[var(--shadow-xs)] ring-1 ring-[color:var(--hairline)]">
         <ClipboardList size={22} />
       </div>
-      <p className="text-sm font-black text-[#073B2A]">{title}</p>
-      <p className="mt-1.5 text-xs font-medium leading-5 text-slate-400">{description}</p>
+      <p className="text-sm font-bold text-[color:var(--foreground)]">{title}</p>
+      <p className="mt-1.5 text-xs font-medium leading-5 text-[color:var(--muted-foreground)]">{description}</p>
     </div>
   )
 }
@@ -636,7 +630,7 @@ export function AdminPortal() {
 
   if (successState.isVisible) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(57,217,138,0.18),transparent_30%),linear-gradient(180deg,#F7FAF8,#EAF0ED)] px-4 py-8">
+      <div className="flex min-h-screen items-center justify-center bg-[color:var(--background)] px-4 py-8">
         <GlassCard className="w-full max-w-md p-6 text-center sm:p-10">
             <div className="flex justify-center">
               <div className="relative">
@@ -652,10 +646,10 @@ export function AdminPortal() {
               </p>
             </div>
 
-            <div className="mt-6 rounded-[1.35rem] border border-[#DDE7E2] bg-white/78 p-5 shadow-sm sm:mt-7 sm:rounded-[1.5rem]">
+            <div className="mt-6 rounded-[1.35rem] border border-[color:var(--hairline)] bg-white p-5 shadow-sm sm:mt-7 sm:rounded-[1.5rem]">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">ID do chamado</p>
               <p className="mt-1 text-2xl font-black text-[#073B2A]">#{successState.ticketId}</p>
-              <div className="mt-4 border-t border-[#DDE7E2] pt-4">
+              <div className="mt-4 border-t border-[color:var(--hairline)] pt-4">
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Solicitante</p>
                 <p className="mt-1 text-base font-bold text-[#111827]">{successState.employeeName}</p>
               </div>
@@ -701,7 +695,7 @@ export function AdminPortal() {
           </div>
 
           <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex gap-1 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1 lg:w-fit">
+            <div className="flex gap-1 rounded-2xl border border-[color:var(--hairline)] bg-[color:var(--surface-inset)] p-1 lg:w-fit">
               {(
                 [
                   { key: "new", label: "Novo Chamado", short: "Novo", Icon: PlusCircle, activeColor: "bg-[#00A859]" },
@@ -729,7 +723,7 @@ export function AdminPortal() {
             <div className="flex flex-col gap-2 sm:flex-row">
               <Button
                 variant="outline"
-                className="h-10 rounded-2xl border border-[#DDE7E2] bg-white/80 font-bold text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+                className="h-10 rounded-2xl border border-[color:var(--hairline)] bg-white font-bold text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
                 onClick={handleExit}
               >
                 <LogOut size={15} className="mr-2 opacity-70" />
@@ -756,7 +750,7 @@ export function AdminPortal() {
                   Sua denúncia foi recebida e será encaminhada com sigilo ao responsável.
                 </p>
                 <Button
-                  className="mt-8 h-11 px-8 rounded-2xl bg-[linear-gradient(135deg,#073B2A,#00A859)] font-bold text-white shadow-md transition hover:-translate-y-0.5"
+                  className="mt-8 h-11 rounded-xl px-8 bg-[#00A859] font-bold text-white shadow-[var(--shadow-xs)] transition hover:bg-[#07934E]"
                   onClick={() => setOuvidoriaSuccess(false)}
                 >
                   Enviar nova denúncia
@@ -766,7 +760,7 @@ export function AdminPortal() {
               <>
                 <div className="mb-6">
                   <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#073B2A] to-[#102A43] text-white shadow-lg shadow-[#073B2A]/20">
+                    <div className="ls-card-dark flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-white shadow-[var(--shadow-sm)]">
                       <ShieldAlert size={22} />
                     </div>
                     <div className="flex-1">
@@ -784,7 +778,7 @@ export function AdminPortal() {
 
                 <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
                   <div className="space-y-4">
-                    <div className="rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
+                    <div className="rounded-[1.35rem] border border-[color:var(--hairline)] bg-white p-4 shadow-sm sm:rounded-[1.5rem]">
                       <p className="mb-4 text-xs font-black uppercase tracking-[0.14em] text-slate-500">Identificação</p>
                       <div className="space-y-3">
                         <div>
@@ -792,7 +786,7 @@ export function AdminPortal() {
                           <Input
                             value={ouvidoriaName}
                             readOnly
-                            className={`mt-1.5 cursor-default select-none bg-[#F3F6F4] text-slate-500 ${styles.input}`}
+                            className={`mt-1.5 cursor-default select-none bg-[color:var(--surface-inset)] text-slate-500 ${styles.input}`}
                           />
                         </div>
                         <div>
@@ -800,7 +794,7 @@ export function AdminPortal() {
                           <Input
                             value={ouvidoriaSector}
                             readOnly
-                            className={`mt-1.5 cursor-default select-none bg-[#F3F6F4] text-slate-500 ${styles.input}`}
+                            className={`mt-1.5 cursor-default select-none bg-[color:var(--surface-inset)] text-slate-500 ${styles.input}`}
                           />
                         </div>
                       </div>
@@ -814,14 +808,14 @@ export function AdminPortal() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
+                  <div className="flex flex-col gap-3 rounded-[1.35rem] border border-[color:var(--hairline)] bg-white p-4 shadow-sm sm:rounded-[1.5rem]">
                     <div className="flex-1">
                       <label className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Descrição da denúncia</label>
                       <Textarea
                         value={ouvidoriaComplaint}
                         onChange={(e) => setOuvidoriaComplaint(e.target.value)}
                         placeholder="Descreva o que aconteceu, quando, onde e quem está envolvido..."
-                        className="mt-2 min-h-[240px] w-full rounded-2xl border-[#DDE7E2] bg-white px-4 py-3 text-sm text-slate-950 focus:border-[#073B2A] focus:outline-none focus:ring-2 focus:ring-[#073B2A]/10"
+                        className="mt-2 min-h-[240px] w-full rounded-2xl border-[color:var(--hairline)] bg-white px-4 py-3 text-sm text-slate-950 focus:border-[#073B2A] focus:outline-none focus:ring-2 focus:ring-[#073B2A]/10"
                       />
                       <p className="mt-1.5 text-xs text-slate-400">
                         {ouvidoriaComplaint.trim().length} caracteres {ouvidoriaComplaint.trim().length < 10 && "(mínimo 10)"}
@@ -883,26 +877,21 @@ export function AdminPortal() {
                           setTicketDepartment(dept.id)
                           setCategory(categoriesByDepartment[dept.id][0])
                         }}
-                        className="group relative flex w-full items-center gap-4 overflow-hidden rounded-2xl p-[1.5px] text-left"
-                        style={{
-                          background: "linear-gradient(135deg,#00A859,#39D98A,#00A859)",
-                          animation: `ap-fade-up 0.38s cubic-bezier(.22,.68,0,1.2) ${0.06 + i * 0.09}s both`,
-                        }}
+                        className="group flex w-full items-center gap-4 rounded-2xl border border-[color:var(--hairline)] bg-white px-4 py-[14px] text-left shadow-[var(--shadow-xs)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#00A859]/40 hover:shadow-[var(--shadow-md)]"
+                        style={{ animation: `ap-fade-up 0.38s cubic-bezier(.22,.68,0,1.2) ${0.06 + i * 0.09}s both` }}
                       >
-                        <span className="flex w-full items-center gap-4 rounded-[14px] bg-white px-4 py-[14px] transition-all duration-200 group-hover:bg-[linear-gradient(135deg,#073B2A,#00A859)]">
-                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#00A859]/10 text-[#00A859] ring-1 ring-[#00A859]/20 transition-all duration-200 group-hover:bg-white/15 group-hover:text-white group-hover:ring-white/30">
-                            <Icon size={22} />
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="block text-[15px] font-black tracking-[-0.02em] text-[#073B2A] transition-colors duration-200 group-hover:text-white">
-                              {dept.label}
-                            </span>
-                            <span className="mt-0.5 block text-xs font-medium leading-4 text-slate-500 transition-colors duration-200 group-hover:text-emerald-100">
-                              {dept.description}
-                            </span>
-                          </span>
-                          <ChevronRight size={18} className="shrink-0 text-[#00A859] transition-all duration-200 group-hover:translate-x-1 group-hover:text-white" />
+                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#00A859]/10 text-[#00A859] ring-1 ring-[#00A859]/15 transition-colors duration-200 group-hover:bg-[#00A859] group-hover:text-white group-hover:ring-transparent">
+                          <Icon size={22} />
                         </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-[15px] font-bold tracking-[-0.02em] text-[color:var(--foreground)]">
+                            {dept.label}
+                          </span>
+                          <span className="mt-0.5 block text-xs font-medium leading-4 text-[color:var(--muted-foreground)]">
+                            {dept.description}
+                          </span>
+                        </span>
+                        <ChevronRight size={18} className="shrink-0 text-zinc-300 transition-all duration-200 group-hover:translate-x-1 group-hover:text-[#00A859]" />
                       </button>
                     )
                   })}
@@ -934,7 +923,7 @@ export function AdminPortal() {
 
                 <div className="grid gap-4 lg:grid-cols-[0.72fr_1.28fr]">
                   <div className="space-y-3">
-                    <div className="rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-4 shadow-sm sm:rounded-[1.5rem]">
+                    <div className="rounded-[1.35rem] border border-[color:var(--hairline)] bg-white p-4 shadow-sm sm:rounded-[1.5rem]">
                       <div className="mb-4">
                         <p className="text-xs font-black uppercase tracking-[0.16em] text-[#00A859]">Classificação</p>
                         <p className="mt-1 text-sm font-semibold leading-5 text-slate-500">Escolha o tipo e a origem do chamado.</p>
@@ -955,7 +944,7 @@ export function AdminPortal() {
                         </div>
                         <div>
                           <label className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Origem</label>
-                          <div className="mt-2 grid grid-cols-2 gap-2 rounded-2xl border border-[#DDE7E2] bg-[#F8FAF9] p-1">
+                          <div className="mt-2 grid grid-cols-2 gap-2 rounded-2xl border border-[color:var(--hairline)] bg-white p-1">
                             {["Administrativo", "Operacional"].map((originOption) => (
                               <button
                                 key={originOption}
@@ -983,21 +972,21 @@ export function AdminPortal() {
                     </div>
                   </div>
 
-                  <div className="space-y-3 rounded-[1.35rem] border border-[#DDE7E2] bg-white/72 p-3 shadow-sm sm:rounded-[1.5rem] sm:p-4">
+                  <div className="space-y-3 rounded-[1.35rem] border border-[color:var(--hairline)] bg-white p-3 shadow-sm sm:rounded-[1.5rem] sm:p-4">
                     <div>
                       <label className="text-sm font-bold text-[#102A43]">Descrição</label>
                       <Textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Descreva o problema com contexto objetivo..."
-                        className="mt-2 min-h-[220px] rounded-2xl border-[#DDE7E2] bg-white/95 px-4 py-3 text-slate-950 focus:border-[#00A859]"
+                        className="mt-2 min-h-[220px] rounded-2xl border-[color:var(--hairline)] bg-white/95 px-4 py-3 text-slate-950 focus:border-[#00A859]"
                       />
                       <p className="mt-2 text-xs font-semibold leading-5 text-slate-500">
                         Inclua local, equipamento, mensagem de erro e urgência, se houver.
                       </p>
                     </div>
 
-                    <div className="rounded-2xl border border-dashed border-[#CFE2D8] bg-[#F8FCFA] p-3">
+                    <div className="rounded-2xl border border-dashed border-[#CFE2D8] bg-[color:var(--surface-inset)] p-3">
                       <p className="mb-2 text-xs font-bold text-slate-500">
                         Anexos <span className="font-medium text-slate-400">(opcional)</span>
                       </p>
@@ -1032,7 +1021,7 @@ export function AdminPortal() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="rounded-xl border-[#DDE7E2] bg-white text-slate-700"
+                  className="rounded-xl border-[color:var(--hairline)] bg-white text-slate-700"
                   onClick={() => {
                     loadMyTickets(loggedEmployee.id)
                     loadArchivedTickets(loggedEmployee.id)
@@ -1047,7 +1036,7 @@ export function AdminPortal() {
                 {isLoadingTickets && myTickets.length === 0 && (
                   <>
                     {Array.from({ length: 3 }).map((_, i) => (
-                      <Skeleton key={i} className="h-28 rounded-2xl bg-white/80" />
+                      <Skeleton key={i} className="h-28 rounded-2xl bg-white" />
                     ))}
                   </>
                 )}
@@ -1058,7 +1047,7 @@ export function AdminPortal() {
                     className={`group w-full overflow-hidden rounded-2xl border text-left shadow-sm transition-all duration-150 hover:shadow-md ${
                       selectedTicket?.id === ticket.id
                         ? "border-[#00A859]/40 bg-[#00A859]/8 ring-1 ring-[#00A859]/20"
-                        : "border-[#DDE7E2] bg-white/80 hover:bg-white"
+                        : "border-[color:var(--hairline)] bg-white hover:bg-white"
                     }`}
                   >
                     <div
@@ -1094,7 +1083,7 @@ export function AdminPortal() {
                 )}
 
                 {archivedTickets.length > 0 && (
-                  <div className="mt-2 border-t border-[#DDE7E2] pt-3">
+                  <div className="mt-2 border-t border-[color:var(--hairline)] pt-3">
                     <button
                       onClick={() => setShowArchivedTickets(!showArchivedTickets)}
                       className="flex w-full items-center justify-between gap-2 rounded-xl px-3 py-2 text-left text-xs font-bold text-slate-600 transition hover:bg-slate-50"
@@ -1115,7 +1104,7 @@ export function AdminPortal() {
                             className={`w-full rounded-2xl border border-l-4 p-3 text-left text-sm transition hover:border-[#00A859]/35 hover:bg-white ${
                               selectedTicket?.id === ticket.id
                                 ? "border-[#00A859]/40 bg-[#00A859]/10"
-                                : "border-[#DDE7E2] bg-white/70 opacity-70"
+                                : "border-[color:var(--hairline)] bg-white opacity-70"
                             }`}
                             style={{ borderLeftColor: getStatusAccent(ticket.status) }}
                           >
@@ -1141,7 +1130,7 @@ export function AdminPortal() {
             <GlassCard className="overflow-hidden p-0">
               {selectedTicket ? (
                 <div className="flex min-h-[560px] flex-col">
-                  <div className="border-b border-[#DDE7E2] bg-white/70 p-4 sm:p-5">
+                  <div className="border-b border-[color:var(--hairline)] bg-white p-4 sm:p-5">
                     <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                       <div className="min-w-0">
                         <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#00A859] sm:text-xs">Conversa do chamado</p>
@@ -1158,7 +1147,7 @@ export function AdminPortal() {
                     </div>
                   </div>
 
-                  <div className="flex-1 space-y-5 overflow-y-auto bg-[#F8FCFA] p-4 sm:p-5">
+                  <div className="flex-1 space-y-5 overflow-y-auto bg-[color:var(--surface-inset)] p-4 sm:p-5">
                     {messages.map((message) => {
                       const isEmployee = message.senderType === "employee"
                       const isBot = message.senderType === "bot"
@@ -1186,10 +1175,10 @@ export function AdminPortal() {
                           <div
                             className={`max-w-[80%] rounded-3xl border px-4 py-3 shadow-sm ${
                               isEmployee
-                                ? "rounded-br-md border-[#00A859]/25 bg-gradient-to-br from-[#00A859]/15 to-[#00A859]/8 text-[#073B2A]"
+                                ? "rounded-br-md border-[#00A859]/20 bg-[#00A859]/10 text-[#073B2A]"
                                 : isBot
                                 ? "rounded-bl-md border-blue-200 bg-blue-50 text-[#111827]"
-                                : "rounded-bl-md border-[#DDE7E2] bg-white text-[#111827]"
+                                : "rounded-bl-md border-[color:var(--hairline)] bg-white text-[#111827]"
                             }`}
                           >
                             <div className="mb-1.5 flex flex-wrap items-center gap-2">
@@ -1225,7 +1214,7 @@ export function AdminPortal() {
                     )}
                   </div>
 
-                  <div className="border-t border-[#DDE7E2] bg-white/82 p-4">
+                  <div className="border-t border-[color:var(--hairline)] bg-white p-4">
                     {selectedTicket.status === "Finalizado" ? (
                       <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700">
                         Este chamado está finalizado e arquivado.
@@ -1237,7 +1226,7 @@ export function AdminPortal() {
                             value={employeeReply}
                             onChange={(e) => setEmployeeReply(e.target.value)}
                             placeholder="Responda o técnico ou envie mais detalhes..."
-                            className="min-h-[92px] rounded-2xl border-[#DDE7E2] bg-white text-slate-950 focus:border-[#00A859]"
+                            className="min-h-[92px] rounded-2xl border-[color:var(--hairline)] bg-white text-slate-950 focus:border-[#00A859]"
                           />
                           <AttachmentPicker
                             compact
@@ -1267,9 +1256,9 @@ export function AdminPortal() {
                   </div>
                 </div>
               ) : (
-                <div className="flex h-full min-h-[520px] items-center justify-center bg-[#F8FCFA] p-8 text-center">
+                <div className="flex h-full min-h-[520px] items-center justify-center bg-[color:var(--surface-inset)] p-8 text-center">
                   <div className="max-w-sm">
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-[#ECFBF3] to-white text-[#00A859] shadow-sm ring-1 ring-[#BFEFD7]">
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-[color:var(--accent)] text-[#00A859] shadow-[var(--shadow-xs)] ring-1 ring-[#00A859]/15">
                       <MessageSquareText size={30} />
                     </div>
                     <h2 className="mt-5 text-2xl font-black tracking-[-0.04em] text-[#111827]">Selecione um chamado</h2>
