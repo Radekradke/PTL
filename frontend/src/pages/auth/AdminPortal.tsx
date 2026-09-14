@@ -8,12 +8,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { categoriesByDepartment, type TicketDepartment } from "@/lib/categories"
 import { PORTAL_USER_KEY, apiFetch, getPortalToken } from "@/services/api"
 import {
-  MAX_TICKET_PHOTOS,
-  fileToCompressedPhoto,
-  type MessageAttachment,
-  type PendingPhoto,
-} from "@/lib/ticketPhotos"
-import { AttachmentImage } from "@/components/tickets/AttachmentImage"
+  attachmentPayload,
+  type PendingAttachment,
+  type StoredAttachment,
+} from "@/lib/attachments"
+import { AttachmentPicker } from "@/components/attachments/AttachmentPicker"
+import { AttachmentGallery } from "@/components/attachments/AttachmentGallery"
+import { EmployeeSuggestions } from "@/components/suggestions/EmployeeSuggestions"
 import { APP_VERSION } from "@/lib/version"
 import {
   CheckCircle2,
@@ -35,8 +36,7 @@ import {
   Building2,
   ChevronRight,
   ChevronLeft,
-  ImagePlus,
-  X,
+  Lightbulb,
 } from "lucide-react"
 
 type Sector = {
@@ -60,7 +60,7 @@ type TicketMessage = {
   senderName: string
   message: string
   createdAt: string
-  attachments?: MessageAttachment[]
+  attachments?: StoredAttachment[]
 }
 
 type PortalTicket = {
@@ -213,73 +213,6 @@ function EmptyPortalState({
   )
 }
 
-function PhotoPicker({
-  photos,
-  onAdd,
-  onRemove,
-  compact = false,
-}: {
-  photos: PendingPhoto[]
-  onAdd: (files: FileList | null) => void
-  onRemove: (id: string) => void
-  compact?: boolean
-}) {
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  return (
-    <div className={compact ? "space-y-2" : "space-y-3"}>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        multiple
-        className="hidden"
-        onChange={(e) => {
-          onAdd(e.target.files)
-          e.target.value = ""
-        }}
-      />
-
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          disabled={photos.length >= MAX_TICKET_PHOTOS}
-          className="inline-flex items-center gap-1.5 rounded-xl border border-[#DDE7E2] bg-white px-3 py-2 text-xs font-bold text-[#073B2A] shadow-sm transition hover:border-[#00A859]/40 hover:bg-[#ECFBF3] disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <ImagePlus size={14} className="text-[#00A859]" />
-          Anexar fotos
-        </button>
-        <span className="text-[11px] font-semibold text-slate-400">
-          {photos.length}/{MAX_TICKET_PHOTOS}
-        </span>
-      </div>
-
-      {photos.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {photos.map((photo) => (
-            <div key={photo.id} className="group relative">
-              <img
-                src={photo.previewUrl}
-                alt={photo.filename}
-                className={`rounded-xl border border-[#DDE7E2] object-cover shadow-sm ${compact ? "h-16 w-16" : "h-20 w-20"}`}
-              />
-              <button
-                type="button"
-                onClick={() => onRemove(photo.id)}
-                className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white shadow transition hover:bg-red-600"
-                aria-label="Remover foto"
-              >
-                <X size={11} />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
 export function AdminPortal() {
   const [loggedEmployee, setLoggedEmployee] = useState<Employee | null>(null)
   const [authChecked, setAuthChecked] = useState(false)
@@ -288,7 +221,7 @@ export function AdminPortal() {
   const [origin, setOrigin] = useState("Administrativo")
   const [description, setDescription] = useState("")
 
-  const [activeTab, setActiveTab] = useState<"new" | "mine" | "ouvidoria">("new")
+  const [activeTab, setActiveTab] = useState<"new" | "mine" | "ouvidoria" | "sugestoes">("new")
   const [ouvidoriaName, setOuvidoriaName] = useState("")
   const [ouvidoriaSector, setOuvidoriaSector] = useState("")
   const [ouvidoriaComplaint, setOuvidoriaComplaint] = useState("")
@@ -302,8 +235,8 @@ export function AdminPortal() {
   const [employeeReply, setEmployeeReply] = useState("")
   const [isLoadingTickets, setIsLoadingTickets] = useState(false)
   const [isSendingReply, setIsSendingReply] = useState(false)
-  const [newTicketPhotos, setNewTicketPhotos] = useState<PendingPhoto[]>([])
-  const [replyPhotos, setReplyPhotos] = useState<PendingPhoto[]>([])
+  const [newTicketPhotos, setNewTicketPhotos] = useState<PendingAttachment[]>([])
+  const [replyPhotos, setReplyPhotos] = useState<PendingAttachment[]>([])
   const [isFinishingTicket, setIsFinishingTicket] = useState(false)
   const hasShownExpiredSession = useRef(false)
 
@@ -489,40 +422,6 @@ export function AdminPortal() {
     }
   }
 
-  async function addPhotos(files: FileList | null, target: "new" | "reply") {
-    if (!files || files.length === 0) return
-
-    const currentList = target === "new" ? newTicketPhotos : replyPhotos
-    const remaining = MAX_TICKET_PHOTOS - currentList.length
-
-    if (remaining <= 0) {
-      toast.error(`Máximo de ${MAX_TICKET_PHOTOS} fotos por envio.`)
-      return
-    }
-
-    const selected = Array.from(files).slice(0, remaining)
-    if (files.length > remaining) {
-      toast.error(`Máximo de ${MAX_TICKET_PHOTOS} fotos por envio.`)
-    }
-
-    for (const file of selected) {
-      try {
-        const photo = await fileToCompressedPhoto(file)
-        if (target === "new") {
-          setNewTicketPhotos((current) => (current.length >= MAX_TICKET_PHOTOS ? current : [...current, photo]))
-        } else {
-          setReplyPhotos((current) => (current.length >= MAX_TICKET_PHOTOS ? current : [...current, photo]))
-        }
-      } catch (error: any) {
-        toast.error(error?.message || "Não foi possível processar a imagem.")
-      }
-    }
-  }
-
-  function photosToPayload(photos: PendingPhoto[]) {
-    return photos.map(({ filename, mimeType, data }) => ({ filename, mimeType, data }))
-  }
-
   async function handleSubmit() {
     if (!loggedEmployee || !description) {
       toast.error("Descreva o problema antes de abrir o chamado.")
@@ -543,7 +442,7 @@ export function AdminPortal() {
           category,
           origin,
           description,
-          attachments: photosToPayload(newTicketPhotos),
+          attachments: attachmentPayload(newTicketPhotos),
         }),
       }, getPortalToken())
 
@@ -594,7 +493,7 @@ export function AdminPortal() {
           senderType: "employee",
           employeeId: loggedEmployee.id,
           message: employeeReply.trim(),
-          attachments: photosToPayload(replyPhotos),
+          attachments: attachmentPayload(replyPhotos),
         }),
       }, getPortalToken())
 
@@ -667,7 +566,7 @@ export function AdminPortal() {
     loadArchivedTickets(loggedEmployee?.id)
   }
 
-  function handleTabChange(tab: "new" | "mine" | "ouvidoria") {
+  function handleTabChange(tab: "new" | "mine" | "ouvidoria" | "sugestoes") {
     setActiveTab(tab)
     if (tab === "ouvidoria") {
       setOuvidoriaSuccess(false)
@@ -805,11 +704,12 @@ export function AdminPortal() {
             <div className="flex gap-1 rounded-2xl border border-[#DDE7E2] bg-white/70 p-1 lg:w-fit">
               {(
                 [
-                  { key: "new", label: "Novo Chamado", Icon: PlusCircle, activeColor: "bg-[#00A859]" },
-                  { key: "mine", label: "Meus Chamados", Icon: MessageSquareText, activeColor: "bg-[#00A859]" },
-                  { key: "ouvidoria", label: "Ouvidoria", Icon: ShieldAlert, activeColor: "bg-[#00A859]" },
+                  { key: "new", label: "Novo Chamado", short: "Novo", Icon: PlusCircle, activeColor: "bg-[#00A859]" },
+                  { key: "mine", label: "Meus Chamados", short: "Meus", Icon: MessageSquareText, activeColor: "bg-[#00A859]" },
+                  { key: "sugestoes", label: "Sugestões", short: "Ideias", Icon: Lightbulb, activeColor: "bg-[#00A859]" },
+                  { key: "ouvidoria", label: "Ouvidoria", short: "Ouvidoria", Icon: ShieldAlert, activeColor: "bg-[#00A859]" },
                 ] as const
-              ).map(({ key, label, Icon, activeColor }) => (
+              ).map(({ key, label, short, Icon, activeColor }) => (
                 <button
                   key={key}
                   onClick={() => handleTabChange(key)}
@@ -821,7 +721,7 @@ export function AdminPortal() {
                 >
                   <Icon size={15} className={`hidden shrink-0 sm:block ${activeTab === key ? "opacity-100" : "opacity-60"}`} />
                   <span className="hidden truncate sm:inline">{label}</span>
-                  <span className="truncate sm:hidden">{key === "new" ? "Novo" : key === "mine" ? "Meus" : "Ouvidoria"}</span>
+                  <span className="truncate sm:hidden">{short}</span>
                 </button>
               ))}
             </div>
@@ -839,7 +739,11 @@ export function AdminPortal() {
           </div>
         </header>
 
-        {activeTab === "ouvidoria" ? (
+        {activeTab === "sugestoes" ? (
+          <GlassCard className="p-4 sm:p-6">
+            <EmployeeSuggestions employee={loggedEmployee} />
+          </GlassCard>
+        ) : activeTab === "ouvidoria" ? (
           <GlassCard className="p-4 sm:p-6">
             {ouvidoriaSuccess ? (
               <div className="flex flex-col items-center justify-center py-14 text-center">
@@ -1095,11 +999,11 @@ export function AdminPortal() {
 
                     <div className="rounded-2xl border border-dashed border-[#CFE2D8] bg-[#F8FCFA] p-3">
                       <p className="mb-2 text-xs font-bold text-slate-500">
-                        Fotos do problema <span className="font-medium text-slate-400">(opcional)</span>
+                        Anexos <span className="font-medium text-slate-400">(opcional)</span>
                       </p>
-                      <PhotoPicker
-                        photos={newTicketPhotos}
-                        onAdd={(files) => addPhotos(files, "new")}
+                      <AttachmentPicker
+                        attachments={newTicketPhotos}
+                        onAdd={(attachment) => setNewTicketPhotos((current) => [...current, attachment])}
                         onRemove={(id) => setNewTicketPhotos((current) => current.filter((photo) => photo.id !== id))}
                       />
                     </div>
@@ -1300,15 +1204,12 @@ export function AdminPortal() {
                               <p className="whitespace-pre-wrap break-words text-sm leading-6">{message.message}</p>
                             )}
                             {(message.attachments?.length ?? 0) > 0 && (
-                              <div className="mt-2 flex flex-wrap gap-2">
-                                {message.attachments!.map((attachment) => (
-                                  <AttachmentImage
-                                    key={attachment.id}
-                                    ticketId={message.ticketId}
-                                    attachment={attachment}
-                                    token={getPortalToken()}
-                                  />
-                                ))}
+                              <div className="mt-2.5">
+                                <AttachmentGallery
+                                  attachments={message.attachments!}
+                                  buildPath={(a) => `/tickets/${message.ticketId}/attachments/${a.id}`}
+                                  token={getPortalToken()}
+                                />
                               </div>
                             )}
                           </div>
@@ -1338,10 +1239,10 @@ export function AdminPortal() {
                             placeholder="Responda o técnico ou envie mais detalhes..."
                             className="min-h-[92px] rounded-2xl border-[#DDE7E2] bg-white text-slate-950 focus:border-[#00A859]"
                           />
-                          <PhotoPicker
+                          <AttachmentPicker
                             compact
-                            photos={replyPhotos}
-                            onAdd={(files) => addPhotos(files, "reply")}
+                            attachments={replyPhotos}
+                            onAdd={(attachment) => setReplyPhotos((current) => [...current, attachment])}
                             onRemove={(id) => setReplyPhotos((current) => current.filter((photo) => photo.id !== id))}
                           />
                         </div>

@@ -67,20 +67,66 @@ model TicketMessage {
 }
 
 model TicketAttachment {
-  id        Int      @id @default(autoincrement())
-  ticketId  Int
-  messageId Int?
-  filename  String
-  mimeType  String
-  size      Int
-  data      String
-  createdAt DateTime @default(now())
+  id         Int       @id @default(autoincrement())
+  ticketId   Int
+  messageId  Int?
+  filename   String // nome original (para exibir/baixar)
+  storageKey String? // identificador interno seguro (UUID + extensão)
+  mimeType   String
+  size       Int
+  data       String // conteúdo em base64
+  uploadedBy String? // quem anexou (ex.: "employee:9" ou "technician:Admin")
+  deletedAt  DateTime? // remoção lógica (preserva histórico/auditoria)
+  deletedBy  String?
+  createdAt  DateTime  @default(now())
 
   ticket  Ticket         @relation(fields: [ticketId], references: [id], onDelete: Cascade)
   message TicketMessage? @relation(fields: [messageId], references: [id], onDelete: Cascade)
 
   @@index([ticketId])
   @@index([messageId])
+}
+
+// ── Sugestões de melhoria (v1.3.2) ──
+model Suggestion {
+  id           Int      @id @default(autoincrement())
+  title        String
+  description  String
+  improvement  String? // "como poderia melhorar" (opcional)
+  category     String
+  sectorId     Int?
+  sectorName   String? // snapshot do setor no momento do envio
+  employeeId   Int? // autor (mantido internamente mesmo se anônimo)
+  authorName   String? // snapshot do autor (não exposto quando anônimo)
+  isAnonymous  Boolean  @default(false)
+  status       String   @default("Nova")
+  internalNote String? // observação administrativa (nunca exposta ao funcionário)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
+
+  attachments SuggestionAttachment[]
+
+  @@index([status])
+  @@index([category])
+  @@index([employeeId])
+}
+
+model SuggestionAttachment {
+  id           Int       @id @default(autoincrement())
+  suggestionId Int
+  filename     String
+  storageKey   String?
+  mimeType     String
+  size         Int
+  data         String
+  uploadedBy   String?
+  deletedAt    DateTime?
+  deletedBy    String?
+  createdAt    DateTime  @default(now())
+
+  suggestion Suggestion @relation(fields: [suggestionId], references: [id], onDelete: Cascade)
+
+  @@index([suggestionId])
 }
 
 model PushSubscription {

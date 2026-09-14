@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { ArrowRight, LayoutDashboard, FileText, Settings, Ticket, Activity, Clock3, AlertTriangle } from "lucide-react"
+import { ArrowRight, LayoutDashboard, FileText, Settings, Ticket, Activity, Clock3, AlertTriangle, Lightbulb } from "lucide-react"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { BentoGrid, BentoCard } from "@/components/ui/bento-grid"
 import { Reveal } from "@/components/ui/reveal"
@@ -103,9 +103,23 @@ export function HomePage() {
             />
           </Reveal>
 
+          {/* Sugestões (Admin) */}
+          {isAdmin && (
+            <Reveal className="lg:col-start-1 lg:col-span-2 lg:row-start-3" delay={0.22}>
+              <BentoCard
+                name="Sugestões"
+                description="Ideias e melhorias enviadas pela equipe — analise e defina o status."
+                cta="Abrir"
+                Icon={Lightbulb}
+                onClick={() => navigate("/suggestions")}
+                className="h-full"
+              />
+            </Reveal>
+          )}
+
           {/* Configurações (Admin) */}
           {isAdmin && (
-            <Reveal className="lg:col-span-3 lg:row-start-3" delay={0.22}>
+            <Reveal className="lg:col-start-3 lg:row-start-3" delay={0.26}>
               <BentoCard
                 name="Configurações"
                 description="Setores, funcionários, e-mails dos responsáveis e versão do sistema."

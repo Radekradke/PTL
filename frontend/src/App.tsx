@@ -12,6 +12,7 @@ const Dashboard = lazy(() => import("./pages/dashboard/Dashboard").then((m) => (
 const AccessScreen = lazy(() => import("./pages/auth/AccessScreen").then((m) => ({ default: m.AccessScreen })))
 const ReportsPage = lazy(() => import("@/pages/reports/ReportsPage").then((m) => ({ default: m.ReportsPage })))
 const SettingsPage = lazy(() => import("./pages/settings/SettingsPage").then((m) => ({ default: m.SettingsPage })))
+const SuggestionsPage = lazy(() => import("./pages/suggestions/SuggestionsPage").then((m) => ({ default: m.SuggestionsPage })))
 
 function RouteFallback() {
   return (
@@ -115,6 +116,15 @@ function App() {
               element={
                 <ProtectedRoute allowed={["Admin"]}>
                   <SettingsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/suggestions"
+              element={
+                <ProtectedRoute allowed={["Admin"]}>
+                  <SuggestionsPage />
                 </ProtectedRoute>
               }
             />
