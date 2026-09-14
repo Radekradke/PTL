@@ -61,8 +61,8 @@ export function AppLayout({ children }: Props) {
   usePushForActiveSession()
 
   return (
-    <div className="min-h-screen bg-[#F6FAF8] text-[#111827]">
-      <div className="flex min-h-screen flex-col lg:flex-row">
+    <div className="min-h-[100dvh] bg-[color:var(--background)] text-[color:var(--foreground)]">
+      <div className="flex min-h-[100dvh] flex-col lg:flex-row">
         <Sidebar />
 
         <div className="flex min-w-0 flex-1 flex-col">

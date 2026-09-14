@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState, type ElementType } from "react"
-import { useNavigate } from "react-router-dom"
+import { Navigate } from "react-router-dom"
 import toast from "react-hot-toast"
-import logoLifting from "../../assets/logo-lifting-icon-dark-bg.png"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { categoriesByDepartment, type TicketDepartment } from "@/lib/categories"
-import { API_URL, PORTAL_USER_KEY, apiFetch, getPortalToken } from "@/services/api"
+import { PORTAL_USER_KEY, apiFetch, getPortalToken } from "@/services/api"
 import {
   MAX_TICKET_PHOTOS,
   fileToCompressedPhoto,
@@ -20,14 +19,9 @@ import {
   CheckCircle2,
   ChevronDown,
   LogOut,
-  LockKeyhole,
   MessageSquareText,
   PlusCircle,
   RefreshCw,
-  ShieldCheck,
-  UserCircle2,
-  UserRound,
-  ArrowRight,
   ClipboardList,
   Clock3,
   Send,
@@ -91,10 +85,10 @@ type SuccessState = {
 
 const styles = {
   page:
-    "min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.14),transparent_28%),linear-gradient(180deg,#F7FAF8_0%,#EEF6F2_52%,#EAF0ED_100%)] text-[#111827]",
+    "min-h-[100dvh] bg-[color:var(--background)] text-[color:var(--foreground)]",
   shell: "mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-4 px-3 py-4 sm:gap-5 sm:px-5 sm:py-6",
   glass:
-    "overflow-hidden rounded-[1.35rem] border border-white/80 bg-white/82 shadow-[0_16px_46px_rgba(7,59,42,0.09)] backdrop-blur-2xl ring-1 ring-white/60 sm:rounded-[1.75rem]",
+    "overflow-hidden rounded-[1.35rem] border border-[color:var(--hairline)] bg-white shadow-[var(--shadow-sm)] sm:rounded-[1.6rem]",
   card:
     "rounded-[1.35rem] border border-[#DDE7E2] bg-white shadow-[0_12px_34px_rgba(7,59,42,0.07)] sm:rounded-[1.75rem]",
   input:
@@ -102,7 +96,7 @@ const styles = {
   select:
     "h-11 w-full rounded-2xl border border-[#DDE7E2] bg-[#F8FAF9] px-4 text-sm font-semibold text-[#111827] shadow-sm outline-none transition focus:border-[#00A859] focus:ring-4 focus:ring-[#00A859]/10",
   primary:
-    "rounded-2xl bg-[linear-gradient(135deg,#00A859,#07864A)] font-bold text-white shadow-[0_14px_30px_rgba(0,168,89,0.22)] transition hover:-translate-y-0.5 hover:brightness-105 disabled:opacity-50 disabled:hover:translate-y-0",
+    "rounded-xl bg-[#00A859] font-bold text-white shadow-[var(--shadow-xs)] transition hover:bg-[#07934E] active:translate-y-px disabled:opacity-50",
   secondary:
     "rounded-2xl border border-[#DDE7E2] bg-white font-bold text-[#102A43] shadow-sm transition hover:bg-[#F4F8F6] hover:text-[#073B2A]",
 }
@@ -287,11 +281,8 @@ function PhotoPicker({
 }
 
 export function AdminPortal() {
-  const navigate = useNavigate()
   const [loggedEmployee, setLoggedEmployee] = useState<Employee | null>(null)
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const [authChecked, setAuthChecked] = useState(false)
   const [ticketDepartment, setTicketDepartment] = useState<TicketDepartment | null>(null)
   const [category, setCategory] = useState("PC")
   const [origin, setOrigin] = useState("Administrativo")
@@ -327,16 +318,17 @@ export function AdminPortal() {
     if (savedEmployee) {
       try {
         const parsedEmployee = JSON.parse(savedEmployee)
-        if (!parsedEmployee?.token) {
+        if (parsedEmployee?.token) {
+          setLoggedEmployee(parsedEmployee)
+        } else {
           localStorage.removeItem(PORTAL_USER_KEY)
-          return
         }
-
-        setLoggedEmployee(parsedEmployee)
       } catch {
         localStorage.removeItem(PORTAL_USER_KEY)
       }
     }
+
+    setAuthChecked(true)
   }, [])
 
   useEffect(() => {
@@ -345,47 +337,6 @@ export function AdminPortal() {
       loadArchivedTickets(loggedEmployee.id)
     }
   }, [loggedEmployee?.id])
-
-  async function handlePortalLogin() {
-    if (isLoggingIn) return
-
-    if (!username || !password) {
-      toast.error("Digite seu usuário e senha.")
-      return
-    }
-
-    setIsLoggingIn(true)
-
-    try {
-      const response = await fetch(`${API_URL}/employees/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      })
-
-      if (!response.ok) {
-        toast.error("Usuário ou senha inválidos.")
-        return
-      }
-
-      const employee = await response.json()
-      hasShownExpiredSession.current = false
-      localStorage.setItem(PORTAL_USER_KEY, JSON.stringify(employee))
-      setUsername("")
-      setPassword("")
-      setLoggedEmployee(employee)
-    } catch (error) {
-      console.error("Erro ao acessar portal:", error)
-      toast.error("Erro ao acessar portal.")
-    } finally {
-      setIsLoggingIn(false)
-    }
-  }
 
   async function loadMyTickets(targetEmployeeId?: number) {
     const idToSearch = targetEmployeeId || loggedEmployee?.id
@@ -731,8 +682,6 @@ export function AdminPortal() {
     localStorage.removeItem(PORTAL_USER_KEY)
     hasShownExpiredSession.current = false
     setLoggedEmployee(null)
-    setUsername("")
-    setPassword("")
     setCategory("PC")
     setOrigin("Administrativo")
     setDescription("")
@@ -762,7 +711,6 @@ export function AdminPortal() {
     }
 
     setLoggedEmployee(null)
-    setPassword("")
     setMyTickets([])
     setArchivedTickets([])
     setSelectedTicket(null)
@@ -777,133 +725,14 @@ export function AdminPortal() {
   const finishedTickets = allTickets.filter((ticket) => ticket.status === "Finalizado").length
 
   if (!loggedEmployee) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.20),transparent_30%),linear-gradient(180deg,#F7FAF8,#EAF0ED)] px-4 py-8 text-[#111827]">
-        <div className="grid w-full max-w-5xl overflow-hidden rounded-[1.5rem] border border-white/80 bg-white shadow-[0_28px_90px_rgba(7,59,42,0.14)] sm:rounded-[2rem] lg:grid-cols-[1.05fr_0.95fr]">
-          <section className="relative hidden min-h-[620px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(57,217,138,0.28),transparent_32%),linear-gradient(135deg,#073B2A,#102A43)] p-10 text-white lg:flex lg:flex-col lg:justify-between">
-            <div className="relative">
-           <img
-              src={logoLifting}
-              alt="Lifting Electric"
-              className="h-20 w-auto object-contain drop-shadow-[0_10px_24px_rgba(0,0,0,0.28)]"/>
-            <h1 className="mt-3 max-w-sm text-sm leading-6 text-emerald-50/80">
-             <br /> Lifting
-            </h1>
-
-              <p className="mt-3 max-w-sm text-sm leading-6 text-emerald-50/80">
-               <br /> Portal do funcionário para abrir chamados, acompanhar respostas e conversar com a equipe técnica.
-              </p>
-            </div>
-
-            <div className="relative space-y-3">
-              <div className="rounded-3xl border border-white/14 bg-white/10 p-4 backdrop-blur-xl">
-                <div className="flex items-center gap-3">
-                  <ShieldCheck className="text-[#39D98A]" size={22} />
-                  <div>
-                    <p className="text-sm font-bold text-white">
-                      Atendimento conectado
-                    </p>
-                    <p className="text-xs text-emerald-50/65">
-                      Chamado, resposta e histórico no mesmo lugar
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3">
-                {["Abrir", "Conversar", "Acompanhar"].map((item) => (
-                  <div key={item} className="rounded-2xl border border-white/12 bg-white/10 px-3 py-3 text-center text-xs font-black text-emerald-50/85">
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="flex min-h-[560px] items-center justify-center bg-white px-5 py-8 sm:min-h-[620px] sm:px-12 sm:py-10">
-            <div className="w-full max-w-[360px]">
-              <div className="mb-7 text-center sm:mb-9">
-                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00A859]/10 text-[#00A859] ring-1 ring-[#00A859]/20">
-                  <UserCircle2 size={24} />
-                </div>
-
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-[#00A859] lg:hidden">
-                  Portal do funcionário
-                </p>
-
-                <h2 className="mt-1 text-3xl font-black tracking-[-0.05em] text-[#111827] sm:text-4xl sm:tracking-[-0.06em]">
-                  Entrar no portal
-                </h2>
-
-                <p className="mt-3 text-sm leading-6 text-slate-500">
-                  Acesse seu portal de chamados com usuário e senha.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="relative">
-                  <UserRound
-                    size={18}
-                    className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
-
-                  <Input
-                    type="text"
-                    placeholder="Digite seu usuário"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="h-[52px] w-full rounded-full border border-slate-200 bg-white pl-12 pr-5 text-sm font-semibold text-slate-800 shadow-[0_8px_25px_rgba(15,23,42,0.04)] outline-none transition hover:border-[#00A859]/40 focus:border-[#00A859] focus:ring-4 focus:ring-[#39D98A]/10"
-                  />
-                </div>
-
-                <div className="relative">
-                  <LockKeyhole
-                    size={18}
-                    className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
-
-                  <Input
-                    type="password"
-                    placeholder="Digite sua senha"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") handlePortalLogin()
-                    }}
-                    className="h-[52px] w-full rounded-full border border-slate-200 bg-white pl-12 pr-5 text-sm font-semibold text-slate-800 shadow-[0_8px_25px_rgba(15,23,42,0.04)] outline-none transition hover:border-[#00A859]/40 focus:border-[#00A859] focus:ring-4 focus:ring-[#39D98A]/10"
-                  />
-                </div>
-
-                <Button
-                  className="mt-3 h-[52px] w-full rounded-full bg-gradient-to-r from-[#073B2A] via-[#00A859] to-[#073B2A] font-bold text-white shadow-[0_18px_45px_rgba(0,168,89,0.28)] transition hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 disabled:opacity-50"
-                  onClick={handlePortalLogin}
-                  disabled={isLoggingIn}
-                >
-                  {isLoggingIn ? "Entrando..." : "Entrar no portal"}
-                  <ArrowRight size={18} className="ml-2" />
-                </Button>
-              </div>
-
-              <div className="mt-8 text-center">
-                <p className="text-xs leading-5 text-slate-400">
-                  Acesso restrito para funcionários autorizados.
-                </p>
-                <p className="mt-1 text-[11px] font-semibold text-slate-300">Versão {APP_VERSION}</p>
-                <div className="mt-4 border-t border-slate-100 pt-4">
-                  <p className="text-xs text-slate-400">É técnico ou gestor?</p>
-                  <button
-                    onClick={() => navigate("/login")}
-                    className="mt-2 text-sm font-bold text-[#00A859] transition hover:underline"
-                  >
-                    Acessar painel técnico →
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
+    if (!authChecked) {
+      return (
+        <div className="flex min-h-screen items-center justify-center bg-[color:var(--background)]">
+          <div className="h-9 w-9 animate-spin rounded-full border-[3px] border-[#00A859]/25 border-t-[#00A859]" />
         </div>
-      </div>
-    )
+      )
+    }
+    return <Navigate to="/login" replace />
   }
 
   if (successState.isVisible) {

@@ -6,9 +6,10 @@ import { Toaster } from "react-hot-toast"
 import { TECHNICAL_USER_KEY } from "@/services/api"
 
 // Páginas pesadas carregadas sob demanda (code-splitting) — reduz o bundle inicial.
+const HomePage = lazy(() => import("./pages/home/HomePage").then((m) => ({ default: m.HomePage })))
 const TicketsPage = lazy(() => import("./pages/tickets/TicketsPage").then((m) => ({ default: m.TicketsPage })))
 const Dashboard = lazy(() => import("./pages/dashboard/Dashboard").then((m) => ({ default: m.Dashboard })))
-const Login = lazy(() => import("./pages/auth/Login").then((m) => ({ default: m.Login })))
+const AccessScreen = lazy(() => import("./pages/auth/AccessScreen").then((m) => ({ default: m.AccessScreen })))
 const ReportsPage = lazy(() => import("@/pages/reports/ReportsPage").then((m) => ({ default: m.ReportsPage })))
 const SettingsPage = lazy(() => import("./pages/settings/SettingsPage").then((m) => ({ default: m.SettingsPage })))
 
@@ -68,9 +69,19 @@ function App() {
           <Routes>
             {/* Tela inicial (site e PWA): portal do funcionário */}
             <Route path="/" element={<AdminPortal />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<AccessScreen />} />
             {/* Rota antiga do portal mantida para links salvos */}
             <Route path="/portal" element={<Navigate to="/" replace />} />
+
+            {/* Menu inicial do painel técnico */}
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute allowed={["Admin", "TI", "RH", "Infraestrutura"]}>
+                  <HomePage />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="/dashboard"
